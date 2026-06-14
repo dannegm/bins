@@ -1,40 +1,48 @@
 import { Link } from '@tanstack/react-router';
 import { Eye, Globe, Lock, GitFork } from 'lucide-react';
+import { format } from 'date-fns';
+import { enUS, es } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/helpers/utils';
 
-const formatDate = iso =>
-    new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+const dateFnsLocales = { en: enUS, es };
 
-export const BinCard = ({ bin }) => (
-    <Link
-        to='/editor/$binId'
-        params={{ binId: bin.id }}
-        className={cn(
-            'group flex flex-col gap-3 rounded-xl border border-white/8 bg-white/4 p-4',
-            'transition-all hover:border-white/15 hover:bg-white/8',
-        )}
-    >
-        <div className='flex items-start justify-between gap-2'>
-            <span className='truncate text-sm font-medium text-white/90'>
-                {bin.title || 'Untitled'}
-            </span>
-            <span className='[&>svg]:size-3.5 shrink-0 text-zinc-600'>
-                {bin.visibility === 'public' ? <Globe /> : <Lock />}
-            </span>
-        </div>
+export const BinCard = ({ bin }) => {
+    const { t, i18n } = useTranslation();
+    const locale = dateFnsLocales[i18n.language] ?? enUS;
+    const formatDate = iso => format(new Date(iso), t('formats.date.short'), { locale });
 
-        <div className='flex items-center gap-3 text-xs text-zinc-500'>
-            <span className='flex items-center gap-1 [&>svg]:size-3'>
-                <Eye />
-                {bin.views}
-            </span>
-            {bin.forked_from && (
-                <span className='flex items-center gap-1 [&>svg]:size-3'>
-                    <GitFork />
-                    forked
-                </span>
+    return (
+        <Link
+            to='/editor/$binId'
+            params={{ binId: bin.id }}
+            className={cn(
+                'group flex flex-col gap-3 rounded-xl border border-border bg-card p-4',
+                'transition-all hover:border-border/60 hover:bg-accent',
             )}
-            <span className='ml-auto'>{formatDate(bin.updated_at)}</span>
-        </div>
-    </Link>
-);
+        >
+            <div className='flex items-start justify-between gap-2'>
+                <span className='truncate text-sm font-medium text-card-foreground'>
+                    {bin.title || t('bins.card.untitled')}
+                </span>
+                <span className='[&>svg]:size-3.5 shrink-0 text-muted-foreground'>
+                    {bin.visibility === 'public' ? <Globe /> : <Lock />}
+                </span>
+            </div>
+
+            <div className='flex items-center gap-3 text-xs text-muted-foreground'>
+                <span className='flex items-center gap-1 [&>svg]:size-3'>
+                    <Eye />
+                    {bin.views}
+                </span>
+                {bin.forked_from && (
+                    <span className='flex items-center gap-1 [&>svg]:size-3'>
+                        <GitFork />
+                        {t('bins.card.forked')}
+                    </span>
+                )}
+                <span className='ml-auto'>{formatDate(bin.updated_at)}</span>
+            </div>
+        </Link>
+    );
+};

@@ -12,7 +12,8 @@ export const ThemeProvider = ({ children }) => {
 
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', uiTheme);
-    }, [uiTheme]);
+        document.documentElement.setAttribute('data-theme-gama', isDark ? 'dark' : 'light');
+    }, [uiTheme, isDark]);
 
     return <ThemeContext.Provider value={{ uiTheme, isDark }}>{children}</ThemeContext.Provider>;
 };

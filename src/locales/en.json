@@ -1,1 +1,44 @@
-{}
+{
+    "formats": {
+        "date": {
+            "short": "MMM d, yyyy"
+        }
+    },
+    "command_palette": {
+        "placeholder": "Type a command or search…",
+        "empty": "No commands found.",
+        "hint_navigate": "navigate",
+        "hint_select": "select",
+        "hint_close": "close"
+    },
+    "sidebar": {
+        "home": "Home",
+        "new_bin": "New bin",
+        "admin": "Admin",
+        "settings": "Settings"
+    },
+    "footer": {
+        "tagline": "BINS. — real-time collaborative code editor"
+    },
+    "home": {
+        "header": {
+            "search_placeholder": "Search bins…",
+            "new_bin": "New bin"
+        },
+        "shared_bins": {
+            "title": "Shared with you"
+        },
+        "my_bins": {
+            "title": "Your bins",
+            "empty_title": "No bins yet",
+            "empty_description": "Create your first bin and start coding",
+            "empty_cta": "Create your first bin"
+        }
+    },
+    "bins": {
+        "card": {
+            "untitled": "Untitled",
+            "forked": "forked"
+        }
+    }
+}

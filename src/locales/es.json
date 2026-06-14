@@ -1,1 +1,44 @@
-{}
+{
+    "formats": {
+        "date": {
+            "short": "d MMM yyyy"
+        }
+    },
+    "command_palette": {
+        "placeholder": "Escribe un comando o busca…",
+        "empty": "No se encontraron comandos.",
+        "hint_navigate": "navegar",
+        "hint_select": "seleccionar",
+        "hint_close": "cerrar"
+    },
+    "sidebar": {
+        "home": "Inicio",
+        "new_bin": "Nuevo bin",
+        "admin": "Admin",
+        "settings": "Configuración"
+    },
+    "footer": {
+        "tagline": "BINS. — editor de código colaborativo en tiempo real"
+    },
+    "home": {
+        "header": {
+            "search_placeholder": "Buscar bins…",
+            "new_bin": "Nuevo bin"
+        },
+        "shared_bins": {
+            "title": "Compartidos contigo"
+        },
+        "my_bins": {
+            "title": "Tus bins",
+            "empty_title": "Aún no tienes bins",
+            "empty_description": "Crea tu primer bin y empieza a programar",
+            "empty_cta": "Crear tu primer bin"
+        }
+    },
+    "bins": {
+        "card": {
+            "untitled": "Sin título",
+            "forked": "bifurcado"
+        }
+    }
+}

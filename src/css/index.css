@@ -9,6 +9,9 @@
 @import './themes/index.css';
 @import './utils.css';
 
+@custom-variant dark (&:where([data-theme-gama='dark'], [data-theme-gama='dark'] *));
+@custom-variant short (@media (max-height: 600px));
+
 @theme inline {
     --font-heading: var(--font-sans);
     --font-sans: 'Geist Variable', sans-serif;
@@ -48,6 +51,9 @@
     --color-accent-hover: var(--accent-hover);
     --color-success: var(--success);
     --color-warning: var(--warning);
+    --color-overlay: var(--overlay);
+    --color-brand: var(--brand);
+    --color-brand-foreground: var(--brand-foreground);
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);
     --radius-lg: var(--radius);
@@ -69,6 +75,6 @@
         cursor: pointer;
     }
     html {
-        @apply font-sans;
+        @apply font-sans bg-background;
     }
 }

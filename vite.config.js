@@ -1,6 +1,9 @@
 import path from 'path';
 import { execSync } from 'child_process';
+import { createRequire } from 'module';
 import { defineConfig } from 'vite';
+
+const require = createRequire(import.meta.url);
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
@@ -16,8 +19,11 @@ const getCommitHash = () => {
     }
 };
 
+const { version } = require('./package.json');
+
 export default defineConfig({
     define: {
+        __APP_VERSION__: JSON.stringify(version),
         __COMMIT_HASH__: JSON.stringify(getCommitHash()),
         __COMMIT_HASH_SHORT__: JSON.stringify(getCommitHash().slice(0, 7)),
     },

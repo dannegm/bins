@@ -2,6 +2,8 @@ import { Command } from 'cmdk';
 import { AnimatePresence, motion } from 'motion/react';
 import { DynamicIcon } from 'lucide-react/dynamic';
 import { useRouterState } from '@tanstack/react-router';
+import { useTranslation } from 'react-i18next';
+import { Kbd, KbdGroup } from '@/ui/kbd';
 import { useEvents } from '@/providers/bus-provider';
 import { useCommandPalette } from '@/providers/command-palette-provider';
 import { createCommands } from '@/constants/commands';
@@ -10,6 +12,7 @@ const matchesScope = (scope, pathname) =>
     scope === '*' || scope.some(s => pathname.startsWith(s));
 
 export const CommandPalette = () => {
+    const { t } = useTranslation();
     const { isOpen, close } = useCommandPalette();
     const { emit } = useEvents();
     const pathname = useRouterState({ select: s => s.location.pathname });
@@ -37,7 +40,7 @@ export const CommandPalette = () => {
                     className='fixed inset-0 z-50 flex items-start justify-center pt-[20vh]'
                     onClick={close}
                 >
-                    <div className='absolute inset-0 bg-black/60 backdrop-blur-sm' />
+                    <div className='absolute inset-0 bg-overlay backdrop-blur-xs' />
 
                     <motion.div
                         initial={{ opacity: 0, scale: 0.96, y: -8 }}
@@ -48,26 +51,26 @@ export const CommandPalette = () => {
                         onClick={e => e.stopPropagation()}
                     >
                         <Command
-                            className='overflow-hidden rounded-xl border border-white/10 bg-zinc-900 shadow-2xl shadow-black/50'
+                            className='overflow-hidden rounded-xl border border-border bg-popover shadow-2xl shadow-black/50'
                             onKeyDown={e => { if (e.key === 'Escape') close(); }}
                             loop
                         >
                             <Command.Input
                                 autoFocus
-                                placeholder='Type a command or search…'
-                                className='w-full border-b border-white/10 bg-transparent px-4 py-3.5 text-sm text-white/90 placeholder:text-zinc-500 focus:outline-none'
+                                placeholder={t('command_palette.placeholder')}
+                                className='w-full border-b border-border bg-transparent px-4 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none'
                             />
 
                             <Command.List className='max-h-80 overflow-y-auto p-2'>
-                                <Command.Empty className='py-8 text-center text-sm text-zinc-500'>
-                                    No commands found.
+                                <Command.Empty className='py-8 text-center text-sm text-muted-foreground'>
+                                    {t('command_palette.empty')}
                                 </Command.Empty>
 
                                 {commands.map(({ group, items }) => (
                                     <Command.Group
                                         key={group}
                                         heading={group}
-                                        className='**:[[cmdk-group-heading]]:px-2 **:[[cmdk-group-heading]]:pb-1.5 **:[[cmdk-group-heading]]:pt-3 **:[[cmdk-group-heading]]:text-[11px] **:[[cmdk-group-heading]]:font-semibold **:[[cmdk-group-heading]]:uppercase **:[[cmdk-group-heading]]:tracking-widest **:[[cmdk-group-heading]]:text-zinc-500'
+                                        className='**:[[cmdk-group-heading]]:px-2 **:[[cmdk-group-heading]]:pb-1.5 **:[[cmdk-group-heading]]:pt-3 **:[[cmdk-group-heading]]:text-[11px] **:[[cmdk-group-heading]]:font-semibold **:[[cmdk-group-heading]]:uppercase **:[[cmdk-group-heading]]:tracking-widest **:[[cmdk-group-heading]]:text-muted-foreground'
                                     >
                                         {items.map(({ id, label, icon, action }) => (
                                             <Command.Item
@@ -75,9 +78,9 @@ export const CommandPalette = () => {
                                                 value={id}
                                                 keywords={[label]}
                                                 onSelect={() => run(action)}
-                                                className='flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-white/70 transition-colors aria-selected:bg-white/10 aria-selected:text-white/90 [&>svg]:size-4'
+                                                className='flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors aria-selected:bg-accent aria-selected:text-accent-foreground [&>svg]:size-4'
                                             >
-                                                <div className='[&>svg]:size-4 text-zinc-500 aria-selected:text-white/70'>
+                                                <div className='[&>svg]:size-4 text-muted-foreground'>
                                                     <DynamicIcon name={icon} />
                                                 </div>
                                                 {label}
@@ -87,10 +90,10 @@ export const CommandPalette = () => {
                                 ))}
                             </Command.List>
 
-                            <div className='flex items-center gap-4 border-t border-white/5 px-4 py-2.5 text-[11px] text-zinc-600'>
-                                <span><kbd className='font-mono'>↑↓</kbd> navigate</span>
-                                <span><kbd className='font-mono'>↵</kbd> select</span>
-                                <span><kbd className='font-mono'>esc</kbd> close</span>
+                            <div className='flex items-center gap-4 border-t border-border px-4 py-2.5 text-[11px] text-muted-foreground'>
+                                <KbdGroup><Kbd>↑</Kbd><Kbd>↓</Kbd> {t('command_palette.hint_navigate')}</KbdGroup>
+                                <KbdGroup><Kbd>↵</Kbd> {t('command_palette.hint_select')}</KbdGroup>
+                                <KbdGroup><Kbd>esc</Kbd> {t('command_palette.hint_close')}</KbdGroup>
                             </div>
                         </Command>
                     </motion.div>

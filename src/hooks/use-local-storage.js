@@ -7,7 +7,12 @@ export const useLocalStorage = (key, initialValue) => {
         if (typeof window === 'undefined') return $initial.current;
         try {
             const item = localStorage.getItem(key);
-            return item ? JSON.parse(item) : $initial.current;
+            if (!item) return $initial.current;
+            try {
+                return JSON.parse(item);
+            } catch {
+                return item;
+            }
         } catch {
             return $initial.current;
         }
@@ -38,10 +43,13 @@ export const useLocalStorage = (key, initialValue) => {
 
         const handleStorage = event => {
             if (event.key === key) {
+                const item = localStorage.getItem(key);
+                if (!item) { setStoredValue($initial.current); return; }
                 try {
-                    const item = localStorage.getItem(key);
-                    setStoredValue(item ? JSON.parse(item) : $initial.current);
-                } catch {}
+                    setStoredValue(JSON.parse(item));
+                } catch {
+                    setStoredValue(item);
+                }
             }
         };
 

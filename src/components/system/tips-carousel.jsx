@@ -23,8 +23,15 @@ export const TipsCarousel = () => {
 
     return (
         <div
-            className='relative flex flex-col gap-4 rounded-xl p-6 transition-colors duration-700'
-            style={{ backgroundColor: `color-mix(in srgb, ${tip.color} 12%, transparent)` }}
+            className='relative flex flex-col gap-4 rounded-xl p-6 transition-colors duration-700 bg-(--tip-bg-light) dark:bg-(--tip-bg-dark)'
+            style={{
+                '--tip-color-dark': tip.color,
+                '--tip-color-light': `color-mix(in srgb, ${tip.color} 10%, white)`,
+                '--tip-bg-dark': `color-mix(in srgb, ${tip.color} 12%, transparent)`,
+                '--tip-bg-light': `color-mix(in srgb, ${tip.color} 60%, transparent)`,
+                '--tip-icon-bg-dark': `color-mix(in srgb, ${tip.color} 20%, transparent)`,
+                '--tip-icon-bg-light': `color-mix(in srgb, ${tip.color} 50%, transparent)`,
+            }}
         >
             <AnimatePresence mode='wait'>
                 <motion.div
@@ -35,15 +42,12 @@ export const TipsCarousel = () => {
                     transition={{ duration: 0.2 }}
                     className='flex items-start gap-4'
                 >
-                    <div
-                        className='flex size-10 shrink-0 items-center justify-center rounded-lg [&>svg]:size-5'
-                        style={{ backgroundColor: `color-mix(in srgb, ${tip.color} 20%, transparent)`, color: tip.color }}
-                    >
+                    <div className='flex size-10 shrink-0 items-center justify-center rounded-lg [&>svg]:size-5 bg-(--tip-icon-bg-light) dark:bg-(--tip-icon-bg-dark) text-(--tip-color-light) dark:text-(--tip-color-dark)'>
                         <DynamicIcon name={tip.icon} />
                     </div>
                     <div className='flex flex-col gap-1'>
-                        <span className='text-sm font-semibold text-white/90'>{tip.title}</span>
-                        <span className='text-sm text-white/70'>{tip.body}</span>
+                        <span className='text-sm font-semibold text-zinc-100 dark:text-zinc-100'>{tip.title}</span>
+                        <span className='text-sm text-zinc-150 dark:text-zinc-300'>{tip.body}</span>
                     </div>
                 </motion.div>
             </AnimatePresence>
@@ -54,10 +58,9 @@ export const TipsCarousel = () => {
                         key={i}
                         onClick={() => go(i)}
                         className={cn(
-                            'h-1 rounded-full transition-all duration-300',
-                            i === active ? 'w-4' : 'w-1 opacity-30',
+                            'h-1 rounded-full transition-all duration-300 bg-(--tip-color-light) dark:bg-(--tip-color-dark)',
+                            { 'w-4': i === active, 'w-1 opacity-30': i !== active },
                         )}
-                        style={{ backgroundColor: tip.color }}
                     />
                 ))}
             </div>

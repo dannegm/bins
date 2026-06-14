@@ -1,2 +1,6 @@
+.claude
+.agents
+.tanstack
+dist
 node_modules
 pnpm-lock.yaml
