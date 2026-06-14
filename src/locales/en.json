@@ -84,6 +84,7 @@
             "group_tabs": "Tabs",
             "group_bin": "Bin",
             "group_editor": "Editor",
+            "group_monaco": "Monaco editor",
             "edit": "Edit shortcut",
             "reset": "Reset to default",
             "press_key": "Press a key combination…",

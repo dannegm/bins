@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
+import { useListener } from '@/providers/bus-provider';
 import { CommandPalette } from '@/components/system/command-palette';
 
 const CommandPaletteContext = createContext({ isOpen: false, open: () => {}, close: () => {}, toggle: () => {} });
@@ -11,12 +11,13 @@ export const CommandPaletteProvider = ({ children }) => {
 
     const open = () => setIsOpen(true);
     const close = () => setIsOpen(false);
-    const toggle = () => setIsOpen(v => !v);
 
-    useHotkeys('mod+k', e => { e.preventDefault(); toggle(); }, { enableOnFormElements: false });
+    useListener('palette:toggle', () => setIsOpen(v => !v));
+    useListener('palette:open', open);
+    useListener('palette:close', close);
 
     return (
-        <CommandPaletteContext.Provider value={{ isOpen, open, close, toggle }}>
+        <CommandPaletteContext.Provider value={{ isOpen, open, close }}>
             <CommandPalette />
             {children}
         </CommandPaletteContext.Provider>

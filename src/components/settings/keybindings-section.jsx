@@ -4,6 +4,7 @@ import { AlertTriangle, Pencil, RotateCcw, X } from 'lucide-react';
 import { Dialog } from '@base-ui/react/dialog';
 import { useSettings } from '@/hooks/use-settings';
 import { defaultSettings } from '@/constants/default-settings';
+import { normalizeEvent } from '@/hooks/use-hotkey';
 import { Button } from '@/ui/button';
 import { Kbd, KbdGroup } from '@/ui/kbd';
 import { cn } from '@/helpers/utils';
@@ -11,54 +12,62 @@ import { SectionHeading, SettingGroup, SettingRow } from './settings-ui';
 
 const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.platform);
 
+// type: 'app' | 'monaco'
 const KEYBINDING_GROUPS = [
-    { group: 'general', items: ['command_palette', 'settings', 'new_bin'] },
-    { group: 'tabs', items: ['new_file', 'prev_tab', 'next_tab'] },
-    { group: 'bin', items: ['copy_link'] },
-    { group: 'editor', items: ['toggle_runner', 'format_code', 'word_wrap', 'redo'] },
+    { group: 'general', type: 'app', items: ['command_palette', 'settings', 'new_bin'] },
+    { group: 'tabs', type: 'app', items: ['new_file', 'prev_tab', 'next_tab'] },
+    { group: 'bin', type: 'app', items: ['copy_link'] },
+    { group: 'editor', type: 'app', items: ['toggle_runner', 'format_code'] },
+    { group: 'monaco', type: 'monaco', items: ['redo'] },
 ];
 
 const BROWSER_CONFLICTS = new Map([
-    ['cmd+t', 'New tab'],
-    ['cmd+w', 'Close tab'],
-    ['cmd+r', 'Reload page'],
-    ['cmd+shift+r', 'Hard reload'],
-    ['cmd+l', 'Address bar'],
-    ['cmd+d', 'Bookmark page'],
-    ['cmd+p', 'Print'],
-    ['cmd+f', 'Find in page'],
-    ['cmd+g', 'Find next'],
-    ['cmd+shift+g', 'Find previous'],
-    ['cmd+shift+i', 'Developer tools'],
-    ['cmd+shift+j', 'Developer tools'],
-    ['cmd+shift+n', 'New incognito window'],
-    ['cmd+shift+t', 'Reopen closed tab'],
-    ['cmd+shift+b', 'Bookmarks bar'],
-    ['cmd+opt+i', 'Developer tools'],
-    ['cmd+opt+j', 'Console'],
+    ['mod+t', 'New tab'],
+    ['mod+n', 'New window'],
+    ['mod+w', 'Close tab'],
+    ['mod+shift+w', 'Close all tabs'],
+    ['mod+shift+n', 'New incognito window'],
+    ['mod+shift+t', 'Reopen closed tab'],
+    ['mod+r', 'Reload page'],
+    ['mod+shift+r', 'Hard reload'],
+    ['mod+l', 'Address bar'],
+    ['mod+d', 'Bookmark page'],
+    ['mod+p', 'Print'],
+    ['mod+f', 'Find in page'],
+    ['mod+g', 'Find next'],
+    ['mod+shift+g', 'Find previous'],
+    ['mod+shift+i', 'Developer tools'],
+    ['mod+shift+j', 'Developer tools'],
+    ['mod+shift+b', 'Bookmarks bar'],
+    ['mod+alt+i', 'Developer tools'],
+    ['mod+alt+j', 'Console'],
+    ...Array.from({ length: 9 }, (_, i) => [`mod+${i + 1}`, `Focus tab ${i + 1}`]),
 ]);
 
 const MAC_CONFLICTS = new Map([
-    ['cmd+space', 'Spotlight'],
-    ['cmd+tab', 'App switcher'],
-    ['cmd+q', 'Quit app'],
-    ['cmd+h', 'Hide app'],
-    ['cmd+opt+h', 'Hide other apps'],
-    ['cmd+m', 'Minimize window'],
-    ['cmd+`', 'Next window'],
-    ['cmd+shift+3', 'Screenshot'],
-    ['cmd+shift+4', 'Screenshot selection'],
-    ['cmd+shift+5', 'Screenshot options'],
+    ['mod+space', 'Spotlight'],
+    ['mod+tab', 'App switcher'],
+    ['mod+q', 'Quit app'],
+    ['mod+h', 'Hide app'],
+    ['mod+alt+h', 'Hide other apps'],
+    ['mod+m', 'Minimize window'],
+    ['mod+`', 'Next window'],
+    ['mod+shift+3', 'Screenshot'],
+    ['mod+shift+4', 'Screenshot selection'],
+    ['mod+shift+5', 'Screenshot options'],
 ]);
 
 const WIN_CONFLICTS = new Map([
-    ['ctrl+alt+delete', 'Task Manager'],
-    ['ctrl+shift+escape', 'Task Manager'],
+    ['mod+alt+delete', 'Task Manager'],
+    ['mod+shift+escape', 'Task Manager'],
 ]);
 
-const getConflict = (combo, excludeId, keybindings) => {
-    const appDefaults = defaultSettings.keybindings;
-    for (const [id, value] of Object.entries({ ...appDefaults, ...keybindings })) {
+const getConflict = (combo, excludeId, allKeybindings) => {
+    const allDefaults = {
+        ...defaultSettings.appKeybindings,
+        ...defaultSettings.monacoKeybindings,
+    };
+    for (const [id, value] of Object.entries({ ...allDefaults, ...allKeybindings })) {
         if (id !== excludeId && value === combo) {
             return { type: 'app', label: id };
         }
@@ -72,9 +81,10 @@ const getConflict = (combo, excludeId, keybindings) => {
 const formatBinding = raw => {
     if (!raw) return [];
     return raw.split('+').map(part => {
-        if (part === 'cmd') return isMac ? '⌘' : 'Ctrl';
+        if (part === 'mod') return isMac ? '⌘' : 'Ctrl';
         if (part === 'ctrl') return 'Ctrl';
-        if (part === 'opt') return isMac ? '⌥' : 'Alt';
+        if (part === 'meta') return '⌘';
+        if (part === 'alt') return isMac ? '⌥' : 'Alt';
         if (part === 'shift') return '⇧';
         return part.toUpperCase();
     });
@@ -90,7 +100,7 @@ const KeybindingDisplay = ({ raw, muted }) => (
     </KbdGroup>
 );
 
-const CaptureZone = ({ onCapture, excludeId, keybindings }) => {
+const CaptureZone = ({ onCapture, excludeId, allKeybindings }) => {
     const { t } = useTranslation();
     const [pending, setPending] = useState(null);
     const [conflict, setConflict] = useState(null);
@@ -102,16 +112,9 @@ const CaptureZone = ({ onCapture, excludeId, keybindings }) => {
             e.stopImmediatePropagation();
             if (['Meta', 'Control', 'Alt', 'Shift'].includes(e.key)) return;
 
-            const parts = [];
-            if (e.metaKey) parts.push('cmd');
-            else if (e.ctrlKey) parts.push('ctrl');
-            if (e.altKey) parts.push('opt');
-            if (e.shiftKey) parts.push('shift');
-            parts.push(e.key.toLowerCase());
-
-            if (parts.length >= 2) {
-                const combo = parts.join('+');
-                const c = getConflict(combo, excludeId, keybindings);
+            const combo = normalizeEvent(e);
+            if (combo.split('+').length >= 2) {
+                const c = getConflict(combo, excludeId, allKeybindings);
                 setPending(combo);
                 setConflict(c);
                 onCapture(combo, c);
@@ -119,7 +122,7 @@ const CaptureZone = ({ onCapture, excludeId, keybindings }) => {
         };
         window.addEventListener('keydown', onKey, { capture: true });
         return () => window.removeEventListener('keydown', onKey, { capture: true });
-    }, [onCapture, excludeId, keybindings]);
+    }, [onCapture, excludeId, allKeybindings]);
 
     const keys = pending ? formatBinding(pending) : [];
     const hasConflict = !!conflict;
@@ -174,7 +177,7 @@ const CaptureZone = ({ onCapture, excludeId, keybindings }) => {
     );
 };
 
-const KeybindingModal = ({ shortcutId, actionLabel, currentValue, keybindings, onSave, t }) => {
+const KeybindingModal = ({ shortcutId, actionLabel, currentValue, allKeybindings, onSave, t }) => {
     const [open, setOpen] = useState(false);
     const [captured, setCaptured] = useState(null);
     const [conflict, setConflict] = useState(null);
@@ -231,7 +234,7 @@ const KeybindingModal = ({ shortcutId, actionLabel, currentValue, keybindings, o
                         <CaptureZone
                             onCapture={handleCapture}
                             excludeId={shortcutId}
-                            keybindings={keybindings}
+                            allKeybindings={allKeybindings}
                         />
                         <div className='flex items-center gap-2 text-xs text-muted-foreground'>
                             <span>{t('settings.keybindings.current_label')}</span>
@@ -266,22 +269,32 @@ const GroupLabel = ({ label }) => (
 
 export const KeybindingsSection = () => {
     const { t } = useTranslation();
-    const [keybindings, setKeybindings] = useSettings('keybindings', defaultSettings.keybindings);
+    const [appKeybindings, setAppKeybindings] = useSettings('appKeybindings', defaultSettings.appKeybindings);
+    const [monacoKeybindings, setMonacoKeybindings] = useSettings('monacoKeybindings', defaultSettings.monacoKeybindings);
 
-    const set = (id, val) => setKeybindings(prev => ({ ...prev, [id]: val }));
-    const reset = id => setKeybindings(prev => ({ ...prev, [id]: defaultSettings.keybindings[id] }));
-    const isCustom = id => keybindings[id] !== defaultSettings.keybindings[id];
+    const allKeybindings = { ...appKeybindings, ...monacoKeybindings };
+
+    const getKb = type => type === 'app' ? appKeybindings : monacoKeybindings;
+    const getDefaults = type => type === 'app' ? defaultSettings.appKeybindings : defaultSettings.monacoKeybindings;
+    const setKb = (type, id, val) => {
+        if (type === 'app') setAppKeybindings(prev => ({ ...prev, [id]: val }));
+        else setMonacoKeybindings(prev => ({ ...prev, [id]: val }));
+    };
+    const resetKb = (type, id) =>
+        setKb(type, id, getDefaults(type)[id]);
+    const isCustom = (type, id) =>
+        getKb(type)[id] !== getDefaults(type)[id];
 
     return (
         <section id='settings-keybindings'>
             <SectionHeading title={t('settings.keybindings.title')} />
             <SettingGroup>
-                {KEYBINDING_GROUPS.map(({ group, items }) => (
+                {KEYBINDING_GROUPS.map(({ group, type, items }) => (
                     <>
                         <GroupLabel key={`label-${group}`} label={t(`settings.keybindings.group_${group}`)} />
                         {items.map(id => {
-                            const current = keybindings[id] ?? defaultSettings.keybindings[id];
-                            const custom = isCustom(id);
+                            const current = getKb(type)[id] ?? getDefaults(type)[id];
+                            const custom = isCustom(type, id);
                             return (
                                 <SettingRow key={id} label={t(`settings.keybindings.${id}`)}>
                                     <div className='flex items-center gap-2'>
@@ -295,14 +308,14 @@ export const KeybindingsSection = () => {
                                             shortcutId={id}
                                             actionLabel={t(`settings.keybindings.${id}`)}
                                             currentValue={current}
-                                            keybindings={keybindings}
-                                            onSave={val => set(id, val)}
+                                            allKeybindings={allKeybindings}
+                                            onSave={val => setKb(type, id, val)}
                                             t={t}
                                         />
                                         <Button
                                             variant='ghost'
                                             size='icon-xs'
-                                            onClick={() => reset(id)}
+                                            onClick={() => resetKb(type, id)}
                                             disabled={!custom}
                                             title={t('settings.keybindings.reset')}
                                         >

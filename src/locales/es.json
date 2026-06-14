@@ -84,6 +84,7 @@
             "group_tabs": "Pestañas",
             "group_bin": "Bin",
             "group_editor": "Editor",
+            "group_monaco": "Editor Monaco",
             "edit": "Editar atajo",
             "reset": "Restablecer",
             "press_key": "Presiona una combinación de teclas…",
