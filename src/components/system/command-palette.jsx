@@ -6,6 +6,9 @@ import { useTranslation } from 'react-i18next';
 import { Kbd, KbdGroup } from '@/ui/kbd';
 import { useEvents } from '@/providers/bus-provider';
 import { useCommandPalette } from '@/providers/command-palette-provider';
+import { useSettings } from '@/hooks/use-settings';
+import { defaultSettings } from '@/constants/default-settings';
+import { formatBinding } from '@/hooks/use-hotkey';
 import { createCommands } from '@/constants/commands';
 
 const matchesScope = (scope, pathname) =>
@@ -16,6 +19,12 @@ export const CommandPalette = () => {
     const { isOpen, close } = useCommandPalette();
     const { emit } = useEvents();
     const pathname = useRouterState({ select: s => s.location.pathname });
+    const [appKeybindings] = useSettings('appKeybindings', defaultSettings.appKeybindings);
+
+    const shortcut = id => {
+        const raw = id && (appKeybindings[id] ?? defaultSettings.appKeybindings[id]);
+        return raw ? formatBinding(raw) : null;
+    };
 
     const commands = createCommands({ emit })
         .map(group => ({
@@ -72,20 +81,28 @@ export const CommandPalette = () => {
                                         heading={group}
                                         className='**:[[cmdk-group-heading]]:px-2 **:[[cmdk-group-heading]]:pb-1.5 **:[[cmdk-group-heading]]:pt-3 **:[[cmdk-group-heading]]:text-[11px] **:[[cmdk-group-heading]]:font-semibold **:[[cmdk-group-heading]]:uppercase **:[[cmdk-group-heading]]:tracking-widest **:[[cmdk-group-heading]]:text-muted-foreground'
                                     >
-                                        {items.map(({ id, label, icon, action }) => (
-                                            <Command.Item
-                                                key={id}
-                                                value={id}
-                                                keywords={[label]}
-                                                onSelect={() => run(action)}
-                                                className='flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors aria-selected:bg-accent aria-selected:text-accent-foreground [&>svg]:size-4'
-                                            >
-                                                <div className='[&>svg]:size-4 text-muted-foreground'>
-                                                    <DynamicIcon name={icon} />
-                                                </div>
-                                                {label}
-                                            </Command.Item>
-                                        ))}
+                                        {items.map(({ id, label, icon, shortcutId, action }) => {
+                                            const keys = shortcut(shortcutId);
+                                            return (
+                                                <Command.Item
+                                                    key={id}
+                                                    value={id}
+                                                    keywords={[label]}
+                                                    onSelect={() => run(action)}
+                                                    className='flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors aria-selected:bg-accent aria-selected:text-accent-foreground [&>svg]:size-4'
+                                                >
+                                                    <div className='[&>svg]:size-4 text-muted-foreground'>
+                                                        <DynamicIcon name={icon} />
+                                                    </div>
+                                                    <span className='flex-1'>{label}</span>
+                                                    {keys && (
+                                                        <KbdGroup>
+                                                            {keys.map((k, i) => <Kbd key={i}>{k}</Kbd>)}
+                                                        </KbdGroup>
+                                                    )}
+                                                </Command.Item>
+                                            );
+                                        })}
                                     </Command.Group>
                                 ))}
                             </Command.List>

@@ -74,6 +74,18 @@ export const normalizeEvent = e => {
     return parts.join('+');
 };
 
+export const formatBinding = raw => {
+    if (!raw) return [];
+    return raw.split('+').map(part => {
+        if (part === 'mod') return isMac ? '⌘' : 'Ctrl';
+        if (part === 'ctrl') return 'Ctrl';
+        if (part === 'meta') return '⌘';
+        if (part === 'alt') return isMac ? '⌥' : 'Alt';
+        if (part === 'shift') return '⇧';
+        return part.toUpperCase();
+    });
+};
+
 export const useHotkey = (keys, handler, options = {}) => {
     const { enabled = true, enableOnFormElements = false } = options;
     const handlerRef = useRef(handler);

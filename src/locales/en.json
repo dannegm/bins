@@ -158,8 +158,7 @@
             "apply_error": "Invalid settings link.",
             "export_session_label": "Export session",
             "export_session_description": "Generate a one-time link to move your identity to another device. Expires in 15 minutes.",
-            "export_session_button": "Generate session link",
-            "export_session_requires": "Requires VITE_SESSION_SECRET to be configured."
+            "export_session_button": "Generate session link"
         }
     }
 }

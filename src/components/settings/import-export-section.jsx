@@ -103,7 +103,6 @@ export const ImportExportSection = () => {
                     <Button variant='outline' size='sm' disabled className='self-start'>
                         {t('settings.import_export.export_session_button')}
                     </Button>
-                    <p className='text-xs text-muted-foreground'>{t('settings.import_export.export_session_requires')}</p>
                 </div>
             </div>
         </section>

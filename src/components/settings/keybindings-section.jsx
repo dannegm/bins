@@ -4,7 +4,7 @@ import { AlertTriangle, Pencil, RotateCcw, X } from 'lucide-react';
 import { Dialog } from '@base-ui/react/dialog';
 import { useSettings } from '@/hooks/use-settings';
 import { defaultSettings } from '@/constants/default-settings';
-import { normalizeEvent } from '@/hooks/use-hotkey';
+import { normalizeEvent, formatBinding } from '@/hooks/use-hotkey';
 import { Button } from '@/ui/button';
 import { Kbd, KbdGroup } from '@/ui/kbd';
 import { cn } from '@/helpers/utils';
@@ -78,17 +78,6 @@ const getConflict = (combo, excludeId, allKeybindings) => {
     return null;
 };
 
-const formatBinding = raw => {
-    if (!raw) return [];
-    return raw.split('+').map(part => {
-        if (part === 'mod') return isMac ? '⌘' : 'Ctrl';
-        if (part === 'ctrl') return 'Ctrl';
-        if (part === 'meta') return '⌘';
-        if (part === 'alt') return isMac ? '⌥' : 'Alt';
-        if (part === 'shift') return '⇧';
-        return part.toUpperCase();
-    });
-};
 
 const KeybindingDisplay = ({ raw, muted }) => (
     <KbdGroup>

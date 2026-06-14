@@ -158,8 +158,7 @@
             "apply_error": "Enlace de configuración inválido.",
             "export_session_label": "Exportar sesión",
             "export_session_description": "Genera un enlace de un solo uso para mover tu identidad a otro dispositivo. Expira en 15 minutos.",
-            "export_session_button": "Generar enlace de sesión",
-            "export_session_requires": "Requiere que VITE_SESSION_SECRET esté configurado."
+            "export_session_button": "Generar enlace de sesión"
         }
     }
 }
