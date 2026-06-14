@@ -55,7 +55,7 @@ npm run preview   # Preview production build locally
 |---|---|
 | Framework | Vite + React |
 | Styles | Tailwind CSS v4 |
-| UI primitives | shadcn/ui with **Base UI** (`@base-ui-components/react`) — not Radix. Use Radix only as documented fallback when Base UI lacks support |
+| UI primitives | shadcn/ui with **Base UI** (`@base-ui/react`) — not Radix. Use Radix only as documented fallback when Base UI lacks support |
 | Routing | TanStack Router (file-based, Vite plugin) |
 | Server state | TanStack Query |
 | URL state | nuqs |
