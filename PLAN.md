@@ -1476,9 +1476,9 @@ curl -X POST 'https://endpoints.hckr.mx/proxys/custom' \
 ```
 
 ### Repositorio de Bins
-- [ ] Crear repo en GitHub
-- [ ] Configurar `.gitignore` (`.env`, `node_modules`, `dist`)
-- [ ] Crear `.env.example`
+- [x] Crear repo en GitHub
+- [x] Configurar `.gitignore` (`.env`, `node_modules`, `dist`)
+- [x] Crear `.env.example`
 
 ### Assets a preparar
 - [ ] `favicon.svg`
