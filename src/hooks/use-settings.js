@@ -14,7 +14,6 @@ export const useSettings = (path, defaultValue) => {
 
     const set = next => {
         const resolved = next instanceof Function ? next(value) : next;
-        setValue(resolved);
         settings.set(path, resolved);
     };
 

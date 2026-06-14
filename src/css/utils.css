@@ -29,6 +29,11 @@
     flex-grow: 1;
 }
 
+@utility squircle-* {
+    border-radius: --value(--radius-*);
+    corner-shape: squircle;
+}
+
 @layer utilities {
     .bg-playground {
         background-color: #313131;

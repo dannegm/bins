@@ -3,6 +3,7 @@ import { getByPath, setByPath } from '@/helpers/objects';
 
 const STORAGE_KEY = 'bins:settings';
 const CHANNEL = 'settings';
+const listeners = [];
 
 const getAll = () => {
     try {
@@ -19,6 +20,7 @@ const setAll = value => {
         const bc = new BroadcastChannel(CHANNEL);
         bc.postMessage(value);
         bc.close();
+        listeners.forEach(cb => cb(value));
     } catch {}
 };
 
@@ -34,6 +36,7 @@ const set = (path, value) => {
 };
 
 const subscribe = callback => {
+    listeners.push(callback);
     const bc = new BroadcastChannel(CHANNEL);
 
     const onStorage = event => {
@@ -55,6 +58,7 @@ const subscribe = callback => {
     bc.addEventListener('message', onBroadcast);
 
     return () => {
+        listeners.splice(listeners.indexOf(callback), 1);
         window.removeEventListener('storage', onStorage);
         bc.removeEventListener('message', onBroadcast);
         bc.close();

@@ -1,5 +1,5 @@
 import { createAvatar } from '@dicebear/core';
-import { rings } from '@dicebear/rings';
+import * as rings from '@dicebear/rings';
 
 export const getAvatarUrl = uuid =>
-    createAvatar(rings, { seed: uuid }).toDataUri();
+    uuid ? createAvatar(rings, { seed: uuid }).toDataUri() : '';

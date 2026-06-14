@@ -6,7 +6,7 @@ export const NewPage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        navigate({ to: '/editor/$bin-id', params: { 'bin-id': nanoid(8) }, replace: true });
+        navigate({ to: '/editor/$binId', params: { binId: nanoid(8) }, replace: true });
     }, []);
 
     return null;
