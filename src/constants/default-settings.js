@@ -30,6 +30,16 @@ export const defaultSettings = {
     },
 
     keybindings: {
+        command_palette: 'cmd+k',
+        settings: 'cmd+,',
+        new_bin: 'cmd+n',
+        new_file: 'cmd+shift+n',
+        prev_tab: 'cmd+shift+[',
+        next_tab: 'cmd+shift+]',
+        copy_link: 'cmd+shift+c',
+        toggle_runner: 'opt+shift+r',
+        format_code: 'opt+shift+f',
+        word_wrap: 'opt+shift+w',
         redo: 'cmd+y',
     },
 

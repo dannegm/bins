@@ -40,5 +40,125 @@
             "untitled": "Sin título",
             "forked": "bifurcado"
         }
+    },
+    "settings": {
+        "title": "Configuración",
+        "nav": {
+            "identity": "Identidad",
+            "appearance": "Apariencia",
+            "editor": "Editor",
+            "keybindings": "Atajos",
+            "prettier": "Prettier",
+            "ai_completions": "Completado IA",
+            "import_export": "Importar y Exportar"
+        },
+        "identity": {
+            "title": "Identidad",
+            "description": "Tu presencia anónima en todos los bins.",
+            "name_label": "Nombre visible",
+            "name_placeholder": "tu-nombre",
+            "color_label": "Color de cursor",
+            "color_hint": "Visible para los colaboradores en tiempo real.",
+            "color_light": "Claro",
+            "color_dark": "Oscuro",
+            "uuid_label": "Tu ID",
+            "uuid_hint": "Nunca cambia y te identifica en todos los bins."
+        },
+        "appearance": {
+            "title": "Apariencia",
+            "ui_theme_label": "Tema de interfaz",
+            "monaco_theme_label": "Tema del editor",
+            "language_label": "Idioma"
+        },
+        "editor": {
+            "title": "Editor",
+            "font_size_label": "Tamaño de fuente",
+            "tab_size_label": "Tamaño de tabulación",
+            "word_wrap_label": "Ajuste de línea",
+            "line_numbers_label": "Números de línea",
+            "minimap_label": "Minimapa"
+        },
+        "keybindings": {
+            "title": "Atajos de teclado",
+            "group_general": "General",
+            "group_tabs": "Pestañas",
+            "group_bin": "Bin",
+            "group_editor": "Editor",
+            "edit": "Editar atajo",
+            "reset": "Restablecer",
+            "press_key": "Presiona una combinación de teclas…",
+            "command_palette": "Paleta de comandos",
+            "settings": "Configuración",
+            "new_bin": "Nuevo bin",
+            "new_file": "Nuevo archivo en el bin",
+            "prev_tab": "Pestaña anterior",
+            "next_tab": "Pestaña siguiente",
+            "copy_link": "Copiar enlace del bin",
+            "toggle_runner": "Activar/desactivar runner",
+            "format_code": "Formatear código",
+            "word_wrap": "Activar/desactivar ajuste de línea",
+            "redo": "Rehacer",
+            "modal_title": "Editar atajo",
+            "current_label": "Actual:",
+            "capture_change_hint": "Presiona otra combinación para reemplazar",
+            "cancel": "Cancelar",
+            "save": "Guardar",
+            "save_anyway": "Guardar igual",
+            "conflict_app": "Conflicto con atajo de la app",
+            "conflict_browser": "Conflicto con atajo del navegador",
+            "conflict_os": "Conflicto con atajo del sistema",
+            "custom": "personalizado"
+        },
+        "prettier": {
+            "title": "Prettier",
+            "print_width_label": "Ancho de impresión",
+            "tab_width_label": "Ancho de tabulación",
+            "use_tabs_label": "Usar tabulaciones",
+            "semi_label": "Punto y coma",
+            "single_quote_label": "Comillas simples",
+            "trailing_comma_label": "Coma al final",
+            "bracket_spacing_label": "Espacios en llaves",
+            "arrow_parens_label": "Paréntesis en arrow functions",
+            "jsx_single_quote_label": "Comillas simples en JSX"
+        },
+        "ai_completions": {
+            "title": "Completado con IA",
+            "enabled_label": "Activar completado con IA",
+            "provider_label": "Proveedor",
+            "model_label": "Modelo",
+            "model_placeholder": "nombre del modelo",
+            "model_custom": "Otro…",
+            "api_key_label": "Clave de API",
+            "base_url_label": "URL base",
+            "show": "Mostrar",
+            "hide": "Ocultar",
+            "key_notice": "Tu clave de API se almacena localmente en este navegador y nunca se envía a ningún servidor que no sea el proveedor de IA."
+        },
+        "reset": {
+            "title": "Restablecer toda la configuración",
+            "description": "Restaura todas las preferencias a sus valores predeterminados. Tu identidad (UUID, nombre, colores) no se verá afectada.",
+            "button": "Restablecer valores predeterminados",
+            "modal_title": "¿Restablecer toda la configuración?",
+            "modal_description": "Esto restaurará la apariencia, el editor, los atajos, Prettier y la configuración de IA a sus valores predeterminados. Tu identidad se conservará.",
+            "cancel": "Cancelar",
+            "confirm": "Restablecer todo"
+        },
+        "import_export": {
+            "title": "Importar y Exportar",
+            "share_settings_label": "Compartir configuración",
+            "share_settings_description": "Copia un enlace con tu configuración actual. Cualquiera que lo abra podrá aplicarla.",
+            "share_settings_button": "Copiar enlace de configuración",
+            "copied": "¡Copiado!",
+            "apply_settings_label": "Aplicar configuración desde enlace",
+            "apply_settings_description": "Pega un enlace de configuración de otro usuario para aplicar su configuración.",
+            "apply_settings_placeholder": "Pega un enlace de configuración…",
+            "apply_settings_button": "Aplicar",
+            "apply_success": "Configuración aplicada.",
+            "apply_error": "Enlace de configuración inválido.",
+            "export_session_label": "Exportar sesión",
+            "export_session_description": "Genera un enlace de un solo uso para mover tu identidad a otro dispositivo. Expira en 15 minutos.",
+            "export_session_button": "Generar enlace de sesión",
+            "export_session_requires": "Requiere que VITE_SESSION_SECRET esté configurado."
+        }
     }
 }

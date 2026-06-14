@@ -40,5 +40,125 @@
             "untitled": "Untitled",
             "forked": "forked"
         }
+    },
+    "settings": {
+        "title": "Settings",
+        "nav": {
+            "identity": "Identity",
+            "appearance": "Appearance",
+            "editor": "Editor",
+            "keybindings": "Keybindings",
+            "prettier": "Prettier",
+            "ai_completions": "AI Completions",
+            "import_export": "Import & Export"
+        },
+        "identity": {
+            "title": "Identity",
+            "description": "Your anonymous presence across all bins.",
+            "name_label": "Display name",
+            "name_placeholder": "your-name",
+            "color_label": "Cursor color",
+            "color_hint": "Shown to collaborators in real time.",
+            "color_light": "Light",
+            "color_dark": "Dark",
+            "uuid_label": "Your ID",
+            "uuid_hint": "This never changes and identifies you across bins."
+        },
+        "appearance": {
+            "title": "Appearance",
+            "ui_theme_label": "Interface theme",
+            "monaco_theme_label": "Editor theme",
+            "language_label": "Language"
+        },
+        "editor": {
+            "title": "Editor",
+            "font_size_label": "Font size",
+            "tab_size_label": "Tab size",
+            "word_wrap_label": "Word wrap",
+            "line_numbers_label": "Line numbers",
+            "minimap_label": "Minimap"
+        },
+        "keybindings": {
+            "title": "Keybindings",
+            "group_general": "General",
+            "group_tabs": "Tabs",
+            "group_bin": "Bin",
+            "group_editor": "Editor",
+            "edit": "Edit shortcut",
+            "reset": "Reset to default",
+            "press_key": "Press a key combination…",
+            "command_palette": "Command palette",
+            "settings": "Settings",
+            "new_bin": "New bin",
+            "new_file": "New file in bin",
+            "prev_tab": "Previous tab",
+            "next_tab": "Next tab",
+            "copy_link": "Copy bin link",
+            "toggle_runner": "Toggle runner",
+            "format_code": "Format code",
+            "word_wrap": "Toggle word wrap",
+            "redo": "Redo",
+            "modal_title": "Edit shortcut",
+            "current_label": "Current:",
+            "capture_change_hint": "Press a different combination to replace",
+            "cancel": "Cancel",
+            "save": "Save",
+            "save_anyway": "Save anyway",
+            "conflict_app": "Conflicts with app shortcut",
+            "conflict_browser": "Conflicts with browser shortcut",
+            "conflict_os": "Conflicts with system shortcut",
+            "custom": "custom"
+        },
+        "prettier": {
+            "title": "Prettier",
+            "print_width_label": "Print width",
+            "tab_width_label": "Tab width",
+            "use_tabs_label": "Use tabs",
+            "semi_label": "Semicolons",
+            "single_quote_label": "Single quotes",
+            "trailing_comma_label": "Trailing comma",
+            "bracket_spacing_label": "Bracket spacing",
+            "arrow_parens_label": "Arrow function parens",
+            "jsx_single_quote_label": "JSX single quotes"
+        },
+        "ai_completions": {
+            "title": "AI Completions",
+            "enabled_label": "Enable AI completions",
+            "provider_label": "Provider",
+            "model_label": "Model",
+            "model_placeholder": "model name",
+            "model_custom": "Other…",
+            "api_key_label": "API key",
+            "base_url_label": "Base URL",
+            "show": "Show",
+            "hide": "Hide",
+            "key_notice": "Your API key is stored locally in this browser and never sent to any server other than the AI provider."
+        },
+        "reset": {
+            "title": "Reset all settings",
+            "description": "Restore all preferences to their default values. Your identity (UUID, name, colors) will not be affected.",
+            "button": "Reset to defaults",
+            "modal_title": "Reset all settings?",
+            "modal_description": "This will restore appearance, editor, keybindings, Prettier, and AI settings to their defaults. Your identity will be preserved.",
+            "cancel": "Cancel",
+            "confirm": "Reset everything"
+        },
+        "import_export": {
+            "title": "Import & Export",
+            "share_settings_label": "Share settings",
+            "share_settings_description": "Copy a link with your current settings. Anyone who opens it can apply your configuration.",
+            "share_settings_button": "Copy settings link",
+            "copied": "Copied!",
+            "apply_settings_label": "Apply settings from link",
+            "apply_settings_description": "Paste a settings link from another user to apply their configuration.",
+            "apply_settings_placeholder": "Paste a settings link…",
+            "apply_settings_button": "Apply",
+            "apply_success": "Settings applied.",
+            "apply_error": "Invalid settings link.",
+            "export_session_label": "Export session",
+            "export_session_description": "Generate a one-time link to move your identity to another device. Expires in 15 minutes.",
+            "export_session_button": "Generate session link",
+            "export_session_requires": "Requires VITE_SESSION_SECRET to be configured."
+        }
     }
 }
