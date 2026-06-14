@@ -1,0 +1,72 @@
+import { defaultSettings } from '@/constants/default-settings';
+import { getByPath, setByPath } from '@/helpers/objects';
+
+const STORAGE_KEY = 'bins:settings';
+const CHANNEL = 'settings';
+
+const getAll = () => {
+    try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        return stored ? { ...defaultSettings, ...JSON.parse(stored) } : { ...defaultSettings };
+    } catch {
+        return { ...defaultSettings };
+    }
+};
+
+const setAll = value => {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+        const bc = new BroadcastChannel(CHANNEL);
+        bc.postMessage(value);
+        bc.close();
+    } catch {}
+};
+
+const get = (path, defaultValue) => {
+    if (!path) return getAll();
+    const value = getByPath(getAll(), path);
+    return value !== undefined ? value : defaultValue;
+};
+
+const set = (path, value) => {
+    const updated = setByPath(getAll(), path, value);
+    setAll(updated);
+};
+
+const subscribe = callback => {
+    const bc = new BroadcastChannel(CHANNEL);
+
+    const onStorage = event => {
+        if (event.key === STORAGE_KEY) {
+            try {
+                const next = event.newValue
+                    ? { ...defaultSettings, ...JSON.parse(event.newValue) }
+                    : { ...defaultSettings };
+                callback(next);
+            } catch {}
+        }
+    };
+
+    const onBroadcast = event => {
+        callback(event.data);
+    };
+
+    window.addEventListener('storage', onStorage);
+    bc.addEventListener('message', onBroadcast);
+
+    return () => {
+        window.removeEventListener('storage', onStorage);
+        bc.removeEventListener('message', onBroadcast);
+        bc.close();
+    };
+};
+
+const handleCommand = ({ key, value }) => {
+    set(key, value);
+};
+
+const registerDevTools = () => {
+    window.settings = { get, set, getAll, setAll };
+};
+
+export const settings = { get, set, getAll, setAll, subscribe, handleCommand, registerDevTools };
