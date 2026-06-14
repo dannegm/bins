@@ -1428,20 +1428,31 @@ VITE_SESSION_SECRET=     # clave para firmar JWTs de transferencia de sesión
 **Schema**
 
 1. SQL Editor → `create schema if not exists bins;`
-2. Dashboard → Settings → API → **Extra Search Path** → agregar `bins` → guardar (~30s para reiniciar PostgREST)
+2. Ejecutar grants de permisos para `anon`, `authenticated`, `service_role` sobre el schema `bins`
+3. Dashboard → Settings → API → **Exposed schemas** → agregar `bins` → guardar (~30s para reiniciar PostgREST)
 
-- [ ] Crear schema `bins`
-- [ ] Agregar `bins` al Extra Search Path
-- [ ] Crear tabla `bins.profiles`
-- [ ] Crear tabla `bins.bins`
-- [ ] Crear tabla `bins.bin_files`
-- [ ] Crear tabla `bins.bin_collaborators`
-- [ ] Agregar constraint `bin_file_max_size`
-- [ ] Crear función y trigger `enforce_bin_files_limit`
-- [ ] Ejecutar SQL de RLS
-- [ ] Habilitar `pg_cron` desde Dashboard → Database → Extensions
-- [ ] Registrar cron job de limpieza
-- [ ] Habilitar Realtime para las tablas necesarias
+```sql
+GRANT USAGE ON SCHEMA bins TO anon, authenticated, service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA bins TO anon, authenticated, service_role;
+GRANT ALL ON ALL ROUTINES IN SCHEMA bins TO anon, authenticated, service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA bins TO anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA bins GRANT ALL ON TABLES TO anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA bins GRANT ALL ON ROUTINES TO anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA bins GRANT ALL ON SEQUENCES TO anon, authenticated, service_role;
+```
+
+- [x] Crear schema `bins`
+- [x] Agregar `bins` a Exposed schemas
+- [x] Crear tabla `bins.profiles`
+- [x] Crear tabla `bins.bins`
+- [x] Crear tabla `bins.bin_files`
+- [x] Crear tabla `bins.bin_collaborators`
+- [x] Agregar constraint `bin_file_max_size`
+- [x] Crear función y trigger `enforce_bin_files_limit`
+- [x] Ejecutar SQL de RLS
+- [x] Habilitar `pg_cron` desde Dashboard → Database → Extensions
+- [x] Registrar cron job de limpieza
+- [x] Habilitar Realtime para las tablas necesarias
 
 **Extensiones**
 ```sql
@@ -1481,10 +1492,10 @@ curl -X POST 'https://endpoints.hckr.mx/proxys/custom' \
 - [x] Crear `.env.example`
 
 ### Assets a preparar
-- [ ] `favicon.svg`
-- [ ] `favicon-light.png` (32x32)
-- [ ] `favicon-dark.png` (32x32)
-- [ ] `assets/sounds/` — sonido nudge MSN
+- [x] `favicon.svg`
+- [x] `favicon-light.png` (32x32)
+- [x] `favicon-dark.png` (32x32)
+- [x] `assets/sounds/` — sonido nudge MSN
 
 ### Código a proporcionar
 - [ ] `services/ntfy.js` — capa de abstracción ntfy
