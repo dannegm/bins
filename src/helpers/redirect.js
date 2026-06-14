@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 
-export const redirectInternal = ({ to, params, search }) =>
+export const redirectInternal =
+    ({ to, params, search }) =>
     () => {
         const navigate = useNavigate();
         useEffect(() => {
@@ -10,7 +11,8 @@ export const redirectInternal = ({ to, params, search }) =>
         return null;
     };
 
-export const redirectExternal = ({ to, target = '_self' }) =>
+export const redirectExternal =
+    ({ to, target = '_self' }) =>
     () => {
         useEffect(() => {
             if (target === '_self') {

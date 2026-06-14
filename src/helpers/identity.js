@@ -3,7 +3,11 @@ import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generato
 export const generateUUID = () => crypto.randomUUID();
 
 export const generateName = () =>
-    uniqueNamesGenerator({ dictionaries: [adjectives, animals], separator: '-', style: 'lowerCase' });
+    uniqueNamesGenerator({
+        dictionaries: [adjectives, animals],
+        separator: '-',
+        style: 'lowerCase',
+    });
 
 export const generateColors = () => {
     const hue = Math.floor(Math.random() * 360);
