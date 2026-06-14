@@ -183,7 +183,7 @@ export const HomePage = () => {
 
             </div>
             <footer className='flex shrink-0 items-center justify-between border-t border-white/5 px-8 py-4 text-xs text-zinc-600'>
-                <span>Bins — real-time collaborative code editor</span>
+                <span>BINS. — real-time collaborative code editor</span>
                 <span>
                     v0.1.0 ·{' '}
                     <a
