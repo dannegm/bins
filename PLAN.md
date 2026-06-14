@@ -1401,7 +1401,7 @@ JSON de tips generado por el agente con contenido basado en las features de la a
 
 ```env
 VITE_SUPABASE_URL=
-VITE_SUPABASE_ANON_KEY=
+VITE_SUPABASE_PUBLISHABLE_KEY=
 VITE_ADMIN_KEY=          # opcional — habilita modo admin
 VITE_PROXY_URL=          # ej: https://endpoints.hckr.mx/proxy/custom
 VITE_SESSION_SECRET=     # clave para firmar JWTs de transferencia de sesión
@@ -1459,24 +1459,20 @@ create extension if not exists pg_cron with schema cron;
 - [ ] Configurar dominio `bins.hckr.mx`
 
 ### Repo `dannegm/endpoints`
-- [ ] Agregar endpoint `/proxy/custom`:
+- [x] Endpoint `/proxys/custom` ya disponible en `https://endpoints.hckr.mx/proxys/custom`
 
-```js
-router.use('/custom', async (req, res) => {
-  try {
-    const { host, 'x-proxy-target': target, ...headers } = req.headers
-    if (!target) return res.status(400).json({ error: 'Missing x-proxy-target header' })
-    const params = new URLSearchParams(req.query).toString()
-    const url = `${target}${req.path}${params ? '?' + params : ''}`
-    const isBodyless = ['GET', 'HEAD'].includes(req.method)
-    const body = isBodyless ? undefined : JSON.stringify(req.body)
-    const response = await fetch(url, { method: req.method, headers, body })
-    const data = await response.json()
-    res.status(response.status).json(data)
-  } catch (err) {
-    res.status(502).json({ error: err.message })
-  }
-})
+El target completo (path + query) va en el header `x-proxy-target`:
+
+```bash
+# GET
+curl 'https://endpoints.hckr.mx/proxys/custom' \
+     -H 'x-proxy-target: https://endpoints.hckr.mx/starfish/otp'
+
+# POST
+curl -X POST 'https://endpoints.hckr.mx/proxys/custom' \
+     -H 'x-proxy-target: https://api.example.com/users?active=true' \
+     -H 'Content-Type: application/json' \
+     -d '{"name":"dan"}'
 ```
 
 ### Repositorio de Bins
