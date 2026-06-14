@@ -49,6 +49,49 @@ npm run preview   # Preview production build locally
 - **Dynamic values** — pass runtime values as CSS custom properties via `style` and reference with Tailwind's variable syntax: `<div className="w-(--panel-width)" style={{ '--panel-width': '22.5rem' }} />`. Use kebab-case for the variable name.
 - **Shadows** — always pair a shadow size with an explicit color: `shadow-lg shadow-black/30`. Tailwind v4 shadows have no default color and will be invisible without one.
 
+## UI Implementation Rules
+
+These rules were established through iteration and must be followed without exception:
+
+### i18n
+- **No hardcoded UI strings** — every label, placeholder, title, and message goes through `useTranslation`.
+- **One hook instance per file** — call `useTranslation()` once at the top-level component and pass `t` as a prop to helper/sub-components in the same file. Never call `useTranslation()` inside sub-components defined in the same file.
+
+### Theme colors
+- **No explicit color classes** — never use `text-indigo-400`, `bg-white/5`, `border-zinc-800`, etc. Always use semantic tokens (`text-brand`, `bg-surface`, `border-border`).
+- **Missing token? Create it** — if no token exists for a need, register the CSS variable in all 3 theme files (`dark.css`, `light.css`, `dracula.css`) and add it to `@theme inline` in `index.css`, then use it.
+- **Component-specific colors** — when a component needs its own colors that don't belong to the theme (e.g. dynamic accent colors), define `--var-dark` and `--var-light` CSS custom properties and switch with the `dark:` custom variant: `bg-(--var-light) dark:bg-(--var-dark)`.
+
+### Dynamic values (CSS custom property pattern)
+- **Never `style={{ color: value }}`** — always pass runtime values as CSS custom properties and reference them with Tailwind's variable syntax:
+  ```jsx
+  <div className="bg-(--item-color)" style={{ '--item-color': color }} />
+  ```
+- This applies to any dynamic value: colors, sizes, offsets — anything that varies at runtime.
+
+### Conditional classes
+- **Objects, not ternaries** — always use conditional objects inside `cn()`:
+  ```jsx
+  // Correct
+  cn('base', { 'extra': isActive, 'other': isDisabled })
+  // Wrong
+  cn(isActive ? 'extra' : 'other')
+  ```
+
+### Components and composition
+- **Use shadcn/ui components first** — before writing any custom UI, check `src/ui/` and the shadcn registry. Ask before implementing something custom.
+- **Don't recreate existing components** — reuse what's already in the project.
+- **Compose, don't conditionally render inline** — extract conditional states (loading, empty, error) into their own named components and return them early, rather than embedding `{isLoading && <...>}` inside JSX.
+
+### Navigation buttons
+- **`render` + `nativeButton={false}`** — when a Base UI `Button` should navigate, use `render={<Link to='...' />}` and always add `nativeButton={false}` to suppress the native button warning:
+  ```jsx
+  <Button render={<Link to='/new' />} nativeButton={false}>New bin</Button>
+  ```
+
+### Responsive design
+- **Every component needs mobile + desktop** — default styles are mobile-first; use `sm:` (and `lg:`, `xl:`) for desktop. Consider both layouts for every new component. Use `short:` for viewport height constraints (<600px).
+
 ## Stack
 
 | Layer              | Tool                                                                                                                        |
