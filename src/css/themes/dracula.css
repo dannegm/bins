@@ -36,4 +36,6 @@
     --accent-hover: #a879e6;
     --success: #50fa7b;
     --warning: #ffb86c;
+
+    background-color: var(--background);
 }

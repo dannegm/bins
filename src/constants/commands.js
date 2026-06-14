@@ -1,0 +1,131 @@
+export const createCommands = ({ emit }) => [
+    {
+        group: 'Navigation',
+        items: [
+            {
+                id: 'go-home',
+                label: 'Go to Home',
+                icon: 'house',
+                scope: '*',
+                keywords: ['home', 'dashboard', 'start'],
+                action: () => emit('command:navigate', { to: '/' }),
+            },
+            {
+                id: 'new-bin',
+                label: 'New Bin',
+                icon: 'plus',
+                scope: '*',
+                keywords: ['create', 'new', 'bin', 'file'],
+                action: () => emit('command:navigate', { to: '/new' }),
+            },
+            {
+                id: 'go-settings',
+                label: 'Settings',
+                icon: 'settings',
+                scope: '*',
+                keywords: ['config', 'preferences', 'settings'],
+                action: () => emit('command:navigate', { to: '/settings' }),
+            },
+            {
+                id: 'go-profile',
+                label: 'My Profile',
+                icon: 'user',
+                scope: '*',
+                keywords: ['profile', 'user', 'me'],
+                action: () => emit('command:navigate', { to: '/profile' }),
+            },
+        ],
+    },
+    {
+        group: 'App',
+        items: [
+            {
+                id: 'app-reload',
+                label: 'Reload page',
+                icon: 'refresh-cw',
+                scope: '*',
+                keywords: ['reload', 'refresh', 'restart'],
+                action: () => emit('app:reload'),
+            },
+        ],
+    },
+    {
+        group: 'Theme',
+        items: [
+            {
+                id: 'theme-dark',
+                label: 'Switch to Dark theme',
+                icon: 'moon',
+                scope: '*',
+                keywords: ['dark', 'theme', 'night'],
+                action: () => emit('command:setting', { path: 'uiTheme', value: 'dark' }),
+            },
+            {
+                id: 'theme-light',
+                label: 'Switch to Light theme',
+                icon: 'sun',
+                scope: '*',
+                keywords: ['light', 'theme', 'day'],
+                action: () => emit('command:setting', { path: 'uiTheme', value: 'light' }),
+            },
+        ],
+    },
+    {
+        group: 'Bin',
+        items: [
+            {
+                id: 'bin-share',
+                label: 'Copy link',
+                icon: 'link',
+                scope: ['/editor', '/embed'],
+                keywords: ['share', 'copy', 'link', 'url'],
+                action: () => emit('bin:share'),
+            },
+            {
+                id: 'bin-fork',
+                label: 'Fork bin',
+                icon: 'git-fork',
+                scope: ['/editor'],
+                keywords: ['fork', 'duplicate', 'clone'],
+                action: () => emit('bin:fork'),
+            },
+            {
+                id: 'bin-visibility',
+                label: 'Change visibility',
+                icon: 'eye',
+                scope: ['/editor'],
+                keywords: ['visibility', 'public', 'unlisted', 'private'],
+                action: () => emit('bin:change-visibility'),
+            },
+        ],
+    },
+    {
+        group: 'Editor',
+        items: [
+            {
+                id: 'editor-word-wrap',
+                label: 'Toggle word wrap',
+                icon: 'wrap-text',
+                scope: ['/editor'],
+                keywords: ['wrap', 'word wrap'],
+                action: () => emit('editor:toggle-word-wrap'),
+            },
+            {
+                id: 'editor-minimap',
+                label: 'Toggle minimap',
+                icon: 'map',
+                scope: ['/editor'],
+                keywords: ['minimap', 'map'],
+                action: () => emit('editor:toggle-minimap'),
+            },
+            {
+                id: 'editor-runner',
+                label: 'Toggle runner',
+                icon: 'play',
+                scope: ['/editor'],
+                keywords: ['runner', 'run', 'execute', 'preview'],
+                action: () => emit('editor:toggle-runner'),
+            },
+        ],
+    },
+];

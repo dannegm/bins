@@ -8,6 +8,7 @@ import { IdentityProvider } from './identity-provider';
 import { ThemeProvider } from './theme-provider';
 import { useExternalCommands } from '@/hooks/use-external-commands';
 import { useGlobalCommands } from '@/hooks/use-global-commands';
+import { CommandPaletteProvider } from '@/providers/command-palette-provider';
 
 const CommandsBridge = ({ children }) => {
     useExternalCommands();
@@ -21,4 +22,5 @@ export const Providers = createProviders([
     [CommandsBridge],
     [QueryProvider],
     [ThemeProvider],
+    [CommandPaletteProvider],
 ]);

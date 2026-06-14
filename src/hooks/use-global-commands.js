@@ -3,4 +3,5 @@ import { settings } from '@/services/settings';
 
 export const useGlobalCommands = () => {
     useListener('command:setting', params => settings.handleCommand(params));
+    useListener('app:reload', () => window.location.reload());
 };
