@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI assistants (Cursor, Copilot, Gemini, etc.) when working with code in this repository.
 
 ## Project
 
@@ -133,6 +133,6 @@ VITE_HTTP_PROXY_URL=        # For HTTP runner
 ## Documentation Files to Keep in Sync
 
 After every significant change, update the relevant file(s):
-- `CLAUDE.md` — this file (current state, decisions, known issues)
-- `AGENTS.md` — neutral copy for other AI tools
+- `AGENTS.md` — this file (current state, decisions, known issues)
+- `CLAUDE.md` — Claude Code version of this file
 - `docs/architecture.md`, `docs/database.md`, `docs/sync.md`, `docs/runners.md`, `docs/keybindings.md`, `docs/components.md`, `docs/settings.md`, `docs/theming.md`, `docs/deployment.md`, `docs/changelog.md`
