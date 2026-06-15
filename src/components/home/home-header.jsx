@@ -2,13 +2,14 @@ import { Link } from '@tanstack/react-router';
 import { useCopyToClipboard } from '@uidotdev/usehooks';
 import { Plus, Search, Copy, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { cn } from '@/helpers/utils';
 import { useIdentity } from '@/hooks/use-identity';
 import { useTheme } from '@/providers/theme-provider';
-import { getAvatarUrl } from '@/helpers/avatar';
 import { Button } from '@/ui/button';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/ui/input-group';
+import { UserAvatar } from '@/components/system/user-avatar';
 
-const CopyUUID = ({ uuid, color }) => {
+const CopyUUID = ({ uuid, color, className }) => {
     const [copiedText, copy] = useCopyToClipboard();
 
     return (
@@ -16,7 +17,10 @@ const CopyUUID = ({ uuid, color }) => {
             onClick={() => copy(uuid)}
             variant='ghost'
             size='sm'
-            className='h-auto max-w-full gap-1.5 px-2 py-1 text-xs text-muted-foreground'
+            className={cn(
+                'h-auto max-w-full gap-1.5 px-2 py-1 border border-border/50 text-xs text-muted-foreground',
+                className,
+            )}
         >
             <span
                 className='size-2 shrink-0 rounded-full bg-(--user-color)'
@@ -55,14 +59,11 @@ export const HomeHeader = () => {
 
             {user?.uuid && (
                 <div className='flex min-w-0 items-center gap-3 rounded-xl border border-border bg-card p-3 sm:order-first sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0'>
-                    <img
-                        src={getAvatarUrl(user.uuid)}
-                        alt={user.name}
-                        className='size-10 shrink-0 rounded-full'
-                    />
+                    <UserAvatar />
                     <div className='flex min-w-0 flex-col'>
                         <span className='text-sm font-medium text-foreground'>{user.name}</span>
                         <CopyUUID
+                            className='-ml-1'
                             uuid={user.uuid}
                             color={isDark ? user.colorDark : user.colorLight}
                         />

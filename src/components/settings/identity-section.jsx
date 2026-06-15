@@ -3,9 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { Check, Copy } from 'lucide-react';
 import { useCopyToClipboard } from '@uidotdev/usehooks';
 import { useIdentity } from '@/hooks/use-identity';
-import { getAvatarUrl } from '@/helpers/avatar';
 import { Input } from '@/ui/input';
 import { Button } from '@/ui/button';
+import { UserAvatar } from '@/components/system/user-avatar';
 import { SectionHeading, SettingGroup, SettingRow } from './settings-ui';
 
 const ColorSwatch = ({ value, onChange, label }) => {
@@ -70,13 +70,7 @@ export const IdentitySection = () => {
             <SettingGroup>
                 <SettingRow label={t('settings.identity.name_label')}>
                     <div className='flex items-center gap-2'>
-                        {user?.uuid && (
-                            <img
-                                src={getAvatarUrl(user.uuid)}
-                                alt={user.name}
-                                className='size-7 shrink-0 rounded-full'
-                            />
-                        )}
+                        {user?.uuid && <UserAvatar className='size-7 shrink-0' />}
                         <Input
                             value={name}
                             onChange={e => setName(e.target.value)}

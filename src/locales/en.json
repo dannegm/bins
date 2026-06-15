@@ -161,5 +161,30 @@
             "export_session_description": "Generate a one-time link to move your identity to another device. Expires in 15 minutes.",
             "export_session_button": "Generate session link"
         }
+    },
+    "editor": {
+        "bin_header": {
+            "untitled": "Untitled",
+            "locked": "Read-only — only you can edit",
+            "unlocked": "Editable by anyone with the link"
+        },
+        "tab_bar": {
+            "undo": "Undo",
+            "redo": "Redo",
+            "new_file": "New file",
+            "delete_file": "Delete file",
+            "confirm_delete": "Click again to confirm",
+            "share": "Share",
+            "copied": "Copied!"
+        },
+        "status_bar": {
+            "ln": "Ln",
+            "col": "Col",
+            "spaces": "Spaces: {{count}}",
+            "saving": "Saving…",
+            "saved": "Saved",
+            "unsaved": "Unsaved changes"
+        }
     }
 }
+

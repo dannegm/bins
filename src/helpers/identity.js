@@ -1,5 +1,5 @@
 import { uniqueNamesGenerator, adjectives, animals, colors } from 'unique-names-generator';
-import { items } from '@/constants/items';
+import { nouns } from '@/constants/word-lists';
 
 export const generateUUID = () => crypto.randomUUID();
 
@@ -12,7 +12,7 @@ export const generateName = () =>
 
 export const generateBinName = () =>
     uniqueNamesGenerator({
-        dictionaries: [colors, items],
+        dictionaries: [colors, nouns],
         separator: '-',
         style: 'lowerCase',
     });

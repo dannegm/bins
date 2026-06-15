@@ -403,23 +403,30 @@ create policy "bins: eliminar propio"
   using (author_id = (current_setting('request.headers')::json->>'x-client-id')::uuid);
 
 -- BIN_FILES
-create policy "bin_files: lectura pública"
+create policy "bin_files: lectura"
   on bins.bin_files for select
   using (
     exists (
       select 1 from bins.bins
       where bins.bins.id = bin_files.bin_id
-      and bins.bins.visibility in ('public', 'unlisted')
+      and (
+        bins.bins.visibility in ('public', 'unlisted')
+        or bins.bins.author_id = (current_setting('request.headers')::json->>'x-client-id')::uuid
+        or bins.bins.is_readonly = false
+      )
     )
   );
 
-create policy "bin_files: insertar si es autor"
+create policy "bin_files: insertar"
   on bins.bin_files for insert
   with check (
     exists (
       select 1 from bins.bins
       where bins.bins.id = bin_files.bin_id
-      and bins.bins.author_id = (current_setting('request.headers')::json->>'x-client-id')::uuid
+      and (
+        bins.bins.author_id = (current_setting('request.headers')::json->>'x-client-id')::uuid
+        or bins.bins.is_readonly = false
+      )
     )
   );
 
@@ -436,13 +443,16 @@ create policy "bin_files: actualizar"
     )
   );
 
-create policy "bin_files: eliminar si es autor"
+create policy "bin_files: eliminar"
   on bins.bin_files for delete
   using (
     exists (
       select 1 from bins.bins
       where bins.bins.id = bin_files.bin_id
-      and bins.bins.author_id = (current_setting('request.headers')::json->>'x-client-id')::uuid
+      and (
+        bins.bins.author_id = (current_setting('request.headers')::json->>'x-client-id')::uuid
+        or bins.bins.is_readonly = false
+      )
     )
   );
 

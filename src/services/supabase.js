@@ -14,12 +14,13 @@ export const supabase = () => {
 
     _uuid = uuid;
     _client = createClient(SUPABASE_URL, SUPABASE_KEY, {
+        db: { schema: 'bins' },
         global: {
             headers: {
                 ...(uuid && { 'x-client-id': uuid }),
             },
         },
-    }).schema('bins');
+    });
 
     return _client;
 };

@@ -161,5 +161,29 @@
             "export_session_description": "Genera un enlace de un solo uso para mover tu identidad a otro dispositivo. Expira en 15 minutos.",
             "export_session_button": "Generar enlace de sesión"
         }
+    },
+    "editor": {
+        "bin_header": {
+            "untitled": "Sin título",
+            "locked": "Solo lectura — solo tú puedes editar",
+            "unlocked": "Editable por cualquiera con el enlace"
+        },
+        "tab_bar": {
+            "undo": "Deshacer",
+            "redo": "Rehacer",
+            "new_file": "Nuevo archivo",
+            "delete_file": "Eliminar archivo",
+            "confirm_delete": "Clic de nuevo para confirmar",
+            "share": "Compartir",
+            "copied": "¡Copiado!"
+        },
+        "status_bar": {
+            "ln": "Lín",
+            "col": "Col",
+            "spaces": "Espacios: {{count}}",
+            "saving": "Guardando…",
+            "saved": "Guardado",
+            "unsaved": "Cambios sin guardar"
+        }
     }
 }
