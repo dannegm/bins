@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Undo2, Redo2, Plus, Trash2, Share2, Check, FileText } from 'lucide-react';
+import { Undo2, Redo2, Plus, Trash2, FileText } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/helpers/utils';
 import { getLanguage } from '@/constants/languages';
@@ -108,7 +108,6 @@ export const TabBar = ({
     onCreateFile,
     onDeleteFile,
     onRenameFile,
-    onShare,
     onUndo,
     onRedo,
     canUndo,
@@ -116,7 +115,6 @@ export const TabBar = ({
 }) => {
     const { t } = useTranslation();
     const [deleteConfirmId, setDeleteConfirmId] = useState(null);
-    const [shareState, setShareState] = useState('idle');
 
     const handleDeleteConfirm = fileId => {
         if (deleteConfirmId === fileId) {
@@ -126,12 +124,6 @@ export const TabBar = ({
             setDeleteConfirmId(fileId);
             setTimeout(() => setDeleteConfirmId(null), 2500);
         }
-    };
-
-    const handleShare = async () => {
-        await onShare();
-        setShareState('copied');
-        setTimeout(() => setShareState('idle'), 2000);
     };
 
     return (
@@ -199,24 +191,6 @@ export const TabBar = ({
                 )}
             </div>
 
-            <div className='flex items-center border-l border-border px-2'>
-                <button
-                    onClick={handleShare}
-                    className='flex h-7 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground'
-                >
-                    {shareState === 'copied' ? (
-                        <>
-                            <Check className='size-3.5 text-success' />
-                            <span className='text-success'>{t('editor.tab_bar.copied')}</span>
-                        </>
-                    ) : (
-                        <>
-                            <Share2 className='size-3.5' />
-                            <span>{t('editor.tab_bar.share')}</span>
-                        </>
-                    )}
-                </button>
-            </div>
         </div>
     );
 };

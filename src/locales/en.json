@@ -167,8 +167,21 @@
     "editor": {
         "bin_header": {
             "untitled": "Untitled",
-            "locked": "Read-only — only you can edit",
-            "unlocked": "Editable by anyone with the link"
+            "locked_label": "Read-only",
+            "unlocked_label": "Editable",
+            "locked_action": "Click to allow editing for guests",
+            "unlocked_action": "Click to make read-only",
+            "locked_guest": "Only the author can edit this bin",
+            "unlocked_guest": "Anyone with the link can edit",
+            "created_by": "created by",
+            "share_copied": "Link copied to clipboard",
+            "share_mode_readonly": "Shared as read-only",
+            "share_mode_editable": "Shared as editable",
+            "fork": "Fork",
+            "fork_title": "Fork this bin",
+            "fork_description": "A copy of this bin will be created with all its files. You will be the author of the new bin.",
+            "fork_cancel": "Cancel",
+            "fork_confirm": "Fork"
         },
         "tab_bar": {
             "undo": "Undo",
@@ -187,7 +200,8 @@
             "saved": "Saved",
             "unsaved": "Unsaved changes"
         },
-        "peer_joined": "joined the session"
+        "peer_joined": "joined the session",
+        "peer_left": "left the session"
     }
 }
 

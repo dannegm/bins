@@ -82,8 +82,9 @@ export const EditorCore = ({
         [yContext, scheduleSave],
     );
 
-    const activePeers = Object.values(peers).filter(p => p.activeFileId === file.id && p.cursor);
-    const peerCount = activePeers.length;
+    const selfPeer = { uuid: user.uuid, name: user.name, colorDark: user.colorDark, colorLight: user.colorLight };
+    const filePeers = [selfPeer, ...Object.values(peers).filter(p => p.activeFileId === file.id)];
+    const activePeers = filePeers.filter(p => p.cursor);
 
     const handleCursorChange = pos => {
         setCursor(pos);
@@ -109,7 +110,7 @@ export const EditorCore = ({
                 language={file.language}
                 cursor={cursor}
                 saveStatus={saveStatus}
-                peerCount={peerCount}
+                peers={filePeers}
                 onLanguageChange={lang => onLanguageChange(file.id, lang)}
             />
         </div>

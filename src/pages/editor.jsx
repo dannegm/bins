@@ -14,18 +14,15 @@ import { supabase } from '@/services/supabase';
 import { useIdentity } from '@/hooks/use-identity';
 import { getLanguageByFilename } from '@/constants/languages';
 
-const PeerJoinedToast = ({ peer }) => {
-    const { t } = useTranslation();
-    return (
-        <div className='flex min-w-64 items-center gap-3 rounded-lg border border-border bg-surface px-4 py-3 shadow-lg shadow-black/25'>
-            <UserAvatar profileId={peer.uuid} className='size-7 shrink-0' />
-            <div className='flex flex-col'>
-                <span className='text-sm font-medium text-foreground'>{peer.name}</span>
-                <span className='text-xs text-muted-foreground'>{t('editor.peer_joined')}</span>
-            </div>
+const PeerToast = ({ peer, message }) => (
+    <div className='flex min-w-64 items-center gap-3 rounded-lg border border-border bg-surface px-4 py-3 shadow-lg shadow-black/25'>
+        <UserAvatar profileId={peer.uuid} className='size-7 shrink-0' />
+        <div className='flex flex-col'>
+            <span className='text-sm font-medium text-foreground'>{peer.name}</span>
+            <span className='text-xs text-muted-foreground'>{message}</span>
         </div>
-    );
-};
+    </div>
+);
 
 const sortByPosition = (a, b) => a.position - b.position;
 
@@ -55,23 +52,28 @@ export const EditorPage = () => {
     const $broadcastTimer = useRef(null);
     const $cursorRef = useRef(null);
     const $selectionRef = useRef(null);
-    const $knownPeerIds = useRef(null);
+    const $knownPeers = useRef(null);
     const [undoState, setUndoState] = useState({ canUndo: false, canRedo: false });
 
     const activeFile = files.find(f => f.id === activeFileId) ?? null;
 
     useEffect(() => {
-        const currentIds = new Set(Object.keys(peers));
-        if ($knownPeerIds.current === null) {
-            $knownPeerIds.current = currentIds;
+        const current = new Map(Object.entries(peers));
+        if ($knownPeers.current === null) {
+            $knownPeers.current = current;
             return;
         }
-        for (const uuid of currentIds) {
-            if (!$knownPeerIds.current.has(uuid)) {
-                toast.custom(() => <PeerJoinedToast peer={peers[uuid]} />);
+        for (const [uuid, peer] of current) {
+            if (!$knownPeers.current.has(uuid)) {
+                toast.custom(() => <PeerToast peer={peer} message={t('editor.peer_joined')} />);
             }
         }
-        $knownPeerIds.current = currentIds;
+        for (const [uuid, peer] of $knownPeers.current) {
+            if (!current.has(uuid)) {
+                toast.custom(() => <PeerToast peer={peer} message={t('editor.peer_left')} />);
+            }
+        }
+        $knownPeers.current = current;
     }, [peers]);
 
     useEffect(() => {
@@ -340,6 +342,7 @@ export const EditorPage = () => {
                     isAuthor={isAuthor}
                     onTitleChange={handleTitleChange}
                     onReadonlyToggle={handleReadonlyToggle}
+                    onShare={handleShare}
                 />
                 <TabBar
                     files={files}
@@ -349,7 +352,6 @@ export const EditorPage = () => {
                     onCreateFile={handleCreateFile}
                     onDeleteFile={handleDeleteFile}
                     onRenameFile={handleRenameFile}
-                    onShare={handleShare}
                     onUndo={() => $undoManager.current?.undo()}
                     onRedo={() => $undoManager.current?.redo()}
                     canUndo={undoState.canUndo}

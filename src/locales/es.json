@@ -167,8 +167,21 @@
     "editor": {
         "bin_header": {
             "untitled": "Sin título",
-            "locked": "Solo lectura — solo tú puedes editar",
-            "unlocked": "Editable por cualquiera con el enlace"
+            "locked_label": "Solo lectura",
+            "unlocked_label": "Editable",
+            "locked_action": "Click para permitir edición a invitados",
+            "unlocked_action": "Click para hacer solo lectura",
+            "locked_guest": "Solo el autor puede editar este bin",
+            "unlocked_guest": "Cualquiera con el enlace puede editar",
+            "created_by": "creado por",
+            "share_copied": "Enlace copiado al portapapeles",
+            "share_mode_readonly": "Compartido en modo solo lectura",
+            "share_mode_editable": "Compartido en modo editable",
+            "fork": "Fork",
+            "fork_title": "Fork de este bin",
+            "fork_description": "Se creará una copia de este bin con todos sus archivos. Tú serás el autor del nuevo bin.",
+            "fork_cancel": "Cancelar",
+            "fork_confirm": "Fork"
         },
         "tab_bar": {
             "undo": "Deshacer",
@@ -187,6 +200,7 @@
             "saved": "Guardado",
             "unsaved": "Cambios sin guardar"
         },
-        "peer_joined": "se unió a la sesión"
+        "peer_joined": "se unió a la sesión",
+        "peer_left": "abandonó la sesión"
     }
 }

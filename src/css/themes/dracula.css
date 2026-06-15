@@ -37,8 +37,8 @@
     --success: #50fa7b;
     --warning: #ffb86c;
     --overlay: oklch(0 0 0 / 30%);
-    --brand: #bd93f9;
-    --brand-foreground: #282a36;
+    --brand: #7c3aed;
+    --brand-foreground: #f8f8f2;
 
     background-color: var(--background);
 }
