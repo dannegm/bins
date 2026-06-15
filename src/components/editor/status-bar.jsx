@@ -6,6 +6,7 @@ import { useSettings } from '@/hooks/use-settings';
 import { useTheme } from '@/providers/theme-provider';
 import { UserAvatar } from '@/components/system/user-avatar';
 import { LANGUAGE_LIST, getLanguage } from '@/constants/languages';
+import { Popover, PopoverTrigger, PopoverContent } from '@/ui/popover';
 
 const Divider = () => <span className='text-border'>│</span>;
 
@@ -100,49 +101,32 @@ const LanguagePicker = ({ language, onLanguageChange }) => {
 };
 
 const PeerList = ({ peers }) => {
-    const [open, setOpen] = useState(false);
-    const $ref = useRef(null);
     const { isDark } = useTheme();
 
-    useEffect(() => {
-        if (!open) return;
-        const handler = e => {
-            if (!$ref.current?.contains(e.target)) setOpen(false);
-        };
-        document.addEventListener('mousedown', handler);
-        return () => document.removeEventListener('mousedown', handler);
-    }, [open]);
-
     return (
-        <div ref={$ref} className='relative'>
-            <button
-                onClick={() => setOpen(o => !o)}
-                className='flex items-center gap-1 rounded-full bg-brand px-2 py-0.5 text-brand-foreground transition-opacity hover:opacity-80'
-            >
+        <Popover>
+            <PopoverTrigger className='flex items-center gap-1 rounded-full bg-brand px-2 py-0.5 text-brand-foreground transition-opacity hover:opacity-80'>
                 <Users className='size-3' />
                 {peers.length}
-            </button>
-
-            {open && (
-                <div className='absolute bottom-full right-0 z-50 mb-1 min-w-44 overflow-hidden rounded-lg border border-border bg-popover shadow-lg shadow-black/30'>
-                    {peers.map(peer => {
-                        const color = isDark ? peer.colorDark : peer.colorLight;
-                        return (
-                            <div key={peer.uuid} className='flex items-center gap-2.5 px-3 py-2'>
-                                <UserAvatar profileId={peer.uuid} className='size-5 shrink-0' />
-                                <span className='flex-1 truncate text-xs text-foreground'>
-                                    {peer.name}
-                                </span>
-                                <span
-                                    className='size-2 shrink-0 rounded-full bg-(--peer-color)'
-                                    style={{ '--peer-color': color }}
-                                />
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
-        </div>
+            </PopoverTrigger>
+            <PopoverContent side='top' sideOffset={16} align='end' className='w-auto min-w-44 p-0'>
+                {peers.map(peer => {
+                    const color = isDark ? peer.colorDark : peer.colorLight;
+                    return (
+                        <div key={peer.uuid} className='flex items-center gap-2.5 px-3 py-2'>
+                            <UserAvatar profileId={peer.uuid} className='size-5 shrink-0' />
+                            <span className='flex-1 truncate text-xs text-foreground'>
+                                {peer.name}
+                            </span>
+                            <span
+                                className='size-2 shrink-0 rounded-full bg-(--peer-color)'
+                                style={{ '--peer-color': color }}
+                            />
+                        </div>
+                    );
+                })}
+            </PopoverContent>
+        </Popover>
     );
 };
 
