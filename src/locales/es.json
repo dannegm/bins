@@ -186,6 +186,7 @@
             "saving": "Guardando…",
             "saved": "Guardado",
             "unsaved": "Cambios sin guardar"
-        }
+        },
+        "peer_joined": "se unió a la sesión"
     }
 }

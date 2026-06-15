@@ -1,126 +1,28 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { Route } from '@/routes/editor.$binId';
 import { Layout } from '@/components/layout/layout';
 import { BinHeader } from '@/components/editor/bin-header';
 import { TabBar } from '@/components/editor/tab-bar';
-import { MonacoEditor } from '@/components/editor/monaco-editor';
-import { StatusBar } from '@/components/editor/status-bar';
+import { EditorCore } from '@/components/editor/editor-core';
+import { UserAvatar } from '@/components/system/user-avatar';
 import { ensureBin, permanentizeBin, updateBin } from '@/services/bins';
 import { registerCollaborator } from '@/services/bin-collaborators';
 import { getFiles, createFile, updateFile, deleteFile } from '@/services/bin-files';
-import { initYDoc } from '@/services/yjs';
 import { supabase } from '@/services/supabase';
 import { useIdentity } from '@/hooks/use-identity';
 import { getLanguageByFilename } from '@/constants/languages';
 
-const SAVE_DEBOUNCE_MS = 1500;
-
-const EditorCore = ({
-    binId,
-    file,
-    peers,
-    readOnly,
-    onUndoManagerReady,
-    onFirstSave,
-    onLanguageChange,
-    onCursorChange,
-    onSelectionChange,
-}) => {
-    const { user } = useIdentity();
-    const [saveStatus, setSaveStatus] = useState('idle');
-    const [cursor, setCursor] = useState({ lineNumber: 1, column: 1 });
-    const [yContext, setYContext] = useState(null);
-    const $saveTimer = useRef(null);
-    const $hasLocalEdits = useRef(false);
-
-    useEffect(() => {
-        const ctx = initYDoc(binId, file.id, file.content ?? '');
-        onUndoManagerReady?.(ctx.undoManager);
-        ctx.onReady(() => setYContext(ctx));
-
-        return () => {
-            clearTimeout($saveTimer.current);
-            ctx.destroy();
-        };
-    }, []);
-
-    const scheduleSave = useCallback(
-        content => {
-            clearTimeout($saveTimer.current);
-            setSaveStatus('unsaved');
-
-            $saveTimer.current = setTimeout(async () => {
-                setSaveStatus('saving');
-                try {
-                    await updateFile(file.id, { content });
-                    if (!$hasLocalEdits.current) {
-                        $hasLocalEdits.current = true;
-                        onFirstSave?.();
-                    }
-                    setSaveStatus('saved');
-                    setTimeout(() => setSaveStatus('idle'), 2000);
-                } catch {
-                    setSaveStatus('unsaved');
-                }
-            }, SAVE_DEBOUNCE_MS);
-        },
-        [file.id, onFirstSave],
-    );
-
-    useEffect(() => {
-        if (!yContext || readOnly) return;
-        const observer = event => {
-            if (event.transaction.origin === 'remote' || event.transaction.origin === 'init')
-                return;
-            scheduleSave(yContext.yText.toString());
-        };
-        yContext.yText.observe(observer);
-        return () => yContext.yText.unobserve(observer);
-    }, [yContext, scheduleSave, readOnly]);
-
-    useHotkeys(
-        ['ctrl+s', 'meta+s'],
-        () => {
-            if (!yContext) return;
-            clearTimeout($saveTimer.current);
-            scheduleSave(yContext.yText.toString());
-        },
-        { preventDefault: true, enableOnContentEditable: true },
-        [yContext, scheduleSave],
-    );
-
-    const activePeers = Object.values(peers).filter(p => p.activeFileId === file.id && p.cursor);
-    const peerCount = activePeers.length;
-
-    const handleCursorChange = pos => {
-        setCursor(pos);
-        onCursorChange?.(pos);
-    };
-
+const PeerJoinedToast = ({ peer }) => {
+    const { t } = useTranslation();
     return (
-        <div className='flex min-h-0 flex-1 flex-col'>
-            <div className='min-h-0 flex-1'>
-                {yContext && (
-                    <MonacoEditor
-                        yText={yContext.yText}
-                        clientId={user?.uuid}
-                        language={file.language}
-                        readOnly={readOnly}
-                        peers={activePeers}
-                        onCursorChange={handleCursorChange}
-                        onSelectionChange={onSelectionChange}
-                    />
-                )}
+        <div className='flex min-w-64 items-center gap-3 rounded-lg border border-border bg-surface px-4 py-3 shadow-lg shadow-black/25'>
+            <UserAvatar profileId={peer.uuid} className='size-7 shrink-0' />
+            <div className='flex flex-col'>
+                <span className='text-sm font-medium text-foreground'>{peer.name}</span>
+                <span className='text-xs text-muted-foreground'>{t('editor.peer_joined')}</span>
             </div>
-            <StatusBar
-                language={file.language}
-                cursor={cursor}
-                saveStatus={saveStatus}
-                peerCount={peerCount}
-                onLanguageChange={lang => onLanguageChange(file.id, lang)}
-            />
         </div>
     );
 };
@@ -153,9 +55,24 @@ export const EditorPage = () => {
     const $broadcastTimer = useRef(null);
     const $cursorRef = useRef(null);
     const $selectionRef = useRef(null);
+    const $knownPeerIds = useRef(null);
     const [undoState, setUndoState] = useState({ canUndo: false, canRedo: false });
 
     const activeFile = files.find(f => f.id === activeFileId) ?? null;
+
+    useEffect(() => {
+        const currentIds = new Set(Object.keys(peers));
+        if ($knownPeerIds.current === null) {
+            $knownPeerIds.current = currentIds;
+            return;
+        }
+        for (const uuid of currentIds) {
+            if (!$knownPeerIds.current.has(uuid)) {
+                toast.custom(() => <PeerJoinedToast peer={peers[uuid]} />);
+            }
+        }
+        $knownPeerIds.current = currentIds;
+    }, [peers]);
 
     useEffect(() => {
         if (!user?.uuid) return;

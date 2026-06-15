@@ -10,6 +10,7 @@ import { useExternalCommands } from '@/hooks/use-external-commands';
 import { useGlobalCommands } from '@/hooks/use-global-commands';
 import { useKeybindingCommands } from '@/hooks/use-keybinding-commands';
 import { CommandPaletteProvider } from '@/providers/command-palette-provider';
+import { ToastProvider } from '@/providers/toast-provider';
 
 const CommandsBridge = ({ children }) => {
     useExternalCommands();
@@ -24,5 +25,6 @@ export const Providers = createProviders([
     [CommandsBridge],
     [QueryProvider],
     [ThemeProvider],
+    [ToastProvider],
     [CommandPaletteProvider],
 ]);

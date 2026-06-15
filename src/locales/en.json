@@ -186,7 +186,8 @@
             "saving": "Saving…",
             "saved": "Saved",
             "unsaved": "Unsaved changes"
-        }
+        },
+        "peer_joined": "joined the session"
     }
 }
 
