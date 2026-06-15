@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import * as monaco from 'monaco-editor';
 import { desaturate, parseToRgb } from 'polished';
 import { initMonacoWorkers, defineEditorThemes } from '@/helpers/monaco';
@@ -7,6 +7,7 @@ import { useIdentity } from '@/hooks/use-identity';
 import { useTheme } from '@/providers/theme-provider';
 import { getLanguage } from '@/constants/languages';
 import { MONACO_THEMES } from '@/constants/themes';
+import { useListener } from '@/providers/bus-provider';
 
 const toHex = color => {
     try {
@@ -38,6 +39,7 @@ export const MonacoEditor = ({
     peers = [],
     revealPosition,
     onRevealed,
+    onSave,
     onCursorChange,
     onSelectionChange,
     onEditorReady,
@@ -81,7 +83,6 @@ export const MonacoEditor = ({
             lineNumbers: lineNumbers ? 'on' : 'off',
             minimap: { enabled: minimap },
             fontFamily: '"JetBrains Mono", monospace',
-            fontWeight: '300',
             fontLigatures: true,
             automaticLayout: true,
             readOnly,
@@ -99,6 +100,8 @@ export const MonacoEditor = ({
         $editor.current = editor;
         $decorations.current = editor.createDecorationsCollection([]);
         onEditorReady?.(editor);
+
+        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => onSave?.());
 
         editor.onDidChangeCursorSelection(e => {
             const pos = e.selection.getPosition();
@@ -352,6 +355,10 @@ export const MonacoEditor = ({
             yText.unobserve(observer);
         };
     }, [yText, clientId]);
+
+    useListener('editor:format', useCallback(() => {
+        $editor.current?.getAction('editor.action.formatDocument')?.run();
+    }, []));
 
     return <div ref={$container} className='h-full w-full' />;
 };

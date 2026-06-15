@@ -183,6 +183,10 @@ export const EditorPage = () => {
         }, [activeFileId]),
     );
 
+    useListener('bin:share', useCallback(() => handleShare(), []));
+    useListener('bin:fork', useCallback(() => window.open(`/fork/${binId}`, '_blank', 'noopener,noreferrer'), [binId]));
+    useListener('bin:change-visibility', useCallback(() => handleReadonlyToggle(), [bin?.is_readonly]));
+
     const handleEditorCursorChange = useCallback(
         cursor => {
             $cursorRef.current = cursor;
@@ -381,6 +385,7 @@ export const EditorPage = () => {
         await permanentizeBin(binId);
         $hasBeenSaved.current = true;
         await navigator.clipboard.writeText(window.location.href);
+        toast.success(t('editor.bin_header.share_copied'));
     };
 
     if (isLoading) {

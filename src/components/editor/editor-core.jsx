@@ -119,6 +119,7 @@ export const EditorCore = ({
                         peers={activePeers}
                         revealPosition={revealPosition}
                         onRevealed={onRevealed}
+                        onSave={() => scheduleSave(yContext.yText.toString())}
                         onCursorChange={handleCursorChange}
                         onSelectionChange={onSelectionChange}
                     />

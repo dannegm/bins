@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Users } from 'lucide-react';
+import { Users, Check } from 'lucide-react';
 import { parseToRgb } from 'polished';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/helpers/utils';
@@ -133,12 +133,59 @@ const PeerList = ({ peers }) => {
     );
 };
 
-export const StatusBar = ({ language, cursor, lineCount = 1, saveStatus, peers = [], onLanguageChange }) => {
-    const { t } = useTranslation();
-    const [prettier] = useSettings('prettier');
+const TAB_SIZES = [2, 4, 8];
+
+const IndentationPicker = ({ t }) => {
+    const [prettier, setPrettier] = useSettings('prettier');
     const tabWidth = prettier?.tabWidth ?? 4;
     const useTabs = prettier?.useTabs ?? false;
 
+    const set = (key, val) => setPrettier(prev => ({ ...prev, [key]: val }));
+
+    const label = useTabs
+        ? t('editor.status_bar.tabs', { count: tabWidth })
+        : t('editor.status_bar.spaces', { count: tabWidth });
+
+    return (
+        <Popover>
+            <PopoverTrigger className='rounded px-1 py-0.5 transition-colors hover:bg-surface-raised hover:text-foreground'>
+                {label}
+            </PopoverTrigger>
+            <PopoverContent side='top' sideOffset={8} align='start' className='w-40 p-1'>
+                <div className='px-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground'>
+                    {t('editor.status_bar.indentation')}
+                </div>
+                {[false, true].map(tabs => (
+                    <button
+                        key={String(tabs)}
+                        onClick={() => set('useTabs', tabs)}
+                        className='flex w-full items-center gap-2 rounded px-2 py-1.5 text-xs text-foreground transition-colors hover:bg-muted'
+                    >
+                        <Check className={cn('size-3', { 'opacity-0': useTabs !== tabs })} />
+                        {tabs ? t('editor.status_bar.tabs_label') : t('editor.status_bar.spaces_label')}
+                    </button>
+                ))}
+                <div className='my-1 border-t border-border' />
+                <div className='px-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground'>
+                    {t('editor.status_bar.tab_size')}
+                </div>
+                {TAB_SIZES.map(n => (
+                    <button
+                        key={n}
+                        onClick={() => set('tabWidth', n)}
+                        className='flex w-full items-center gap-2 rounded px-2 py-1.5 text-xs text-foreground transition-colors hover:bg-muted'
+                    >
+                        <Check className={cn('size-3', { 'opacity-0': tabWidth !== n })} />
+                        {n}
+                    </button>
+                ))}
+            </PopoverContent>
+        </Popover>
+    );
+};
+
+export const StatusBar = ({ language, cursor, lineCount = 1, saveStatus, peers = [], onLanguageChange }) => {
+    const { t } = useTranslation();
     return (
         <div className='flex h-8 shrink-0 items-center gap-2 border-t border-border bg-surface px-3 text-xs text-muted-foreground'>
             <LanguagePicker language={language} onLanguageChange={onLanguageChange} />
@@ -156,11 +203,7 @@ export const StatusBar = ({ language, cursor, lineCount = 1, saveStatus, peers =
 
             <Divider />
 
-            <span>
-                {useTabs
-                    ? t('editor.status_bar.tabs', { count: tabWidth })
-                    : t('editor.status_bar.spaces', { count: tabWidth })}
-            </span>
+            <IndentationPicker t={t} />
 
             <Divider />
 

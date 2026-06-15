@@ -199,6 +199,10 @@
             "lines": "{{count}} líneas",
             "spaces": "Espacios: {{count}}",
             "tabs": "Tabs: {{count}}",
+            "spaces_label": "Espacios",
+            "tabs_label": "Tabs",
+            "indentation": "Indentación",
+            "tab_size": "Tamaño de Tab",
             "saving": "Guardando…",
             "saved": "Guardado",
             "unsaved": "Cambios sin guardar"

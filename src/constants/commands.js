@@ -96,10 +96,10 @@ export const createCommands = ({ emit }) => [
             },
             {
                 id: 'bin-visibility',
-                label: 'Change visibility',
-                icon: 'eye',
+                label: 'Toggle read-only',
+                icon: 'lock',
                 scope: ['/editor'],
-                keywords: ['visibility', 'public', 'unlisted', 'private'],
+                keywords: ['lock', 'unlock', 'readonly', 'read-only', 'edit', 'visibility'],
                 action: () => emit('bin:change-visibility'),
             },
         ],
@@ -114,6 +114,31 @@ export const createCommands = ({ emit }) => [
                 scope: ['/editor'],
                 keywords: ['language', 'syntax', 'mode'],
                 page: 'language',
+            },
+            {
+                id: 'editor-format',
+                label: 'Format code',
+                icon: 'wand-sparkles',
+                scope: ['/editor'],
+                shortcutId: 'format_code',
+                keywords: ['format', 'prettier', 'indent', 'beautify'],
+                action: () => emit('editor:format'),
+            },
+            {
+                id: 'editor-indentation-type',
+                label: 'Indentation: Tabs / Spaces…',
+                icon: 'between-horizontal-start',
+                scope: ['/editor'],
+                keywords: ['tabs', 'spaces', 'indent', 'indentation'],
+                page: 'indentation-type',
+            },
+            {
+                id: 'editor-tab-size',
+                label: 'Tab size…',
+                icon: 'ruler',
+                scope: ['/editor'],
+                keywords: ['tab', 'size', 'width', 'indent'],
+                page: 'tab-size',
             },
             {
                 id: 'editor-word-wrap',
@@ -169,6 +194,22 @@ export const createPages = ({ emit }) => ({
             label: l.label,
             icon: 'code',
             action: () => emit('editor:set-language', { language: l.id }),
+        })),
+    },
+    'indentation-type': {
+        title: 'Indentation',
+        items: [
+            { id: 'indent-spaces', label: 'Spaces', icon: 'space', action: () => emit('command:setting', { path: 'prettier.useTabs', value: false }) },
+            { id: 'indent-tabs', label: 'Tabs', icon: 'between-horizontal-start', action: () => emit('command:setting', { path: 'prettier.useTabs', value: true }) },
+        ],
+    },
+    'tab-size': {
+        title: 'Tab Size',
+        items: [2, 4, 8].map(n => ({
+            id: `tab-size-${n}`,
+            label: `${n} spaces`,
+            icon: 'ruler',
+            action: () => emit('command:setting', { path: 'prettier.tabWidth', value: n }),
         })),
     },
 });
