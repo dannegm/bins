@@ -65,8 +65,8 @@ const subscribe = callback => {
     };
 };
 
-const handleCommand = ({ key, value }) => {
-    set(key, value);
+const handleCommand = ({ path, value }) => {
+    set(path, value);
 };
 
 const registerDevTools = () => {
