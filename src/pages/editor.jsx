@@ -28,8 +28,8 @@ const EditorCore = ({ binId, file, peers, readOnly, onUndoManagerReady, onFirstS
 
     useEffect(() => {
         const ctx = initYDoc(binId, file.id, file.content ?? '');
-        setYContext(ctx);
         onUndoManagerReady?.(ctx.undoManager);
+        ctx.onReady(() => setYContext(ctx));
 
         return () => {
             clearTimeout($saveTimer.current);
@@ -63,7 +63,7 @@ const EditorCore = ({ binId, file, peers, readOnly, onUndoManagerReady, onFirstS
     useEffect(() => {
         if (!yContext || readOnly) return;
         const observer = event => {
-            if (event.transaction.origin === 'remote') return;
+            if (event.transaction.origin === 'remote' || event.transaction.origin === 'init') return;
             scheduleSave(yContext.yText.toString());
         };
         yContext.yText.observe(observer);

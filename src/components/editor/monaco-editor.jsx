@@ -100,7 +100,7 @@ export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly 
 
         $isApplyingRemote.current = true;
         model.setValue(yText.toString());
-        $isApplyingRemote.current = false;
+        setTimeout(() => { $isApplyingRemote.current = false; }, 0);
 
         const disposable = editor.onDidChangeModelContent(event => {
             if ($isApplyingRemote.current) return;
@@ -117,34 +117,31 @@ export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly 
             if (event.transaction.origin === clientId || event.transaction.origin === 'init') return;
 
             $isApplyingRemote.current = true;
-            try {
-                const edits = [];
-                let index = 0;
+            const edits = [];
+            let index = 0;
 
-                for (const op of event.delta) {
-                    if (op.retain !== undefined) {
-                        index += op.retain;
-                    } else if (op.delete !== undefined) {
-                        const start = model.getPositionAt(index);
-                        const end = model.getPositionAt(index + op.delete);
-                        edits.push({
-                            range: new monaco.Range(start.lineNumber, start.column, end.lineNumber, end.column),
-                            text: '',
-                        });
-                        index += op.delete;
-                    } else if (op.insert !== undefined) {
-                        const pos = model.getPositionAt(index);
-                        edits.push({
-                            range: new monaco.Range(pos.lineNumber, pos.column, pos.lineNumber, pos.column),
-                            text: op.insert,
-                        });
-                    }
+            for (const op of event.delta) {
+                if (op.retain !== undefined) {
+                    index += op.retain;
+                } else if (op.delete !== undefined) {
+                    const start = model.getPositionAt(index);
+                    const end = model.getPositionAt(index + op.delete);
+                    edits.push({
+                        range: new monaco.Range(start.lineNumber, start.column, end.lineNumber, end.column),
+                        text: '',
+                    });
+                    index += op.delete;
+                } else if (op.insert !== undefined) {
+                    const pos = model.getPositionAt(index);
+                    edits.push({
+                        range: new monaco.Range(pos.lineNumber, pos.column, pos.lineNumber, pos.column),
+                        text: op.insert,
+                    });
                 }
-
-                if (edits.length > 0) model.applyEdits(edits);
-            } finally {
-                $isApplyingRemote.current = false;
             }
+
+            if (edits.length > 0) model.applyEdits(edits);
+            setTimeout(() => { $isApplyingRemote.current = false; }, 0);
         };
 
         yText.observe(observer);

@@ -7,11 +7,15 @@ export const initYDoc = (binId, fileId, initialContent = '') => {
     const yDoc = new Y.Doc();
     const yText = yDoc.getText('content');
 
-    if (initialContent) {
-        yDoc.transact(() => {
-            yText.insert(0, initialContent);
-        }, 'init');
-    }
+    let synced = false;
+    let initTimer = null;
+    let onReadyCallback = null;
+
+    const markReady = () => {
+        if (synced) return;
+        synced = true;
+        onReadyCallback?.();
+    };
 
     const undoManager = new Y.UndoManager(yText, {
         trackedOrigins: new Set([clientId]),
@@ -36,17 +40,25 @@ export const initYDoc = (binId, fileId, initialContent = '') => {
         })
         .on('broadcast', { event: 'yjs:sync-response' }, ({ payload }) => {
             if (payload.sender === clientId) return;
+            clearTimeout(initTimer);
             Y.applyUpdate(yDoc, new Uint8Array(payload.state), 'remote');
+            markReady();
         })
         .subscribe(status => {
             if (status !== 'SUBSCRIBED') return;
-            setTimeout(() => {
-                channel.send({
-                    type: 'broadcast',
-                    event: 'yjs:sync-request',
-                    payload: { sender: clientId },
-                });
-            }, 150);
+            channel.send({
+                type: 'broadcast',
+                event: 'yjs:sync-request',
+                payload: { sender: clientId },
+            });
+            initTimer = setTimeout(() => {
+                if (!synced && initialContent) {
+                    yDoc.transact(() => {
+                        yText.insert(0, initialContent);
+                    }, 'init');
+                }
+                markReady();
+            }, 300);
         });
 
     yDoc.on('update', (update, origin) => {
@@ -59,10 +71,16 @@ export const initYDoc = (binId, fileId, initialContent = '') => {
     });
 
     const destroy = () => {
+        clearTimeout(initTimer);
         undoManager.destroy();
         channel.unsubscribe();
         yDoc.destroy();
     };
 
-    return { yDoc, yText, undoManager, clientId, destroy };
+    const onReady = callback => {
+        onReadyCallback = callback;
+        if (synced) callback();
+    };
+
+    return { yDoc, yText, undoManager, clientId, destroy, onReady };
 };
