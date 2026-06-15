@@ -1,10 +1,11 @@
 import { useEffect, useRef } from 'react';
 import * as monaco from 'monaco-editor';
-import { initMonacoWorkers } from '@/helpers/monaco';
+import { initMonacoWorkers, defineEditorThemes } from '@/helpers/monaco';
 import { useSettings } from '@/hooks/use-settings';
 import { getLanguage } from '@/constants/languages';
 
 initMonacoWorkers();
+defineEditorThemes();
 
 export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly = false, onCursorChange, onEditorReady }) => {
     const $container = useRef(null);
@@ -22,7 +23,7 @@ export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly 
         if (!$container.current) return;
 
         const langDef = getLanguage(language);
-        const themeId = monacoTheme === 'light' ? 'vs' : 'vs-dark';
+        const themeId = monacoTheme === 'light' ? 'bins-light' : monacoTheme === 'dracula' ? 'bins-dracula' : 'bins-dark';
 
         const editor = monaco.editor.create($container.current, {
             value: '',
@@ -88,7 +89,7 @@ export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly 
 
     useEffect(() => {
         if (!$editor.current) return;
-        const themeId = monacoTheme === 'light' ? 'vs' : 'vs-dark';
+        const themeId = monacoTheme === 'light' ? 'bins-light' : monacoTheme === 'dracula' ? 'bins-dracula' : 'bins-dark';
         monaco.editor.setTheme(themeId);
     }, [monacoTheme]);
 
