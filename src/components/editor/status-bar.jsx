@@ -83,7 +83,10 @@ const LanguagePicker = ({ language, onLanguageChange }) => {
                                 }}
                                 className={cn(
                                     'flex w-full items-center px-3 py-1.5 text-left text-xs transition-colors hover:bg-muted',
-                                    { 'text-brand': l.id === language, 'text-foreground': l.id !== language },
+                                    {
+                                        'text-brand': l.id === language,
+                                        'text-foreground': l.id !== language,
+                                    },
                                 )}
                             >
                                 {l.label}
@@ -101,13 +104,14 @@ export const StatusBar = ({ language, cursor, saveStatus, peerCount, onLanguageC
     const [tabSize] = useSettings('tabSize');
 
     return (
-        <div className='flex h-6 shrink-0 items-center gap-2 border-t border-border bg-surface px-3 text-xs text-muted-foreground'>
+        <div className='flex h-8 shrink-0 items-center gap-2 border-t border-border bg-surface px-3 text-xs text-muted-foreground'>
             <LanguagePicker language={language} onLanguageChange={onLanguageChange} />
 
             <Divider />
 
             <span>
-                {t('editor.status_bar.ln')} {cursor.lineNumber}, {t('editor.status_bar.col')} {cursor.column}
+                {t('editor.status_bar.ln')} {cursor.lineNumber}, {t('editor.status_bar.col')}{' '}
+                {cursor.column}
             </span>
 
             <Divider />
@@ -124,11 +128,11 @@ export const StatusBar = ({ language, cursor, saveStatus, peerCount, onLanguageC
 
             {peerCount > 0 && (
                 <>
+                    <Divider />
                     <span className='flex items-center gap-1'>
                         <Users className='size-3' />
                         {peerCount}
                     </span>
-                    <Divider />
                 </>
             )}
         </div>

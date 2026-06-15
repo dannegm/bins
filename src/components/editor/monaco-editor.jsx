@@ -20,7 +20,7 @@ const toHex = color => {
 initMonacoWorkers();
 defineEditorThemes();
 
-export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly = false, peers = [], onCursorChange, onEditorReady }) => {
+export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly = false, peers = [], onCursorChange, onSelectionChange, onEditorReady }) => {
     const $container = useRef(null);
     const $editor = useRef(null);
     const $isApplyingRemote = useRef(false);
@@ -68,10 +68,15 @@ export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly 
         $decorations.current = editor.createDecorationsCollection([]);
         onEditorReady?.(editor);
 
-        editor.onDidChangeCursorPosition(e => {
-            onCursorChange?.({
-                lineNumber: e.position.lineNumber,
-                column: e.position.column,
+        editor.onDidChangeCursorSelection(e => {
+            const pos = e.selection.getPosition();
+            onCursorChange?.({ lineNumber: pos.lineNumber, column: pos.column });
+            const sel = e.selection;
+            onSelectionChange?.(sel.isEmpty() ? null : {
+                startLineNumber: sel.startLineNumber,
+                startColumn: sel.startColumn,
+                endLineNumber: sel.endLineNumber,
+                endColumn: sel.endColumn,
             });
         });
 
@@ -139,8 +144,10 @@ export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly 
 
         style.textContent = peers.map(peer => {
             const id = peer.uuid.slice(0, 8);
-            const color = isDark ? peer.colorDark : peer.colorLight;
-            if (!color) return '';
+            const rawColor = isDark ? peer.colorDark : peer.colorLight;
+            if (!rawColor) return '';
+            const color = toHex(rawColor);
+            const selColor = toHex(desaturate(0.2, rawColor));
             return `
                 .peer-cursor-${id}::before {
                     content: '';
@@ -152,6 +159,7 @@ export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly 
                     vertical-align: text-bottom;
                 }
                 .peer-line-${id} { background: ${color}26 !important; }
+                .peer-selection-${id} { background: ${selColor}44 !important; }
             `;
         }).join('');
 
@@ -161,7 +169,7 @@ export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly 
                     if (!peer.cursor) return [];
                     const { lineNumber, column } = peer.cursor;
                     const id = peer.uuid.slice(0, 8);
-                    return [
+                    const decs = [
                         {
                             range: new monaco.Range(lineNumber, 1, lineNumber, 1),
                             options: { isWholeLine: true, className: `peer-line-${id}` },
@@ -171,6 +179,14 @@ export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly 
                             options: { beforeContentClassName: `peer-cursor-${id}` },
                         },
                     ];
+                    if (peer.selection) {
+                        const { startLineNumber, startColumn, endLineNumber, endColumn } = peer.selection;
+                        decs.push({
+                            range: new monaco.Range(startLineNumber, startColumn, endLineNumber, endColumn),
+                            options: { className: `peer-selection-${id}` },
+                        });
+                    }
+                    return decs;
                 }),
             );
         }

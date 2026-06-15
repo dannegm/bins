@@ -26,6 +26,7 @@ const EditorCore = ({
     onFirstSave,
     onLanguageChange,
     onCursorChange,
+    onSelectionChange,
 }) => {
     const { user } = useIdentity();
     const [saveStatus, setSaveStatus] = useState('idle');
@@ -109,6 +110,7 @@ const EditorCore = ({
                         readOnly={readOnly}
                         peers={activePeers}
                         onCursorChange={handleCursorChange}
+                        onSelectionChange={onSelectionChange}
                     />
                 )}
             </div>
@@ -148,7 +150,9 @@ export const EditorPage = () => {
     const $hasBeenSaved = useRef(false);
     const $presenceChannel = useRef(null);
     const $binChannel = useRef(null);
-    const $cursorTimer = useRef(null);
+    const $broadcastTimer = useRef(null);
+    const $cursorRef = useRef(null);
+    const $selectionRef = useRef(null);
     const [undoState, setUndoState] = useState({ canUndo: false, canRedo: false });
 
     const activeFile = files.find(f => f.id === activeFileId) ?? null;
@@ -198,18 +202,31 @@ export const EditorPage = () => {
         });
     }, [activeFileId, user?.name]);
 
+    const scheduleBroadcast = useCallback(() => {
+        clearTimeout($broadcastTimer.current);
+        $broadcastTimer.current = setTimeout(() => {
+            $binChannel.current?.send({
+                type: 'broadcast',
+                event: 'cursor:move',
+                payload: { uuid: user.uuid, cursor: $cursorRef.current, selection: $selectionRef.current },
+            });
+        }, 100);
+    }, [user?.uuid]);
+
     const handleEditorCursorChange = useCallback(
         cursor => {
-            clearTimeout($cursorTimer.current);
-            $cursorTimer.current = setTimeout(() => {
-                $binChannel.current?.send({
-                    type: 'broadcast',
-                    event: 'cursor:move',
-                    payload: { uuid: user.uuid, cursor },
-                });
-            }, 100);
+            $cursorRef.current = cursor;
+            scheduleBroadcast();
         },
-        [user?.uuid],
+        [scheduleBroadcast],
+    );
+
+    const handleEditorSelectionChange = useCallback(
+        selection => {
+            $selectionRef.current = selection;
+            scheduleBroadcast();
+        },
+        [scheduleBroadcast],
     );
 
     useEffect(() => {
@@ -277,7 +294,7 @@ export const EditorPage = () => {
                 setPeers(prev => {
                     const existing = prev[payload.uuid];
                     if (!existing) return prev;
-                    return { ...prev, [payload.uuid]: { ...existing, cursor: payload.cursor } };
+                    return { ...prev, [payload.uuid]: { ...existing, cursor: payload.cursor, selection: payload.selection ?? null } };
                 });
             })
             .subscribe();
@@ -432,6 +449,7 @@ export const EditorPage = () => {
                         onUndoManagerReady={handleUndoManagerReady}
                         onFirstSave={handleFirstSave}
                         onCursorChange={handleEditorCursorChange}
+                        onSelectionChange={handleEditorSelectionChange}
                         onLanguageChange={handleLanguageChange}
                     />
                 )}
