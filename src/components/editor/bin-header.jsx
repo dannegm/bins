@@ -206,7 +206,14 @@ export const BinHeader = ({ bin, isAuthor, onTitleChange, onReadonlyToggle, onSh
                         {bin?.title || t('editor.bin_header.untitled')}
                     </span>
                 )}
-                {isAuthor && <Pencil className='size-3 shrink-0 text-muted-foreground' />}
+                {isAuthor && (
+                    <button
+                        onClick={startEdit}
+                        className='shrink-0 text-muted-foreground transition-colors hover:text-foreground'
+                    >
+                        <Pencil className='size-3' />
+                    </button>
+                )}
             </div>
 
             {/* Fork + Share + Author — desktop only */}
