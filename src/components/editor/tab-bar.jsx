@@ -19,7 +19,16 @@ const LangIcon = ({ language, className }) => {
     return <FileText className={cn('size-3.5 text-muted-foreground', className)} />;
 };
 
-const FileTab = ({ file, isActive, isReadonly, canDelete, onSelect, onRename, deleteConfirmId, onDeleteConfirm }) => {
+const FileTab = ({
+    file,
+    isActive,
+    isReadonly,
+    canDelete,
+    onSelect,
+    onRename,
+    deleteConfirmId,
+    onDeleteConfirm,
+}) => {
     const { t } = useTranslation();
     const [isEditing, setIsEditing] = useState(false);
     const [editName, setEditName] = useState(file.name);
@@ -55,7 +64,8 @@ const FileTab = ({ file, isActive, isReadonly, canDelete, onSelect, onRename, de
                 'group relative flex h-full min-w-0 max-w-48 shrink-0 cursor-pointer items-center gap-1.5 border-r border-border px-3 text-sm select-none',
                 {
                     'bg-background text-foreground': isActive,
-                    'bg-surface text-muted-foreground hover:bg-background/50 hover:text-foreground': !isActive,
+                    'bg-surface text-muted-foreground hover:bg-background/50 hover:text-foreground':
+                        !isActive,
                 },
             )}
         >
@@ -83,7 +93,11 @@ const FileTab = ({ file, isActive, isReadonly, canDelete, onSelect, onRename, de
                         onDeleteConfirm(file.id);
                     }}
                     onDoubleClick={e => e.stopPropagation()}
-                    title={isConfirming ? t('editor.tab_bar.confirm_delete') : t('editor.tab_bar.delete_file')}
+                    title={
+                        isConfirming
+                            ? t('editor.tab_bar.confirm_delete')
+                            : t('editor.tab_bar.delete_file')
+                    }
                     className={cn(
                         'ml-0.5 shrink-0 rounded p-0.5 text-muted-foreground transition-colors',
                         {
@@ -190,7 +204,6 @@ export const TabBar = ({
                     </button>
                 )}
             </div>
-
         </div>
     );
 };

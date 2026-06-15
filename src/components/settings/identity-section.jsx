@@ -92,7 +92,8 @@ export const IdentitySection = () => {
                                 if (e.key === 'Enter') {
                                     commitName.cancel();
                                     const trimmed = e.target.value.trim();
-                                    if (trimmed && trimmed !== user?.name) update({ name: trimmed });
+                                    if (trimmed && trimmed !== user?.name)
+                                        update({ name: trimmed });
                                 }
                             }}
                             placeholder={t('settings.identity.name_placeholder')}

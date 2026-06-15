@@ -9,7 +9,13 @@ import { getProfile } from '@/services/profiles';
 import { useTheme } from '@/providers/theme-provider';
 import { UserAvatar } from '@/components/system/user-avatar';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/ui/tooltip';
-import { Popover, PopoverTrigger, PopoverContent, PopoverTitle, PopoverDescription } from '@/ui/popover';
+import {
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
+    PopoverTitle,
+    PopoverDescription,
+} from '@/ui/popover';
 
 const ShareToast = ({ isReadonly, t }) => (
     <div className='flex min-w-64 items-center gap-3 rounded-lg border border-border bg-surface px-4 py-3 shadow-lg shadow-black/25'>
@@ -125,8 +131,10 @@ export const BinHeader = ({ bin, isAuthor, onTitleChange, onReadonlyToggle, onSh
                                 ? 'border-(--ro-border-light) bg-(--ro-bg-light) text-(--ro-text-light) dark:border-(--ro-border-dark) dark:bg-(--ro-bg-dark) dark:text-(--ro-text-dark)'
                                 : 'border-success/40 bg-success/10 text-success',
                             {
-                                'cursor-pointer hover:border-foreground hover:bg-surface hover:text-foreground': isAuthor && bin?.is_readonly,
-                                'cursor-pointer hover:border-warning/40 hover:bg-warning/10 hover:text-warning': isAuthor && !bin?.is_readonly,
+                                'cursor-pointer hover:border-foreground hover:bg-surface hover:text-foreground':
+                                    isAuthor && bin?.is_readonly,
+                                'cursor-pointer hover:border-warning/40 hover:bg-warning/10 hover:text-warning':
+                                    isAuthor && !bin?.is_readonly,
                                 'cursor-default': !isAuthor,
                             },
                         )}
@@ -166,10 +174,10 @@ export const BinHeader = ({ bin, isAuthor, onTitleChange, onReadonlyToggle, onSh
                 ) : (
                     <span
                         onClick={startEdit}
-                        className={cn(
-                            'truncate text-sm font-medium text-foreground',
-                            { 'cursor-text': isAuthor, 'cursor-default': !isAuthor },
-                        )}
+                        className={cn('truncate text-sm font-medium text-foreground', {
+                            'cursor-text': isAuthor,
+                            'cursor-default': !isAuthor,
+                        })}
                     >
                         {bin?.title || t('editor.bin_header.untitled')}
                     </span>

@@ -46,11 +46,11 @@ Every local change (origin = `clientId`) is broadcast as `yjs:update`. Peers app
 
 Every Yjs transaction has an origin string used for filtering:
 
-| Origin | Source | Broadcast? | Save? | Applied to Monaco? |
-|---|---|---|---|---|
-| `clientId` | Local user typing | Yes | Yes | No (already in Monaco) |
-| `'remote'` | Peer update or sync-response | No | No | Yes |
-| `'init'` | Fallback insert from DB content | No | No | No |
+| Origin     | Source                          | Broadcast? | Save? | Applied to Monaco?     |
+| ---------- | ------------------------------- | ---------- | ----- | ---------------------- |
+| `clientId` | Local user typing               | Yes        | Yes   | No (already in Monaco) |
+| `'remote'` | Peer update or sync-response    | No         | No    | Yes                    |
+| `'init'`   | Fallback insert from DB content | No         | No    | No                     |
 
 The save observer in `EditorCore` skips `'remote'` and `'init'`. The `yDoc.on('update')` broadcast handler skips `'remote'` and `'init'`. The Monaco yText observer skips `clientId` and `'init'`.
 
@@ -67,6 +67,7 @@ The correct pattern: only one client inserts the initial content — either the 
 ### The bug this fixed (content duplication)
 
 **Symptoms:**
+
 - Host writes content, guest opens the link → host sees content duplicated in real time.
 - On each refresh (by either client), content multiplied again (2×, 3×, …).
 - Duplication was only visible locally on each client; did not propagate in real time, but the duplicated state was saved to DB on the next write, making it permanent.
@@ -100,12 +101,12 @@ The binding useEffect runs when `yText` is first set (after `onReady`):
 
 File and bin metadata changes use plain Broadcast (no CRDT):
 
-| Event | Payload | Effect |
-|---|---|---|
-| `bin:updated` | `{ title?, is_readonly? }` | Updates local `bin` state |
-| `file:created` | `{ file }` | Appends to file list (deduped by id) |
-| `file:updated` | `{ file }` | Merges into matching file in list |
-| `file:deleted` | `{ fileId }` | Removes from list, switches active tab if needed |
+| Event          | Payload                    | Effect                                           |
+| -------------- | -------------------------- | ------------------------------------------------ |
+| `bin:updated`  | `{ title?, is_readonly? }` | Updates local `bin` state                        |
+| `file:created` | `{ file }`                 | Appends to file list (deduped by id)             |
+| `file:updated` | `{ file }`                 | Merges into matching file in list                |
+| `file:deleted` | `{ fileId }`               | Removes from list, switches active tab if needed |
 
 The author (creator) always broadcasts after a successful DB write. Other clients apply the broadcast and update their local state — they never write to DB for structural changes.
 

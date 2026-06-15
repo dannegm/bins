@@ -20,7 +20,16 @@ const toHex = color => {
 initMonacoWorkers();
 defineEditorThemes();
 
-export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly = false, peers = [], onCursorChange, onSelectionChange, onEditorReady }) => {
+export const MonacoEditor = ({
+    yText,
+    clientId,
+    language = 'markdown',
+    readOnly = false,
+    peers = [],
+    onCursorChange,
+    onSelectionChange,
+    onEditorReady,
+}) => {
     const $container = useRef(null);
     const $editor = useRef(null);
     const $isApplyingRemote = useRef(false);
@@ -39,7 +48,12 @@ export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly 
         if (!$container.current) return;
 
         const langDef = getLanguage(language);
-        const themeId = monacoTheme === 'light' ? 'bins-light' : monacoTheme === 'dracula' ? 'bins-dracula' : 'bins-dark';
+        const themeId =
+            monacoTheme === 'light'
+                ? 'bins-light'
+                : monacoTheme === 'dracula'
+                  ? 'bins-dracula'
+                  : 'bins-dark';
 
         const editor = monaco.editor.create($container.current, {
             value: '',
@@ -72,12 +86,16 @@ export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly 
             const pos = e.selection.getPosition();
             onCursorChange?.({ lineNumber: pos.lineNumber, column: pos.column });
             const sel = e.selection;
-            onSelectionChange?.(sel.isEmpty() ? null : {
-                startLineNumber: sel.startLineNumber,
-                startColumn: sel.startColumn,
-                endLineNumber: sel.endLineNumber,
-                endColumn: sel.endColumn,
-            });
+            onSelectionChange?.(
+                sel.isEmpty()
+                    ? null
+                    : {
+                          startLineNumber: sel.startLineNumber,
+                          startColumn: sel.startColumn,
+                          endLineNumber: sel.endLineNumber,
+                          endColumn: sel.endColumn,
+                      },
+            );
         });
 
         return () => {
@@ -142,13 +160,14 @@ export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly 
             document.head.appendChild(style);
         }
 
-        style.textContent = peers.map(peer => {
-            const id = peer.uuid.slice(0, 8);
-            const rawColor = isDark ? peer.colorDark : peer.colorLight;
-            if (!rawColor) return '';
-            const color = toHex(rawColor);
-            const selColor = toHex(desaturate(0.2, rawColor));
-            return `
+        style.textContent = peers
+            .map(peer => {
+                const id = peer.uuid.slice(0, 8);
+                const rawColor = isDark ? peer.colorDark : peer.colorLight;
+                if (!rawColor) return '';
+                const color = toHex(rawColor);
+                const selColor = toHex(desaturate(0.2, rawColor));
+                return `
                 .peer-cursor-${id}::before {
                     content: '';
                     display: inline-block;
@@ -161,7 +180,8 @@ export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly 
                 .peer-line-${id} { background: ${color}26 !important; }
                 .peer-selection-${id} { background: ${selColor}44 !important; }
             `;
-        }).join('');
+            })
+            .join('');
 
         if ($decorations.current) {
             $decorations.current.set(
@@ -180,9 +200,15 @@ export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly 
                         },
                     ];
                     if (peer.selection) {
-                        const { startLineNumber, startColumn, endLineNumber, endColumn } = peer.selection;
+                        const { startLineNumber, startColumn, endLineNumber, endColumn } =
+                            peer.selection;
                         decs.push({
-                            range: new monaco.Range(startLineNumber, startColumn, endLineNumber, endColumn),
+                            range: new monaco.Range(
+                                startLineNumber,
+                                startColumn,
+                                endLineNumber,
+                                endColumn,
+                            ),
                             options: { className: `peer-selection-${id}` },
                         });
                     }
@@ -200,21 +226,25 @@ export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly 
 
         $isApplyingRemote.current = true;
         model.setValue(yText.toString());
-        setTimeout(() => { $isApplyingRemote.current = false; }, 0);
+        setTimeout(() => {
+            $isApplyingRemote.current = false;
+        }, 0);
 
         const disposable = editor.onDidChangeModelContent(event => {
             if ($isApplyingRemote.current) return;
 
             yText.doc.transact(() => {
                 for (const change of event.changes) {
-                    if (change.rangeLength > 0) yText.delete(change.rangeOffset, change.rangeLength);
+                    if (change.rangeLength > 0)
+                        yText.delete(change.rangeOffset, change.rangeLength);
                     if (change.text.length > 0) yText.insert(change.rangeOffset, change.text);
                 }
             }, clientId);
         });
 
         const observer = event => {
-            if (event.transaction.origin === clientId || event.transaction.origin === 'init') return;
+            if (event.transaction.origin === clientId || event.transaction.origin === 'init')
+                return;
 
             $isApplyingRemote.current = true;
             const edits = [];
@@ -227,21 +257,33 @@ export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly 
                     const start = model.getPositionAt(index);
                     const end = model.getPositionAt(index + op.delete);
                     edits.push({
-                        range: new monaco.Range(start.lineNumber, start.column, end.lineNumber, end.column),
+                        range: new monaco.Range(
+                            start.lineNumber,
+                            start.column,
+                            end.lineNumber,
+                            end.column,
+                        ),
                         text: '',
                     });
                     index += op.delete;
                 } else if (op.insert !== undefined) {
                     const pos = model.getPositionAt(index);
                     edits.push({
-                        range: new monaco.Range(pos.lineNumber, pos.column, pos.lineNumber, pos.column),
+                        range: new monaco.Range(
+                            pos.lineNumber,
+                            pos.column,
+                            pos.lineNumber,
+                            pos.column,
+                        ),
                         text: op.insert,
                     });
                 }
             }
 
             if (edits.length > 0) model.applyEdits(edits);
-            setTimeout(() => { $isApplyingRemote.current = false; }, 0);
+            setTimeout(() => {
+                $isApplyingRemote.current = false;
+            }, 0);
         };
 
         yText.observe(observer);

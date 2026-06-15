@@ -9,7 +9,13 @@ export const MONACO_THEMES = [
         id: 'light',
         label: 'Light',
         isDark: false,
-        preview: { bg: '#ffffff', keyword: '#0000ff', string: '#a31515', comment: '#008000', text: '#000000' },
+        preview: {
+            bg: '#ffffff',
+            keyword: '#0000ff',
+            string: '#a31515',
+            comment: '#008000',
+            text: '#000000',
+        },
         definition: {
             base: 'vs',
             inherit: true,
@@ -24,7 +30,13 @@ export const MONACO_THEMES = [
         id: 'dark',
         label: 'Dark',
         isDark: true,
-        preview: { bg: '#1e1e1e', keyword: '#569cd6', string: '#ce9178', comment: '#6a9955', text: '#d4d4d4' },
+        preview: {
+            bg: '#1e1e1e',
+            keyword: '#569cd6',
+            string: '#ce9178',
+            comment: '#6a9955',
+            text: '#d4d4d4',
+        },
         definition: {
             base: 'vs-dark',
             inherit: true,
@@ -39,7 +51,13 @@ export const MONACO_THEMES = [
         id: 'dracula',
         label: 'Dracula',
         isDark: true,
-        preview: { bg: '#282a36', keyword: '#ff79c6', string: '#f1fa8c', comment: '#6272a4', text: '#f8f8f2' },
+        preview: {
+            bg: '#282a36',
+            keyword: '#ff79c6',
+            string: '#f1fa8c',
+            comment: '#6272a4',
+            text: '#f8f8f2',
+        },
         definition: {
             base: 'vs-dark',
             inherit: false,
@@ -83,7 +101,11 @@ export const MONACO_THEMES = [
                 { token: 'type.identifier', foreground: '8be9fd', fontStyle: 'italic' },
                 { token: 'entity.name.type', foreground: '8be9fd' },
                 { token: 'entity.name.class', foreground: '8be9fd' },
-                { token: 'entity.other.inherited-class', foreground: '8be9fd', fontStyle: 'italic' },
+                {
+                    token: 'entity.other.inherited-class',
+                    foreground: '8be9fd',
+                    fontStyle: 'italic',
+                },
                 { token: 'support.class', foreground: '8be9fd' },
                 { token: 'support.type', foreground: '8be9fd', fontStyle: 'italic' },
                 { token: 'class', foreground: '8be9fd' },

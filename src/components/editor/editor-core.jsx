@@ -82,7 +82,12 @@ export const EditorCore = ({
         [yContext, scheduleSave],
     );
 
-    const selfPeer = { uuid: user.uuid, name: user.name, colorDark: user.colorDark, colorLight: user.colorLight };
+    const selfPeer = {
+        uuid: user.uuid,
+        name: user.name,
+        colorDark: user.colorDark,
+        colorLight: user.colorLight,
+    };
     const filePeers = [selfPeer, ...Object.values(peers).filter(p => p.activeFileId === file.id)];
     const activePeers = filePeers.filter(p => p.cursor);
 

@@ -3,11 +3,7 @@ import { supabase } from './supabase';
 import { generateBinName } from '@/helpers/identity';
 
 export const getBin = async binId => {
-    const { data, error } = await supabase()
-        .from('bins')
-        .select('*')
-        .eq('id', binId)
-        .maybeSingle();
+    const { data, error } = await supabase().from('bins').select('*').eq('id', binId).maybeSingle();
 
     if (error) throw error;
     return data;
@@ -32,10 +28,7 @@ export const ensureBin = async binId => {
 };
 
 export const permanentizeBin = async binId => {
-    const { error } = await supabase()
-        .from('bins')
-        .update({ expires_at: null })
-        .eq('id', binId);
+    const { error } = await supabase().from('bins').update({ expires_at: null }).eq('id', binId);
 
     if (error) throw error;
 };

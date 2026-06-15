@@ -127,7 +127,11 @@ export const EditorPage = () => {
             $binChannel.current?.send({
                 type: 'broadcast',
                 event: 'cursor:move',
-                payload: { uuid: user.uuid, cursor: $cursorRef.current, selection: $selectionRef.current },
+                payload: {
+                    uuid: user.uuid,
+                    cursor: $cursorRef.current,
+                    selection: $selectionRef.current,
+                },
             });
         }, 100);
     }, [user?.uuid]);
@@ -213,7 +217,14 @@ export const EditorPage = () => {
                 setPeers(prev => {
                     const existing = prev[payload.uuid];
                     if (!existing) return prev;
-                    return { ...prev, [payload.uuid]: { ...existing, cursor: payload.cursor, selection: payload.selection ?? null } };
+                    return {
+                        ...prev,
+                        [payload.uuid]: {
+                            ...existing,
+                            cursor: payload.cursor,
+                            selection: payload.selection ?? null,
+                        },
+                    };
                 });
             })
             .subscribe();
