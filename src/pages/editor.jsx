@@ -12,6 +12,7 @@ import { registerCollaborator } from '@/services/bin-collaborators';
 import { getFiles, createFile, updateFile, deleteFile } from '@/services/bin-files';
 import { supabase } from '@/services/supabase';
 import { useIdentity } from '@/hooks/use-identity';
+import { useListener } from '@/providers/bus-provider';
 import { getLanguageByFilename } from '@/constants/languages';
 
 const PeerToast = ({ peer, message }) => (
@@ -44,6 +45,7 @@ export const EditorPage = () => {
     const [activeFileId, setActiveFileId] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [peers, setPeers] = useState({});
+    const [pendingReveal, setPendingReveal] = useState(null);
 
     const $undoManager = useRef(null);
     const $hasBeenSaved = useRef(false);
@@ -52,6 +54,7 @@ export const EditorPage = () => {
     const $broadcastTimer = useRef(null);
     const $cursorRef = useRef(null);
     const $selectionRef = useRef(null);
+    const $activeFileRef = useRef(null);
     const $knownPeers = useRef(null);
     const [undoState, setUndoState] = useState({ canUndo: false, canRedo: false });
 
@@ -83,12 +86,25 @@ export const EditorPage = () => {
             .channel(`bin:${binId}:awareness`)
             .on('presence', { event: 'sync' }, () => {
                 const state = ch.presenceState();
-                const next = {};
-                for (const [, presences] of Object.entries(state)) {
-                    const p = presences[0];
-                    if (p.uuid !== user.uuid) next[p.uuid] = p;
-                }
-                setPeers(next);
+                setPeers(prev => {
+                    const next = {};
+                    for (const [, presences] of Object.entries(state)) {
+                        const p = presences[0];
+                        if (p.uuid !== user.uuid) {
+                            const existing = prev[p.uuid] ?? {};
+                            next[p.uuid] = {
+                                uuid: p.uuid,
+                                name: p.name,
+                                colorDark: p.colorDark,
+                                colorLight: p.colorLight,
+                                activeFileId: existing.activeFileId ?? p.activeFileId,
+                                cursor: existing.cursor,
+                                selection: existing.selection,
+                            };
+                        }
+                    }
+                    return next;
+                });
             })
             .subscribe(async status => {
                 if (status === 'SUBSCRIBED') {
@@ -131,10 +147,31 @@ export const EditorPage = () => {
                     uuid: user.uuid,
                     cursor: $cursorRef.current,
                     selection: $selectionRef.current,
+                    activeFileId: $activeFileRef.current,
                 },
             });
         }, 100);
     }, [user?.uuid]);
+
+    useEffect(() => {
+        $activeFileRef.current = activeFileId;
+        if (!activeFileId || !user?.uuid) return;
+        $binChannel.current?.send({
+            type: 'broadcast',
+            event: 'cursor:move',
+            payload: {
+                uuid: user.uuid,
+                cursor: $cursorRef.current,
+                selection: $selectionRef.current,
+                activeFileId,
+            },
+        });
+    }, [activeFileId]);
+
+    useListener('peer:focus', useCallback(({ fileId, cursor }) => {
+        setActiveFileId(fileId);
+        setPendingReveal(cursor ?? null);
+    }, []));
 
     const handleEditorCursorChange = useCallback(
         cursor => {
@@ -223,6 +260,7 @@ export const EditorPage = () => {
                             ...existing,
                             cursor: payload.cursor,
                             selection: payload.selection ?? null,
+                            ...(payload.activeFileId && { activeFileId: payload.activeFileId }),
                         },
                     };
                 });
@@ -359,6 +397,8 @@ export const EditorPage = () => {
                     files={files}
                     activeFileId={activeFileId}
                     isReadonly={isGuestReadonly}
+                    peers={peers}
+                    user={user}
                     onTabChange={setActiveFileId}
                     onCreateFile={handleCreateFile}
                     onDeleteFile={handleDeleteFile}
@@ -376,6 +416,8 @@ export const EditorPage = () => {
                         file={activeFile}
                         peers={peers}
                         readOnly={isGuestReadonly}
+                        revealPosition={pendingReveal}
+                        onRevealed={() => setPendingReveal(null)}
                         onUndoManagerReady={handleUndoManagerReady}
                         onFirstSave={handleFirstSave}
                         onCursorChange={handleEditorCursorChange}

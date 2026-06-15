@@ -7,6 +7,7 @@ import { useTheme } from '@/providers/theme-provider';
 import { UserAvatar } from '@/components/system/user-avatar';
 import { LANGUAGE_LIST, getLanguage } from '@/constants/languages';
 import { Popover, PopoverTrigger, PopoverContent } from '@/ui/popover';
+import { useEvents } from '@/providers/bus-provider';
 
 const Divider = () => <span className='text-border'>│</span>;
 
@@ -102,6 +103,7 @@ const LanguagePicker = ({ language, onLanguageChange }) => {
 
 const PeerList = ({ peers }) => {
     const { isDark } = useTheme();
+    const { emit } = useEvents();
 
     return (
         <Popover>
@@ -113,7 +115,11 @@ const PeerList = ({ peers }) => {
                 {peers.map(peer => {
                     const color = isDark ? peer.colorDark : peer.colorLight;
                     return (
-                        <div key={peer.uuid} className='flex items-center gap-2.5 px-3 py-2'>
+                        <button
+                            key={peer.uuid}
+                            onClick={() => peer.activeFileId && emit('peer:focus', { fileId: peer.activeFileId, cursor: peer.cursor })}
+                            className='flex w-full items-center gap-2.5 px-3 py-2 transition-colors hover:bg-muted'
+                        >
                             <UserAvatar profileId={peer.uuid} className='size-5 shrink-0' />
                             <span className='flex-1 truncate text-xs text-foreground'>
                                 {peer.name}
@@ -122,7 +128,7 @@ const PeerList = ({ peers }) => {
                                 className='size-2 shrink-0 rounded-full bg-(--peer-color)'
                                 style={{ '--peer-color': color }}
                             />
-                        </div>
+                        </button>
                     );
                 })}
             </PopoverContent>

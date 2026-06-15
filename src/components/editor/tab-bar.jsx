@@ -3,6 +3,7 @@ import { Undo2, Redo2, Plus, Trash2, FileText } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/helpers/utils';
 import { getLanguage } from '@/constants/languages';
+import { useTheme } from '@/providers/theme-provider';
 
 const LangIcon = ({ language, className }) => {
     const lang = getLanguage(language);
@@ -24,6 +25,7 @@ const FileTab = ({
     isActive,
     isReadonly,
     canDelete,
+    tabGradient,
     onSelect,
     onRename,
     deleteConfirmId,
@@ -69,6 +71,12 @@ const FileTab = ({
                 },
             )}
         >
+            {tabGradient && (
+                <span
+                    className='absolute inset-x-0 top-0 h-0.5'
+                    style={{ background: tabGradient }}
+                />
+            )}
             <LangIcon language={file.language} />
 
             {isEditing ? (
@@ -114,10 +122,18 @@ const FileTab = ({
     );
 };
 
+const makeGradient = colors => {
+    if (colors.length === 0) return null;
+    if (colors.length === 1) return colors[0];
+    return `linear-gradient(to right, ${colors.join(', ')})`;
+};
+
 export const TabBar = ({
     files,
     activeFileId,
     isReadonly,
+    peers = {},
+    user,
     onTabChange,
     onCreateFile,
     onDeleteFile,
@@ -128,7 +144,19 @@ export const TabBar = ({
     canRedo,
 }) => {
     const { t } = useTranslation();
+    const { isDark } = useTheme();
     const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+
+    const getTabGradient = fileId => {
+        const colors = [];
+        if (fileId === activeFileId && user)
+            colors.push(isDark ? user.colorDark : user.colorLight);
+        for (const peer of Object.values(peers)) {
+            if (peer.activeFileId === fileId)
+                colors.push(isDark ? peer.colorDark : peer.colorLight);
+        }
+        return makeGradient(colors.filter(Boolean));
+    };
 
     const handleDeleteConfirm = fileId => {
         if (deleteConfirmId === fileId) {
@@ -181,6 +209,7 @@ export const TabBar = ({
                         isActive={file.id === activeFileId}
                         isReadonly={isReadonly}
                         canDelete={files.length > 1}
+                        tabGradient={getTabGradient(file.id)}
                         onSelect={onTabChange}
                         onRename={onRenameFile}
                         deleteConfirmId={deleteConfirmId}

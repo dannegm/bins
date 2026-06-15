@@ -13,6 +13,8 @@ export const EditorCore = ({
     file,
     peers,
     readOnly,
+    revealPosition,
+    onRevealed,
     onUndoManagerReady,
     onFirstSave,
     onLanguageChange,
@@ -88,8 +90,8 @@ export const EditorCore = ({
         colorDark: user.colorDark,
         colorLight: user.colorLight,
     };
-    const filePeers = [selfPeer, ...Object.values(peers).filter(p => p.activeFileId === file.id)];
-    const activePeers = filePeers.filter(p => p.cursor);
+    const binPeers = [selfPeer, ...Object.values(peers)];
+    const activePeers = binPeers.filter(p => p.activeFileId === file.id && p.cursor);
 
     const handleCursorChange = pos => {
         setCursor(pos);
@@ -106,6 +108,8 @@ export const EditorCore = ({
                         language={file.language}
                         readOnly={readOnly}
                         peers={activePeers}
+                        revealPosition={revealPosition}
+                        onRevealed={onRevealed}
                         onCursorChange={handleCursorChange}
                         onSelectionChange={onSelectionChange}
                     />
@@ -115,7 +119,7 @@ export const EditorCore = ({
                 language={file.language}
                 cursor={cursor}
                 saveStatus={saveStatus}
-                peers={filePeers}
+                peers={binPeers}
                 onLanguageChange={lang => onLanguageChange(file.id, lang)}
             />
         </div>

@@ -17,6 +17,16 @@ const toHex = color => {
     }
 };
 
+const contrastColor = color => {
+    try {
+        const { red, green, blue } = parseToRgb(color);
+        const luminance = (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
+        return luminance > 0.5 ? '#000' : '#fff';
+    } catch {
+        return '#fff';
+    }
+};
+
 initMonacoWorkers();
 defineEditorThemes();
 
@@ -26,6 +36,8 @@ export const MonacoEditor = ({
     language = 'markdown',
     readOnly = false,
     peers = [],
+    revealPosition,
+    onRevealed,
     onCursorChange,
     onSelectionChange,
     onEditorReady,
@@ -34,6 +46,8 @@ export const MonacoEditor = ({
     const $editor = useRef(null);
     const $isApplyingRemote = useRef(false);
     const $decorations = useRef(null);
+    const $revealRef = useRef(revealPosition);
+    $revealRef.current = revealPosition;
 
     const [fontSize] = useSettings('fontSize');
     const [tabSize] = useSettings('tabSize');
@@ -74,6 +88,7 @@ export const MonacoEditor = ({
             smoothScrolling: true,
             cursorBlinking: 'smooth',
             contextmenu: true,
+            stickyScroll: { enabled: false },
             formatOnPaste: false,
             find: { autoFindInSelection: 'never' },
         });
@@ -167,7 +182,10 @@ export const MonacoEditor = ({
                 if (!rawColor) return '';
                 const color = toHex(rawColor);
                 const selColor = toHex(desaturate(0.2, rawColor));
+                const safeName = peer.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+                const labelColor = contrastColor(rawColor);
                 return `
+                .peer-cursor-${id} { position: relative; }
                 .peer-cursor-${id}::before {
                     content: '';
                     display: inline-block;
@@ -177,6 +195,26 @@ export const MonacoEditor = ({
                     margin-left: -1px;
                     vertical-align: text-bottom;
                 }
+                .peer-cursor-${id}::after {
+                    content: '${safeName}';
+                    position: absolute;
+                    bottom: 100%;
+                    left: -1px;
+                    background: ${color};
+                    color: ${labelColor};
+                    padding: 1px 6px 2px;
+                    border-radius: 3px 3px 3px 0;
+                    font-size: 10px;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                    font-weight: 500;
+                    white-space: nowrap;
+                    line-height: 1.5;
+                    opacity: 0;
+                    pointer-events: none;
+                    transition: opacity 0.1s ease;
+                    z-index: 9999;
+                }
+                .peer-cursor-${id}:hover::after { opacity: 1; }
                 .peer-line-${id} { background: ${color}26 !important; }
                 .peer-selection-${id} { background: ${selColor}44 !important; }
             `;
@@ -219,6 +257,12 @@ export const MonacoEditor = ({
     }, [peers, isDark]);
 
     useEffect(() => {
+        if (!$editor.current || !revealPosition) return;
+        $editor.current.revealPositionInCenter(revealPosition);
+        onRevealed?.();
+    }, [revealPosition]);
+
+    useEffect(() => {
         if (!$editor.current || !yText) return;
 
         const editor = $editor.current;
@@ -226,6 +270,10 @@ export const MonacoEditor = ({
 
         $isApplyingRemote.current = true;
         model.setValue(yText.toString());
+        if ($revealRef.current) {
+            editor.revealPositionInCenter($revealRef.current);
+            onRevealed?.();
+        }
         setTimeout(() => {
             $isApplyingRemote.current = false;
         }, 0);
