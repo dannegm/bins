@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import * as monaco from 'monaco-editor';
+import { desaturate, parseToRgb } from 'polished';
 import { initMonacoWorkers, defineEditorThemes } from '@/helpers/monaco';
 import { useSettings } from '@/hooks/use-settings';
 import { useIdentity } from '@/hooks/use-identity';
@@ -7,13 +8,23 @@ import { useTheme } from '@/providers/theme-provider';
 import { getLanguage } from '@/constants/languages';
 import { MONACO_THEMES } from '@/constants/themes';
 
+const toHex = color => {
+    try {
+        const { red, green, blue } = parseToRgb(color);
+        return '#' + [red, green, blue].map(v => v.toString(16).padStart(2, '0')).join('');
+    } catch {
+        return color;
+    }
+};
+
 initMonacoWorkers();
 defineEditorThemes();
 
-export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly = false, onCursorChange, onEditorReady }) => {
+export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly = false, peers = [], onCursorChange, onEditorReady }) => {
     const $container = useRef(null);
     const $editor = useRef(null);
     const $isApplyingRemote = useRef(false);
+    const $decorations = useRef(null);
 
     const [fontSize] = useSettings('fontSize');
     const [tabSize] = useSettings('tabSize');
@@ -54,6 +65,7 @@ export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly 
         });
 
         $editor.current = editor;
+        $decorations.current = editor.createDecorationsCollection([]);
         onEditorReady?.(editor);
 
         editor.onDidChangeCursorPosition(e => {
@@ -66,6 +78,7 @@ export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly 
         return () => {
             editor.dispose();
             $editor.current = null;
+            $decorations.current = null;
         };
     }, []);
 
@@ -97,18 +110,71 @@ export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly 
         const baseTheme = MONACO_THEMES.find(t => t.id === monacoTheme);
         if (!baseTheme || !userColor) return;
 
+        const hex = toHex(userColor);
+        const selHex = toHex(desaturate(0.25, userColor));
+
         const themeId = `bins-${monacoTheme}-user`;
         monaco.editor.defineTheme(themeId, {
             ...baseTheme.definition,
             colors: {
                 ...baseTheme.definition.colors,
-                'editorCursor.foreground': userColor,
-                'editor.lineHighlightBackground': `${userColor}33`,
+                'editorCursor.foreground': hex,
+                'editor.lineHighlightBackground': `${hex}33`,
                 'editor.lineHighlightBorder': '#00000000',
+                'editor.selectionBackground': `${selHex}55`,
+                'editor.inactiveSelectionBackground': `${selHex}33`,
+                'editor.selectionHighlightBackground': `${selHex}30`,
             },
         });
         monaco.editor.setTheme(themeId);
     }, [monacoTheme, user?.colorDark, user?.colorLight, isDark]);
+
+    useEffect(() => {
+        let style = document.getElementById('peer-cursors-style');
+        if (!style) {
+            style = document.createElement('style');
+            style.id = 'peer-cursors-style';
+            document.head.appendChild(style);
+        }
+
+        style.textContent = peers.map(peer => {
+            const id = peer.uuid.slice(0, 8);
+            const color = isDark ? peer.colorDark : peer.colorLight;
+            if (!color) return '';
+            return `
+                .peer-cursor-${id}::before {
+                    content: '';
+                    display: inline-block;
+                    width: 2px;
+                    height: 1.1em;
+                    background: ${color};
+                    margin-left: -1px;
+                    vertical-align: text-bottom;
+                }
+                .peer-line-${id} { background: ${color}26 !important; }
+            `;
+        }).join('');
+
+        if ($decorations.current) {
+            $decorations.current.set(
+                peers.flatMap(peer => {
+                    if (!peer.cursor) return [];
+                    const { lineNumber, column } = peer.cursor;
+                    const id = peer.uuid.slice(0, 8);
+                    return [
+                        {
+                            range: new monaco.Range(lineNumber, 1, lineNumber, 1),
+                            options: { isWholeLine: true, className: `peer-line-${id}` },
+                        },
+                        {
+                            range: new monaco.Range(lineNumber, column, lineNumber, column),
+                            options: { beforeContentClassName: `peer-cursor-${id}` },
+                        },
+                    ];
+                }),
+            );
+        }
+    }, [peers, isDark]);
 
     useEffect(() => {
         if (!$editor.current || !yText) return;

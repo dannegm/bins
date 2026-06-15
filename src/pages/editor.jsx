@@ -17,8 +17,16 @@ import { getLanguageByFilename } from '@/constants/languages';
 
 const SAVE_DEBOUNCE_MS = 1500;
 
-
-const EditorCore = ({ binId, file, peers, readOnly, onUndoManagerReady, onFirstSave, onLanguageChange }) => {
+const EditorCore = ({
+    binId,
+    file,
+    peers,
+    readOnly,
+    onUndoManagerReady,
+    onFirstSave,
+    onLanguageChange,
+    onCursorChange,
+}) => {
     const { user } = useIdentity();
     const [saveStatus, setSaveStatus] = useState('idle');
     const [cursor, setCursor] = useState({ lineNumber: 1, column: 1 });
@@ -63,7 +71,8 @@ const EditorCore = ({ binId, file, peers, readOnly, onUndoManagerReady, onFirstS
     useEffect(() => {
         if (!yContext || readOnly) return;
         const observer = event => {
-            if (event.transaction.origin === 'remote' || event.transaction.origin === 'init') return;
+            if (event.transaction.origin === 'remote' || event.transaction.origin === 'init')
+                return;
             scheduleSave(yContext.yText.toString());
         };
         yContext.yText.observe(observer);
@@ -81,7 +90,13 @@ const EditorCore = ({ binId, file, peers, readOnly, onUndoManagerReady, onFirstS
         [yContext, scheduleSave],
     );
 
-    const peerCount = Object.values(peers).filter(p => p.activeFileId === file.id).length;
+    const activePeers = Object.values(peers).filter(p => p.activeFileId === file.id && p.cursor);
+    const peerCount = activePeers.length;
+
+    const handleCursorChange = pos => {
+        setCursor(pos);
+        onCursorChange?.(pos);
+    };
 
     return (
         <div className='flex min-h-0 flex-1 flex-col'>
@@ -92,7 +107,8 @@ const EditorCore = ({ binId, file, peers, readOnly, onUndoManagerReady, onFirstS
                         clientId={user?.uuid}
                         language={file.language}
                         readOnly={readOnly}
-                        onCursorChange={setCursor}
+                        peers={activePeers}
+                        onCursorChange={handleCursorChange}
                     />
                 )}
             </div>
@@ -132,6 +148,7 @@ export const EditorPage = () => {
     const $hasBeenSaved = useRef(false);
     const $presenceChannel = useRef(null);
     const $binChannel = useRef(null);
+    const $cursorTimer = useRef(null);
     const [undoState, setUndoState] = useState({ canUndo: false, canRedo: false });
 
     const activeFile = files.find(f => f.id === activeFileId) ?? null;
@@ -144,14 +161,21 @@ export const EditorPage = () => {
             .on('presence', { event: 'sync' }, () => {
                 const state = ch.presenceState();
                 const next = {};
-                for (const [uuid, presences] of Object.entries(state)) {
-                    if (uuid !== user.uuid) next[uuid] = presences[0];
+                for (const [, presences] of Object.entries(state)) {
+                    const p = presences[0];
+                    if (p.uuid !== user.uuid) next[p.uuid] = p;
                 }
                 setPeers(next);
             })
             .subscribe(async status => {
                 if (status === 'SUBSCRIBED') {
-                    await ch.track({ uuid: user.uuid, name: user.name, activeFileId });
+                    await ch.track({
+                        uuid: user.uuid,
+                        name: user.name,
+                        activeFileId,
+                        colorDark: user.colorDark,
+                        colorLight: user.colorLight,
+                    });
                 }
             });
 
@@ -165,8 +189,28 @@ export const EditorPage = () => {
     useEffect(() => {
         const ch = $presenceChannel.current;
         if (!ch || !user?.uuid || !activeFileId) return;
-        ch.track({ uuid: user.uuid, name: user.name, activeFileId });
+        ch.track({
+            uuid: user.uuid,
+            name: user.name,
+            activeFileId,
+            colorDark: user.colorDark,
+            colorLight: user.colorLight,
+        });
     }, [activeFileId, user?.name]);
+
+    const handleEditorCursorChange = useCallback(
+        cursor => {
+            clearTimeout($cursorTimer.current);
+            $cursorTimer.current = setTimeout(() => {
+                $binChannel.current?.send({
+                    type: 'broadcast',
+                    event: 'cursor:move',
+                    payload: { uuid: user.uuid, cursor },
+                });
+            }, 100);
+        },
+        [user?.uuid],
+    );
 
     useEffect(() => {
         let mounted = true;
@@ -216,13 +260,24 @@ export const EditorPage = () => {
                 });
             })
             .on('broadcast', { event: 'file:updated' }, ({ payload }) => {
-                setFiles(prev => prev.map(f => (f.id === payload.file.id ? { ...f, ...payload.file } : f)));
+                setFiles(prev =>
+                    prev.map(f => (f.id === payload.file.id ? { ...f, ...payload.file } : f)),
+                );
             })
             .on('broadcast', { event: 'file:deleted' }, ({ payload }) => {
                 setFiles(prev => {
                     const remaining = prev.filter(f => f.id !== payload.fileId);
-                    setActiveFileId(cur => (cur === payload.fileId ? (remaining[0]?.id ?? null) : cur));
+                    setActiveFileId(cur =>
+                        cur === payload.fileId ? (remaining[0]?.id ?? null) : cur,
+                    );
                     return remaining;
+                });
+            })
+            .on('broadcast', { event: 'cursor:move' }, ({ payload }) => {
+                setPeers(prev => {
+                    const existing = prev[payload.uuid];
+                    if (!existing) return prev;
+                    return { ...prev, [payload.uuid]: { ...existing, cursor: payload.cursor } };
                 });
             })
             .subscribe();
@@ -376,6 +431,7 @@ export const EditorPage = () => {
                         readOnly={isGuestReadonly}
                         onUndoManagerReady={handleUndoManagerReady}
                         onFirstSave={handleFirstSave}
+                        onCursorChange={handleEditorCursorChange}
                         onLanguageChange={handleLanguageChange}
                     />
                 )}
