@@ -30,7 +30,7 @@ export const defaultSettings = {
     },
 
     appKeybindings: {
-        command_palette: 'mod+k',
+        command_palette: 'mod+shift+p',
         settings: 'mod+,',
         new_bin: 'alt+n',
         new_file: 'alt+shift+n',

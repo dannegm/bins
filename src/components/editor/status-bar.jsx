@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { Users } from 'lucide-react';
+import { parseToRgb } from 'polished';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/helpers/utils';
 import { useSettings } from '@/hooks/use-settings';
@@ -7,7 +8,23 @@ import { useTheme } from '@/providers/theme-provider';
 import { UserAvatar } from '@/components/system/user-avatar';
 import { LANGUAGE_LIST, getLanguage } from '@/constants/languages';
 import { Popover, PopoverTrigger, PopoverContent } from '@/ui/popover';
+import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '@/ui/command';
 import { useEvents } from '@/providers/bus-provider';
+
+const contrastColor = color => {
+    try {
+        const { red, green, blue } = parseToRgb(color);
+        return (0.299 * red + 0.587 * green + 0.114 * blue) / 255 > 0.5 ? '#000' : '#fff';
+    } catch {
+        return '#fff';
+    }
+};
+
+const LangIcon = ({ lang, color }) => {
+    const iconColor = color ?? lang.color;
+    if (lang.icon) return <i className={cn(lang.icon, 'colored text-xs leading-none')} style={{ color: iconColor }} />;
+    return <span className='size-1.5 rounded-full bg-(--dot)' style={{ '--dot': iconColor }} />;
+};
 
 const Divider = () => <span className='text-border'>│</span>;
 
@@ -34,70 +51,44 @@ const SaveIndicator = ({ status, t }) => {
 
 const LanguagePicker = ({ language, onLanguageChange }) => {
     const [open, setOpen] = useState(false);
-    const [search, setSearch] = useState('');
-    const $ref = useRef(null);
     const lang = getLanguage(language);
 
-    useEffect(() => {
-        if (!open) return;
-        const handler = e => {
-            if (!$ref.current?.contains(e.target)) {
-                setOpen(false);
-                setSearch('');
-            }
-        };
-        document.addEventListener('mousedown', handler);
-        return () => document.removeEventListener('mousedown', handler);
-    }, [open]);
-
-    const filtered = LANGUAGE_LIST.filter(l =>
-        l.label.toLowerCase().includes(search.toLowerCase()),
-    );
-
     return (
-        <div ref={$ref} className='relative'>
-            <button
-                onClick={() => setOpen(o => !o)}
-                className='rounded px-1 py-0.5 text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground'
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger
+                className='flex items-center gap-1 rounded px-1.5 py-0.5 text-xs transition-opacity hover:opacity-80 bg-(--lang-bg) text-(--lang-text)'
+                style={{ '--lang-bg': lang.color, '--lang-text': contrastColor(lang.color) }}
             >
+                <LangIcon lang={lang} color={contrastColor(lang.color)} />
                 {lang.label}
-            </button>
-
-            {open && (
-                <div className='absolute bottom-full left-0 z-50 mb-1 flex w-48 flex-col overflow-hidden rounded-lg border border-border bg-popover shadow-lg shadow-black/30'>
-                    <div className='border-b border-border px-2 py-1.5'>
-                        <input
-                            autoFocus
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                            placeholder='Filter…'
-                            className='w-full bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground'
-                        />
-                    </div>
-                    <div className='max-h-48 overflow-y-auto py-1'>
-                        {filtered.map(l => (
-                            <button
-                                key={l.id}
-                                onClick={() => {
-                                    onLanguageChange(l.id);
-                                    setOpen(false);
-                                    setSearch('');
-                                }}
-                                className={cn(
-                                    'flex w-full items-center px-3 py-1.5 text-left text-xs transition-colors hover:bg-muted',
-                                    {
-                                        'text-brand': l.id === language,
-                                        'text-foreground': l.id !== language,
-                                    },
-                                )}
-                            >
-                                {l.label}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            )}
-        </div>
+            </PopoverTrigger>
+            <PopoverContent side='top' sideOffset={8} align='start' className='w-52 p-0'>
+                <Command>
+                    <CommandInput placeholder='Filter…' />
+                    <CommandList className='max-h-48'>
+                        <CommandEmpty>No results.</CommandEmpty>
+                        <CommandGroup>
+                            {LANGUAGE_LIST.map(l => (
+                                <CommandItem
+                                    key={l.id}
+                                    value={l.label}
+                                    data-checked={l.id === language}
+                                    onSelect={() => {
+                                        onLanguageChange(l.id);
+                                        setOpen(false);
+                                    }}
+                                >
+                                    <span className='flex size-3.5 shrink-0 items-center justify-center'>
+                                        <LangIcon lang={l} />
+                                    </span>
+                                    {l.label}
+                                </CommandItem>
+                            ))}
+                        </CommandGroup>
+                    </CommandList>
+                </Command>
+            </PopoverContent>
+        </Popover>
     );
 };
 

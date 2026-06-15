@@ -176,6 +176,13 @@ export const EditorPage = () => {
         }, []),
     );
 
+    useListener(
+        'editor:set-language',
+        useCallback(({ language }) => {
+            if (activeFileId) handleLanguageChange(activeFileId, language);
+        }, [activeFileId]),
+    );
+
     const handleEditorCursorChange = useCallback(
         cursor => {
             $cursorRef.current = cursor;

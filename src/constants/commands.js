@@ -1,3 +1,6 @@
+import { UI_THEMES, MONACO_THEMES } from '@/constants/themes';
+import { LANGUAGE_LIST } from '@/constants/languages';
+
 export const createCommands = ({ emit }) => [
     {
         group: 'Navigation',
@@ -55,20 +58,20 @@ export const createCommands = ({ emit }) => [
         group: 'Theme',
         items: [
             {
-                id: 'theme-dark',
-                label: 'Switch to Dark theme',
-                icon: 'moon',
+                id: 'change-theme',
+                label: 'Change UI theme…',
+                icon: 'palette',
                 scope: '*',
-                keywords: ['dark', 'theme', 'night'],
-                action: () => emit('command:setting', { path: 'uiTheme', value: 'dark' }),
+                keywords: ['dark', 'light', 'theme', 'dracula', 'color'],
+                page: 'theme',
             },
             {
-                id: 'theme-light',
-                label: 'Switch to Light theme',
-                icon: 'sun',
-                scope: '*',
-                keywords: ['light', 'theme', 'day'],
-                action: () => emit('command:setting', { path: 'uiTheme', value: 'light' }),
+                id: 'change-monaco-theme',
+                label: 'Change editor theme…',
+                icon: 'monitor',
+                scope: ['/editor'],
+                keywords: ['monaco', 'editor', 'theme', 'dark', 'light'],
+                page: 'monaco-theme',
             },
         ],
     },
@@ -105,6 +108,14 @@ export const createCommands = ({ emit }) => [
         group: 'Editor',
         items: [
             {
+                id: 'editor-language',
+                label: 'Change language…',
+                icon: 'code',
+                scope: ['/editor'],
+                keywords: ['language', 'syntax', 'mode'],
+                page: 'language',
+            },
+            {
                 id: 'editor-word-wrap',
                 label: 'Toggle word wrap',
                 icon: 'wrap-text',
@@ -131,3 +142,33 @@ export const createCommands = ({ emit }) => [
         ],
     },
 ];
+
+export const createPages = ({ emit }) => ({
+    theme: {
+        title: 'UI Theme',
+        items: UI_THEMES.map(t => ({
+            id: `theme-${t.id}`,
+            label: t.label,
+            icon: t.isDark ? 'moon' : 'sun',
+            action: () => emit('command:setting', { path: 'uiTheme', value: t.id }),
+        })),
+    },
+    'monaco-theme': {
+        title: 'Editor Theme',
+        items: MONACO_THEMES.map(t => ({
+            id: `monaco-theme-${t.id}`,
+            label: t.label,
+            icon: t.isDark ? 'moon' : 'sun',
+            action: () => emit('command:setting', { path: 'monacoTheme', value: t.id }),
+        })),
+    },
+    language: {
+        title: 'Language',
+        items: LANGUAGE_LIST.map(l => ({
+            id: `lang-${l.id}`,
+            label: l.label,
+            icon: 'code',
+            action: () => emit('editor:set-language', { language: l.id }),
+        })),
+    },
+});

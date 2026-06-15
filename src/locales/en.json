@@ -10,7 +10,8 @@
         "empty": "No commands found.",
         "hint_navigate": "navigate",
         "hint_select": "select",
-        "hint_close": "close"
+        "hint_close": "close",
+        "hint_back": "back"
     },
     "sidebar": {
         "home": "Home",

@@ -1,6 +1,8 @@
+import { useState, useCallback } from 'react';
 import { Command } from 'cmdk';
 import { AnimatePresence, motion } from 'motion/react';
 import { DynamicIcon } from 'lucide-react/dynamic';
+import { ChevronRight, X } from 'lucide-react';
 import { useRouterState } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { Kbd, KbdGroup } from '@/ui/kbd';
@@ -9,7 +11,7 @@ import { useCommandPalette } from '@/providers/command-palette-provider';
 import { useSettings } from '@/hooks/use-settings';
 import { defaultSettings } from '@/constants/default-settings';
 import { formatBinding } from '@/hooks/use-hotkey';
-import { createCommands } from '@/constants/commands';
+import { createCommands, createPages } from '@/constants/commands';
 
 const matchesScope = (scope, pathname) => scope === '*' || scope.some(s => pathname.startsWith(s));
 
@@ -19,6 +21,11 @@ export const CommandPalette = () => {
     const { emit } = useEvents();
     const pathname = useRouterState({ select: s => s.location.pathname });
     const [appKeybindings] = useSettings('appKeybindings', defaultSettings.appKeybindings);
+    const [pages, setPages] = useState([]);
+    const [search, setSearch] = useState('');
+
+    const currentPage = pages[pages.length - 1] ?? 'root';
+    const pages_map = createPages({ emit });
 
     const shortcut = id => {
         const raw = id && (appKeybindings[id] ?? defaultSettings.appKeybindings[id]);
@@ -32,10 +39,41 @@ export const CommandPalette = () => {
         }))
         .filter(group => group.items.length > 0);
 
-    const run = action => {
-        action();
+    const navigate = useCallback(page => {
+        setPages(prev => [...prev, page]);
+        setSearch('');
+    }, []);
+
+    const goBack = useCallback(() => {
+        setPages(prev => prev.slice(0, -1));
+        setSearch('');
+    }, []);
+
+    const handleClose = useCallback(() => {
         close();
-    };
+        setPages([]);
+        setSearch('');
+    }, [close]);
+
+    const run = useCallback(action => {
+        action();
+        handleClose();
+    }, [handleClose]);
+
+    const handleKeyDown = useCallback(e => {
+        if (e.key === 'Escape') {
+            if (pages.length > 0) {
+                goBack();
+            } else {
+                handleClose();
+            }
+        }
+        if (e.key === 'Backspace' && !search && pages.length > 0) {
+            goBack();
+        }
+    }, [pages, search, goBack, handleClose]);
+
+    const pageData = currentPage !== 'root' ? pages_map[currentPage] : null;
 
     return (
         <AnimatePresence>
@@ -46,7 +84,7 @@ export const CommandPalette = () => {
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.15 }}
                     className='fixed inset-0 z-50 flex items-start justify-center pt-[20vh]'
-                    onClick={close}
+                    onClick={handleClose}
                 >
                     <div className='absolute inset-0 bg-overlay backdrop-blur-xs' />
 
@@ -60,42 +98,66 @@ export const CommandPalette = () => {
                     >
                         <Command
                             className='overflow-hidden rounded-xl border border-border bg-popover shadow-2xl shadow-black/50'
-                            onKeyDown={e => {
-                                if (e.key === 'Escape') close();
-                            }}
+                            onKeyDown={handleKeyDown}
                             loop
                         >
-                            <Command.Input
-                                autoFocus
-                                placeholder={t('command_palette.placeholder')}
-                                className='w-full border-b border-border bg-transparent px-4 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none'
-                            />
+                            <div className='flex items-center border-b border-border'>
+                                {pages.length > 0 && (
+                                    <div className='flex shrink-0 items-center gap-1 pl-4'>
+                                        {pages.map((p, i) => (
+                                            <div key={p} className='flex items-center gap-1'>
+                                                {i > 0 && <ChevronRight className='size-3 text-muted-foreground' />}
+                                                <button
+                                                    onClick={i < pages.length - 1 ? () => setPages(prev => prev.slice(0, i + 1)) : undefined}
+                                                    className='flex items-center gap-1 rounded bg-accent px-2 py-0.5 text-xs text-accent-foreground'
+                                                >
+                                                    {pages_map[p]?.title ?? p}
+                                                    {i === pages.length - 1 && (
+                                                        <X
+                                                            className='size-3 opacity-60 hover:opacity-100'
+                                                            onClick={e => { e.stopPropagation(); goBack(); }}
+                                                        />
+                                                    )}
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                <Command.Input
+                                    value={search}
+                                    onValueChange={setSearch}
+                                    autoFocus
+                                    placeholder={pageData ? `Filter ${pageData.title}…` : t('command_palette.placeholder')}
+                                    className='min-w-0 flex-1 bg-transparent px-4 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none'
+                                />
+                            </div>
 
                             <Command.List className='max-h-80 overflow-y-auto p-2'>
                                 <Command.Empty className='py-8 text-center text-sm text-muted-foreground'>
                                     {t('command_palette.empty')}
                                 </Command.Empty>
 
-                                {commands.map(({ group, items }) => (
+                                {currentPage === 'root' && commands.map(({ group, items }) => (
                                     <Command.Group
                                         key={group}
                                         heading={group}
                                         className='**:[[cmdk-group-heading]]:px-2 **:[[cmdk-group-heading]]:pb-1.5 **:[[cmdk-group-heading]]:pt-3 **:[[cmdk-group-heading]]:text-[11px] **:[[cmdk-group-heading]]:font-semibold **:[[cmdk-group-heading]]:uppercase **:[[cmdk-group-heading]]:tracking-widest **:[[cmdk-group-heading]]:text-muted-foreground'
                                     >
-                                        {items.map(({ id, label, icon, shortcutId, action }) => {
+                                        {items.map(({ id, label, icon, shortcutId, action, page }) => {
                                             const keys = shortcut(shortcutId);
                                             return (
                                                 <Command.Item
                                                     key={id}
                                                     value={id}
                                                     keywords={[label]}
-                                                    onSelect={() => run(action)}
+                                                    onSelect={() => page ? navigate(page) : run(action)}
                                                     className='flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors aria-selected:bg-accent aria-selected:text-accent-foreground [&>svg]:size-4'
                                                 >
-                                                    <div className='[&>svg]:size-4 text-muted-foreground'>
+                                                    <div className='text-muted-foreground [&>svg]:size-4'>
                                                         <DynamicIcon name={icon} />
                                                     </div>
                                                     <span className='flex-1'>{label}</span>
+                                                    {page && <ChevronRight className='size-3.5 opacity-40' />}
                                                     {keys && (
                                                         <KbdGroup>
                                                             {keys.map((k, i) => (
@@ -108,6 +170,25 @@ export const CommandPalette = () => {
                                         })}
                                     </Command.Group>
                                 ))}
+
+                                {currentPage !== 'root' && pageData && (
+                                    <Command.Group>
+                                        {pageData.items.map(({ id, label, icon, action }) => (
+                                            <Command.Item
+                                                key={id}
+                                                value={id}
+                                                keywords={[label]}
+                                                onSelect={() => run(action)}
+                                                className='flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors aria-selected:bg-accent aria-selected:text-accent-foreground [&>svg]:size-4'
+                                            >
+                                                <div className='text-muted-foreground [&>svg]:size-4'>
+                                                    <DynamicIcon name={icon} />
+                                                </div>
+                                                <span className='flex-1'>{label}</span>
+                                            </Command.Item>
+                                        ))}
+                                    </Command.Group>
+                                )}
                             </Command.List>
 
                             <div className='flex items-center gap-4 border-t border-border px-4 py-2.5 text-[11px] text-muted-foreground'>
@@ -118,9 +199,10 @@ export const CommandPalette = () => {
                                 <KbdGroup>
                                     <Kbd>↵</Kbd> {t('command_palette.hint_select')}
                                 </KbdGroup>
-                                <KbdGroup>
-                                    <Kbd>esc</Kbd> {t('command_palette.hint_close')}
-                                </KbdGroup>
+                                {pages.length > 0
+                                    ? <KbdGroup><Kbd>⌫</Kbd> {t('command_palette.hint_back')}</KbdGroup>
+                                    : <KbdGroup><Kbd>esc</Kbd> {t('command_palette.hint_close')}</KbdGroup>
+                                }
                             </div>
                         </Command>
                     </motion.div>
