@@ -74,10 +74,10 @@ const getConflict = (combo, excludeId, allKeybindings) => {
     }
     if (isMac && MAC_CONFLICTS.has(combo)) return { type: 'os', label: MAC_CONFLICTS.get(combo) };
     if (!isMac && WIN_CONFLICTS.has(combo)) return { type: 'os', label: WIN_CONFLICTS.get(combo) };
-    if (BROWSER_CONFLICTS.has(combo)) return { type: 'browser', label: BROWSER_CONFLICTS.get(combo) };
+    if (BROWSER_CONFLICTS.has(combo))
+        return { type: 'browser', label: BROWSER_CONFLICTS.get(combo) };
     return null;
 };
-
 
 const KeybindingDisplay = ({ raw, muted }) => (
     <KbdGroup>
@@ -136,7 +136,8 @@ const CaptureZone = ({ onCapture, excludeId, allKeybindings }) => {
                                 className={cn(
                                     'inline-flex h-10 min-w-10 items-center justify-center rounded-lg border px-3 font-mono text-base font-semibold shadow-sm transition-colors',
                                     {
-                                        'border-destructive/50 bg-destructive/10 text-destructive': hasConflict,
+                                        'border-destructive/50 bg-destructive/10 text-destructive':
+                                            hasConflict,
                                         'border-brand/40 bg-brand/10 text-foreground': !hasConflict,
                                     },
                                 )}
@@ -149,18 +150,23 @@ const CaptureZone = ({ onCapture, excludeId, allKeybindings }) => {
                         <div className='flex items-center gap-1.5 text-xs text-destructive'>
                             <AlertTriangle className='size-3 shrink-0' />
                             <span>
-                                {t(`settings.keybindings.conflict_${conflict.type}`)}{': '}
+                                {t(`settings.keybindings.conflict_${conflict.type}`)}
+                                {': '}
                                 {conflict.type === 'app'
                                     ? t(`settings.keybindings.${conflict.label}`)
                                     : conflict.label}
                             </span>
                         </div>
                     ) : (
-                        <p className='text-xs text-muted-foreground'>{t('settings.keybindings.capture_change_hint')}</p>
+                        <p className='text-xs text-muted-foreground'>
+                            {t('settings.keybindings.capture_change_hint')}
+                        </p>
                     )}
                 </>
             ) : (
-                <p className='text-sm text-muted-foreground'>{t('settings.keybindings.press_key')}</p>
+                <p className='text-sm text-muted-foreground'>
+                    {t('settings.keybindings.press_key')}
+                </p>
             )}
         </div>
     );
@@ -214,7 +220,9 @@ const KeybindingModal = ({ shortcutId, actionLabel, currentValue, allKeybindings
                                 {actionLabel}
                             </Dialog.Description>
                         </div>
-                        <Dialog.Close render={<Button variant='ghost' size='icon-xs' className='shrink-0' />}>
+                        <Dialog.Close
+                            render={<Button variant='ghost' size='icon-xs' className='shrink-0' />}
+                        >
                             <X />
                         </Dialog.Close>
                     </div>
@@ -239,9 +247,13 @@ const KeybindingModal = ({ shortcutId, actionLabel, currentValue, allKeybindings
                             size='sm'
                             onClick={handleSave}
                             disabled={!captured}
-                            className={cn({ 'bg-destructive/80 hover:bg-destructive/70': conflict })}
+                            className={cn({
+                                'bg-destructive/80 hover:bg-destructive/70': conflict,
+                            })}
                         >
-                            {conflict ? t('settings.keybindings.save_anyway') : t('settings.keybindings.save')}
+                            {conflict
+                                ? t('settings.keybindings.save_anyway')
+                                : t('settings.keybindings.save')}
                         </Button>
                     </div>
                 </Dialog.Popup>
@@ -252,27 +264,34 @@ const KeybindingModal = ({ shortcutId, actionLabel, currentValue, allKeybindings
 
 const GroupLabel = ({ label }) => (
     <div className='pb-1 pt-4 first:pt-3'>
-        <span className='text-xs font-medium uppercase tracking-wider text-muted-foreground'>{label}</span>
+        <span className='text-xs font-medium uppercase tracking-wider text-muted-foreground'>
+            {label}
+        </span>
     </div>
 );
 
 export const KeybindingsSection = () => {
     const { t } = useTranslation();
-    const [appKeybindings, setAppKeybindings] = useSettings('appKeybindings', defaultSettings.appKeybindings);
-    const [monacoKeybindings, setMonacoKeybindings] = useSettings('monacoKeybindings', defaultSettings.monacoKeybindings);
+    const [appKeybindings, setAppKeybindings] = useSettings(
+        'appKeybindings',
+        defaultSettings.appKeybindings,
+    );
+    const [monacoKeybindings, setMonacoKeybindings] = useSettings(
+        'monacoKeybindings',
+        defaultSettings.monacoKeybindings,
+    );
 
     const allKeybindings = { ...appKeybindings, ...monacoKeybindings };
 
-    const getKb = type => type === 'app' ? appKeybindings : monacoKeybindings;
-    const getDefaults = type => type === 'app' ? defaultSettings.appKeybindings : defaultSettings.monacoKeybindings;
+    const getKb = type => (type === 'app' ? appKeybindings : monacoKeybindings);
+    const getDefaults = type =>
+        type === 'app' ? defaultSettings.appKeybindings : defaultSettings.monacoKeybindings;
     const setKb = (type, id, val) => {
         if (type === 'app') setAppKeybindings(prev => ({ ...prev, [id]: val }));
         else setMonacoKeybindings(prev => ({ ...prev, [id]: val }));
     };
-    const resetKb = (type, id) =>
-        setKb(type, id, getDefaults(type)[id]);
-    const isCustom = (type, id) =>
-        getKb(type)[id] !== getDefaults(type)[id];
+    const resetKb = (type, id) => setKb(type, id, getDefaults(type)[id]);
+    const isCustom = (type, id) => getKb(type)[id] !== getDefaults(type)[id];
 
     return (
         <section id='settings-keybindings'>
@@ -280,7 +299,10 @@ export const KeybindingsSection = () => {
             <SettingGroup>
                 {KEYBINDING_GROUPS.map(({ group, type, items }) => (
                     <>
-                        <GroupLabel key={`label-${group}`} label={t(`settings.keybindings.group_${group}`)} />
+                        <GroupLabel
+                            key={`label-${group}`}
+                            label={t(`settings.keybindings.group_${group}`)}
+                        />
                         {items.map(id => {
                             const current = getKb(type)[id] ?? getDefaults(type)[id];
                             const custom = isCustom(type, id);

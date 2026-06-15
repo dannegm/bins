@@ -16,13 +16,10 @@ const NavItem = ({ sectionId, active, label, onClick }) => (
     <button
         type='button'
         onClick={() => onClick(sectionId)}
-        className={cn(
-            'w-full rounded-md px-2.5 py-1.5 text-left text-sm transition-colors',
-            {
-                'bg-muted font-medium text-foreground': active,
-                'text-muted-foreground hover:text-foreground': !active,
-            },
-        )}
+        className={cn('w-full rounded-md px-2.5 py-1.5 text-left text-sm transition-colors', {
+            'bg-muted font-medium text-foreground': active,
+            'text-muted-foreground hover:text-foreground': !active,
+        })}
     >
         {label}
     </button>
@@ -37,7 +34,9 @@ export const SettingsNav = ({ scrollContainerRef }) => {
         const container = scrollContainerRef?.current;
         if (!container) return;
 
-        const sections = NAV_SECTIONS.map(id => document.getElementById(`settings-${id}`)).filter(Boolean);
+        const sections = NAV_SECTIONS.map(id => document.getElementById(`settings-${id}`)).filter(
+            Boolean,
+        );
 
         observerRef.current = new IntersectionObserver(
             entries => {

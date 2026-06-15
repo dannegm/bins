@@ -38,7 +38,9 @@ const ResetConfirmModal = ({ t }) => {
                         <Dialog.Title className='text-sm font-semibold text-foreground'>
                             {t('settings.reset.modal_title')}
                         </Dialog.Title>
-                        <Dialog.Close render={<Button variant='ghost' size='icon-xs' className='shrink-0' />}>
+                        <Dialog.Close
+                            render={<Button variant='ghost' size='icon-xs' className='shrink-0' />}
+                        >
                             <X />
                         </Dialog.Close>
                     </div>
@@ -86,8 +88,12 @@ export const SettingsPage = () => {
 
                                 <div className='flex flex-col gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-5'>
                                     <div>
-                                        <p className='text-sm font-medium text-foreground'>{t('settings.reset.title')}</p>
-                                        <p className='mt-0.5 text-xs text-muted-foreground'>{t('settings.reset.description')}</p>
+                                        <p className='text-sm font-medium text-foreground'>
+                                            {t('settings.reset.title')}
+                                        </p>
+                                        <p className='mt-0.5 text-xs text-muted-foreground'>
+                                            {t('settings.reset.description')}
+                                        </p>
                                     </div>
                                     <ResetConfirmModal t={t} />
                                 </div>

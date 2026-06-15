@@ -37,12 +37,23 @@ const ShareSettingsCard = ({ t }) => {
     return (
         <div className='flex flex-col gap-3 rounded-xl border border-border bg-card p-4'>
             <div>
-                <p className='text-sm font-medium text-foreground'>{t('settings.import_export.share_settings_label')}</p>
-                <p className='mt-0.5 text-xs text-muted-foreground'>{t('settings.import_export.share_settings_description')}</p>
+                <p className='text-sm font-medium text-foreground'>
+                    {t('settings.import_export.share_settings_label')}
+                </p>
+                <p className='mt-0.5 text-xs text-muted-foreground'>
+                    {t('settings.import_export.share_settings_description')}
+                </p>
             </div>
-            <Button variant='outline' size='sm' onClick={() => copy(url)} className='self-start gap-2'>
+            <Button
+                variant='outline'
+                size='sm'
+                onClick={() => copy(url)}
+                className='self-start gap-2'
+            >
                 {copied ? <Check className='size-3.5' /> : <Link2 className='size-3.5' />}
-                {copied ? t('settings.import_export.copied') : t('settings.import_export.share_settings_button')}
+                {copied
+                    ? t('settings.import_export.copied')
+                    : t('settings.import_export.share_settings_button')}
             </Button>
         </div>
     );
@@ -62,8 +73,12 @@ const ApplySettingsCard = ({ t }) => {
     return (
         <div className='flex flex-col gap-3 rounded-xl border border-border bg-card p-4'>
             <div>
-                <p className='text-sm font-medium text-foreground'>{t('settings.import_export.apply_settings_label')}</p>
-                <p className='mt-0.5 text-xs text-muted-foreground'>{t('settings.import_export.apply_settings_description')}</p>
+                <p className='text-sm font-medium text-foreground'>
+                    {t('settings.import_export.apply_settings_label')}
+                </p>
+                <p className='mt-0.5 text-xs text-muted-foreground'>
+                    {t('settings.import_export.apply_settings_description')}
+                </p>
             </div>
             <div className='flex gap-2'>
                 <Input
@@ -80,7 +95,9 @@ const ApplySettingsCard = ({ t }) => {
                 <p className='text-xs text-success'>{t('settings.import_export.apply_success')}</p>
             )}
             {status === 'error' && (
-                <p className='text-xs text-destructive'>{t('settings.import_export.apply_error')}</p>
+                <p className='text-xs text-destructive'>
+                    {t('settings.import_export.apply_error')}
+                </p>
             )}
         </div>
     );
@@ -97,8 +114,12 @@ export const ImportExportSection = () => {
                 <ApplySettingsCard t={t} />
                 <div className='flex flex-col gap-3 rounded-xl border border-border bg-card p-4 opacity-60'>
                     <div>
-                        <p className='text-sm font-medium text-foreground'>{t('settings.import_export.export_session_label')}</p>
-                        <p className='mt-0.5 text-xs text-muted-foreground'>{t('settings.import_export.export_session_description')}</p>
+                        <p className='text-sm font-medium text-foreground'>
+                            {t('settings.import_export.export_session_label')}
+                        </p>
+                        <p className='mt-0.5 text-xs text-muted-foreground'>
+                            {t('settings.import_export.export_session_description')}
+                        </p>
                     </div>
                     <Button variant='outline' size='sm' disabled className='self-start'>
                         {t('settings.import_export.export_session_button')}

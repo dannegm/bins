@@ -18,7 +18,9 @@ const NavItem = ({ to, icon: Icon, label }) => (
     </Button>
 );
 
-const Separator = () => <div className='hidden sm:block border-t border-foreground/5 my-2 w-full' />;
+const Separator = () => (
+    <div className='hidden sm:block border-t border-foreground/5 my-2 w-full' />
+);
 const Spacer = () => <div className='hidden sm:flex flex-1' />;
 
 export const Sidebar = () => {

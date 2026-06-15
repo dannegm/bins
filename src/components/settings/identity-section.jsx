@@ -42,7 +42,11 @@ const UUIDCopy = ({ uuid }) => {
             className='h-auto gap-1.5 px-2 py-1 font-mono text-xs text-muted-foreground'
         >
             <span className='max-w-44 truncate'>{uuid}</span>
-            {copiedText === uuid ? <Check className='size-3 shrink-0' /> : <Copy className='size-3 shrink-0' />}
+            {copiedText === uuid ? (
+                <Check className='size-3 shrink-0' />
+            ) : (
+                <Copy className='size-3 shrink-0' />
+            )}
         </Button>
     );
 };
@@ -59,7 +63,10 @@ export const IdentitySection = () => {
 
     return (
         <section id='settings-identity'>
-            <SectionHeading title={t('settings.identity.title')} description={t('settings.identity.description')} />
+            <SectionHeading
+                title={t('settings.identity.title')}
+                description={t('settings.identity.description')}
+            />
             <SettingGroup>
                 <SettingRow label={t('settings.identity.name_label')}>
                     <div className='flex items-center gap-2'>
@@ -97,7 +104,10 @@ export const IdentitySection = () => {
                         />
                     </div>
                 </SettingRow>
-                <SettingRow label={t('settings.identity.uuid_label')} description={t('settings.identity.uuid_hint')}>
+                <SettingRow
+                    label={t('settings.identity.uuid_label')}
+                    description={t('settings.identity.uuid_hint')}
+                >
                     <UUIDCopy uuid={user?.uuid} />
                 </SettingRow>
             </SettingGroup>

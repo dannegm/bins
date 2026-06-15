@@ -13,7 +13,13 @@ const UI_THEME_COLORS = {
         accent: '#4f46e5',
         text: '#18181b',
     },
-    dark: { bg: '#0a0a0a', surface: '#27272a', bar: '#3f3f46', accent: '#6366f1', text: '#fafafa' },
+    dark: {
+        bg: '#0a0a0a',
+        surface: '#27272a',
+        bar: '#3f3f46',
+        accent: '#6366f1',
+        text: '#fafafa',
+    },
     dracula: {
         bg: '#282a36',
         surface: '#1e1f29',
@@ -58,6 +64,12 @@ const UiThemeThumbnail = ({ theme, selected, onSelect, label }) => {
         <button
             type='button'
             onClick={onSelect}
+            style={{
+                '--thumb-bg': colors.bg,
+                '--thumb-surface': colors.surface,
+                '--thumb-accent': colors.accent,
+                '--thumb-text': colors.text,
+            }}
             className={cn(
                 'group flex flex-col overflow-hidden rounded-lg border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                 {
@@ -66,8 +78,8 @@ const UiThemeThumbnail = ({ theme, selected, onSelect, label }) => {
                 },
             )}
         >
-            <div className='relative h-14 w-full' style={{ backgroundColor: colors.bg }}>
-                <div className='h-2.5 w-full' style={{ backgroundColor: colors.surface }}>
+            <div className='relative h-14 w-full bg-(--thumb-bg)'>
+                <div className='h-2.5 w-full bg-(--thumb-surface)'>
                     <div className='flex h-full items-center gap-0.5 px-1.5'>
                         <span className='size-1 rounded-full bg-red-500' />
                         <span className='size-1 rounded-full bg-yellow-500' />
@@ -75,22 +87,10 @@ const UiThemeThumbnail = ({ theme, selected, onSelect, label }) => {
                     </div>
                 </div>
                 <div className='flex flex-col gap-1 p-1.5 pt-2'>
-                    <div
-                        className='h-1 w-10 rounded-full'
-                        style={{ backgroundColor: colors.accent, opacity: 0.8 }}
-                    />
-                    <div
-                        className='h-1 w-14 rounded-full'
-                        style={{ backgroundColor: colors.text, opacity: 0.25 }}
-                    />
-                    <div
-                        className='h-1 w-8 rounded-full'
-                        style={{ backgroundColor: colors.text, opacity: 0.15 }}
-                    />
-                    <div
-                        className='h-1 w-12 rounded-full'
-                        style={{ backgroundColor: colors.text, opacity: 0.25 }}
-                    />
+                    <div className='h-1 w-10 rounded-full bg-(--thumb-accent) opacity-80' />
+                    <div className='h-1 w-14 rounded-full bg-(--thumb-text) opacity-25' />
+                    <div className='h-1 w-8 rounded-full bg-(--thumb-text) opacity-15' />
+                    <div className='h-1 w-12 rounded-full bg-(--thumb-text) opacity-25' />
                 </div>
                 {selected && (
                     <div className='absolute right-1.5 top-1.5 flex size-4 items-center justify-center rounded-full bg-brand'>
@@ -98,10 +98,7 @@ const UiThemeThumbnail = ({ theme, selected, onSelect, label }) => {
                     </div>
                 )}
             </div>
-            <div
-                className='px-2 py-1.5 text-xs font-medium'
-                style={{ backgroundColor: colors.surface, color: colors.text }}
-            >
+            <div className='bg-(--thumb-surface) text-(--thumb-text) px-2 py-1.5 text-xs font-medium'>
                 {label}
             </div>
         </button>
@@ -114,6 +111,14 @@ const MonacoThemeThumbnail = ({ theme, selected, onSelect, label }) => {
         <button
             type='button'
             onClick={onSelect}
+            style={{
+                '--thumb-bg': colors.bg,
+                '--thumb-keyword': colors.keyword,
+                '--thumb-string': colors.string,
+                '--thumb-comment': colors.comment,
+                '--thumb-text': colors.text,
+                '--thumb-border': `${colors.keyword}33`,
+            }}
             className={cn(
                 'group flex flex-col overflow-hidden rounded-lg border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                 {
@@ -122,20 +127,17 @@ const MonacoThemeThumbnail = ({ theme, selected, onSelect, label }) => {
                 },
             )}
         >
-            <div
-                className='relative h-14 w-full px-2 py-3 font-mono text-[8px] leading-tight text-left'
-                style={{ backgroundColor: colors.bg }}
-            >
+            <div className='relative h-14 w-full bg-(--thumb-bg) px-2 py-3 text-left font-mono text-[8px] leading-tight'>
                 <div>
-                    <span style={{ color: colors.keyword }}>{'const '}</span>
-                    <span style={{ color: colors.text }}>{'x '}</span>
-                    <span style={{ color: colors.text }}>{'= '}</span>
-                    <span style={{ color: colors.string }}>{'"hello"'}</span>
+                    <span className='text-(--thumb-keyword)'>{'const '}</span>
+                    <span className='text-(--thumb-text)'>{'x '}</span>
+                    <span className='text-(--thumb-text)'>{'= '}</span>
+                    <span className='text-(--thumb-string)'>{'"hello"'}</span>
                 </div>
-                <div style={{ color: colors.comment }}>{'// comment'}</div>
+                <div className='text-(--thumb-comment)'>{'// comment'}</div>
                 <div>
-                    <span style={{ color: colors.keyword }}>{'return '}</span>
-                    <span style={{ color: colors.text }}>{'x'}</span>
+                    <span className='text-(--thumb-keyword)'>{'return '}</span>
+                    <span className='text-(--thumb-text)'>{'x'}</span>
                 </div>
                 {selected && (
                     <div className='absolute right-1.5 top-1.5 flex size-4 items-center justify-center rounded-full bg-brand'>
@@ -143,14 +145,7 @@ const MonacoThemeThumbnail = ({ theme, selected, onSelect, label }) => {
                     </div>
                 )}
             </div>
-            <div
-                className='px-2 py-1.5 text-xs font-medium'
-                style={{
-                    backgroundColor: colors.bg,
-                    color: colors.text,
-                    borderTop: `1px solid ${colors.keyword}33`,
-                }}
-            >
+            <div className='bg-(--thumb-bg) text-(--thumb-text) border-t border-(--thumb-border) px-2 py-1.5 text-xs font-medium'>
                 {label}
             </div>
         </button>

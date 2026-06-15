@@ -46,7 +46,9 @@ export const TipsCarousel = () => {
                         <DynamicIcon name={tip.icon} />
                     </div>
                     <div className='flex flex-col gap-1'>
-                        <span className='text-sm font-semibold text-zinc-100 dark:text-zinc-100'>{tip.title}</span>
+                        <span className='text-sm font-semibold text-zinc-100 dark:text-zinc-100'>
+                            {tip.title}
+                        </span>
                         <span className='text-sm text-zinc-150 dark:text-zinc-300'>{tip.body}</span>
                     </div>
                 </motion.div>

@@ -2,7 +2,12 @@ import { createContext, useContext, useState } from 'react';
 import { useListener } from '@/providers/bus-provider';
 import { CommandPalette } from '@/components/system/command-palette';
 
-const CommandPaletteContext = createContext({ isOpen: false, open: () => {}, close: () => {}, toggle: () => {} });
+const CommandPaletteContext = createContext({
+    isOpen: false,
+    open: () => {},
+    close: () => {},
+    toggle: () => {},
+});
 
 export const useCommandPalette = () => useContext(CommandPaletteContext);
 

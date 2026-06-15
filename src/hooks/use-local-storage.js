@@ -44,7 +44,10 @@ export const useLocalStorage = (key, initialValue) => {
         const handleStorage = event => {
             if (event.key === key) {
                 const item = localStorage.getItem(key);
-                if (!item) { setStoredValue($initial.current); return; }
+                if (!item) {
+                    setStoredValue($initial.current);
+                    return;
+                }
                 try {
                     setStoredValue(JSON.parse(item));
                 } catch {

@@ -69,7 +69,8 @@ export const AiCompletionsSection = () => {
 
     const set = (key, val) => setAiCompletions(prev => ({ ...prev, [key]: val }));
 
-    const currentProvider = PROVIDERS.find(p => p.id === (aiCompletions.provider ?? 'ollama')) ?? PROVIDERS[4];
+    const currentProvider =
+        PROVIDERS.find(p => p.id === (aiCompletions.provider ?? 'ollama')) ?? PROVIDERS[4];
     const hasPresetModels = currentProvider.models.length > 0;
 
     return (
@@ -116,7 +117,9 @@ export const AiCompletionsSection = () => {
                                                 {m}
                                             </option>
                                         ))}
-                                        <option value='custom'>{t('settings.ai_completions.model_custom')}</option>
+                                        <option value='custom'>
+                                            {t('settings.ai_completions.model_custom')}
+                                        </option>
                                     </select>
                                 ) : (
                                     <Input
@@ -143,7 +146,9 @@ export const AiCompletionsSection = () => {
                                             size='xs'
                                             onClick={() => setShowKey(s => !s)}
                                         >
-                                            {showKey ? t('settings.ai_completions.hide') : t('settings.ai_completions.show')}
+                                            {showKey
+                                                ? t('settings.ai_completions.hide')
+                                                : t('settings.ai_completions.show')}
                                         </Button>
                                     </div>
                                 </SettingRow>

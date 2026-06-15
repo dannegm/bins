@@ -11,8 +11,7 @@ import { defaultSettings } from '@/constants/default-settings';
 import { formatBinding } from '@/hooks/use-hotkey';
 import { createCommands } from '@/constants/commands';
 
-const matchesScope = (scope, pathname) =>
-    scope === '*' || scope.some(s => pathname.startsWith(s));
+const matchesScope = (scope, pathname) => scope === '*' || scope.some(s => pathname.startsWith(s));
 
 export const CommandPalette = () => {
     const { t } = useTranslation();
@@ -61,7 +60,9 @@ export const CommandPalette = () => {
                     >
                         <Command
                             className='overflow-hidden rounded-xl border border-border bg-popover shadow-2xl shadow-black/50'
-                            onKeyDown={e => { if (e.key === 'Escape') close(); }}
+                            onKeyDown={e => {
+                                if (e.key === 'Escape') close();
+                            }}
                             loop
                         >
                             <Command.Input
@@ -97,7 +98,9 @@ export const CommandPalette = () => {
                                                     <span className='flex-1'>{label}</span>
                                                     {keys && (
                                                         <KbdGroup>
-                                                            {keys.map((k, i) => <Kbd key={i}>{k}</Kbd>)}
+                                                            {keys.map((k, i) => (
+                                                                <Kbd key={i}>{k}</Kbd>
+                                                            ))}
                                                         </KbdGroup>
                                                     )}
                                                 </Command.Item>
@@ -108,9 +111,16 @@ export const CommandPalette = () => {
                             </Command.List>
 
                             <div className='flex items-center gap-4 border-t border-border px-4 py-2.5 text-[11px] text-muted-foreground'>
-                                <KbdGroup><Kbd>↑</Kbd><Kbd>↓</Kbd> {t('command_palette.hint_navigate')}</KbdGroup>
-                                <KbdGroup><Kbd>↵</Kbd> {t('command_palette.hint_select')}</KbdGroup>
-                                <KbdGroup><Kbd>esc</Kbd> {t('command_palette.hint_close')}</KbdGroup>
+                                <KbdGroup>
+                                    <Kbd>↑</Kbd>
+                                    <Kbd>↓</Kbd> {t('command_palette.hint_navigate')}
+                                </KbdGroup>
+                                <KbdGroup>
+                                    <Kbd>↵</Kbd> {t('command_palette.hint_select')}
+                                </KbdGroup>
+                                <KbdGroup>
+                                    <Kbd>esc</Kbd> {t('command_palette.hint_close')}
+                                </KbdGroup>
                             </div>
                         </Command>
                     </motion.div>

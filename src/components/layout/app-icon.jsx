@@ -4,7 +4,10 @@ import { cn } from '@/helpers/utils';
 export const AppIcon = ({ className }) => (
     <Link
         to='/'
-        className={cn('grid size-8 p-1 grid-cols-2 grid-rows-2 gap-0 overflow-hidden squircle-xl bg-brand', className)}
+        className={cn(
+            'grid size-8 p-1 grid-cols-2 grid-rows-2 gap-0 overflow-hidden squircle-xl bg-brand',
+            className,
+        )}
         title='Home'
     >
         {['B', 'I', 'N', 'S'].map(l => (

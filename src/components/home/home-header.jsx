@@ -23,7 +23,11 @@ const CopyUUID = ({ uuid, color }) => {
                 style={{ '--user-color': color }}
             />
             <span className='truncate font-mono'>{uuid}</span>
-            {copiedText === uuid ? <Check className='size-3 shrink-0' /> : <Copy className='size-3 shrink-0' />}
+            {copiedText === uuid ? (
+                <Check className='size-3 shrink-0' />
+            ) : (
+                <Copy className='size-3 shrink-0' />
+            )}
         </Button>
     );
 };

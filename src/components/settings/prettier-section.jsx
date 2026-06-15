@@ -67,10 +67,7 @@ export const PrettierSection = () => {
                     />
                 </SettingRow>
                 <SettingRow label={t('settings.prettier.semi_label')}>
-                    <Switch
-                        checked={prettier.semi ?? true}
-                        onCheckedChange={v => set('semi', v)}
-                    />
+                    <Switch checked={prettier.semi ?? true} onCheckedChange={v => set('semi', v)} />
                 </SettingRow>
                 <SettingRow label={t('settings.prettier.single_quote_label')}>
                     <Switch
