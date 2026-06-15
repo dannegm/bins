@@ -63,7 +63,7 @@ const FileTab = ({
             onClick={() => onSelect(file.id)}
             onDoubleClick={handleDoubleClick}
             className={cn(
-                'group relative flex h-full min-w-0 max-w-48 shrink-0 cursor-pointer items-center gap-1.5 border-r border-border px-3 text-sm select-none',
+                'group relative flex h-full min-w-0 max-w-48 shrink-0 cursor-pointer items-center gap-1.5 border-r border-border px-3 text-sm font-light select-none',
                 {
                     'bg-background text-foreground': isActive,
                     'bg-surface text-muted-foreground hover:bg-background/50 hover:text-foreground':

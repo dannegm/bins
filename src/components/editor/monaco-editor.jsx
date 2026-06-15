@@ -81,6 +81,7 @@ export const MonacoEditor = ({
             lineNumbers: lineNumbers ? 'on' : 'off',
             minimap: { enabled: minimap },
             fontFamily: '"JetBrains Mono", monospace',
+            fontWeight: '300',
             fontLigatures: true,
             automaticLayout: true,
             readOnly,
