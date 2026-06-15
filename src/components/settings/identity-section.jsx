@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Check, Copy } from 'lucide-react';
+import { Check, Copy, Info } from 'lucide-react';
 import { useCopyToClipboard } from '@uidotdev/usehooks';
 import { useDebouncedCallback } from '@/hooks/use-debounce-callback';
 import { useIdentity } from '@/hooks/use-identity';
@@ -32,6 +32,13 @@ const ColorSwatch = ({ value, onChange, label }) => {
         </div>
     );
 };
+
+const InfoCallout = ({ children }) => (
+    <div className='flex gap-2.5 px-1 py-3 text-xs text-muted-foreground'>
+        <Info className='mt-px size-3.5 shrink-0' />
+        <p className='text-pretty leading-relaxed'>{children}</p>
+    </div>
+);
 
 const UUIDCopy = ({ uuid }) => {
     const [copiedText, copy] = useCopyToClipboard();
@@ -93,6 +100,7 @@ export const IdentitySection = () => {
                         />
                     </div>
                 </SettingRow>
+                <InfoCallout>{t('settings.identity.name_callout')}</InfoCallout>
                 <SettingRow
                     label={t('settings.identity.color_label')}
                     description={t('settings.identity.color_hint')}
@@ -110,6 +118,7 @@ export const IdentitySection = () => {
                         />
                     </div>
                 </SettingRow>
+                <InfoCallout>{t('settings.identity.color_callout')}</InfoCallout>
                 <SettingRow
                     label={t('settings.identity.uuid_label')}
                     description={t('settings.identity.uuid_hint')}

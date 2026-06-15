@@ -17,10 +17,12 @@ export const generateBinName = () =>
         style: 'lowerCase',
     });
 
+// colorDark  = bright/light color → used when isDark=true  (dark bg  → needs light color for contrast)
+// colorLight = dark/rich color   → used when isDark=false (light bg → needs dark color for contrast)
 export const generateColors = () => {
     const hue = Math.floor(Math.random() * 360);
     return {
-        colorDark: `hsl(${hue}, 80%, 70%)`,
-        colorLight: `hsl(${hue}, 70%, 40%)`,
+        colorDark: `hsl(${hue}, 90%, 68%)`,
+        colorLight: `hsl(${hue}, 72%, 35%)`,
     };
 };

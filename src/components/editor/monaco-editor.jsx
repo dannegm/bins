@@ -2,7 +2,10 @@ import { useEffect, useRef } from 'react';
 import * as monaco from 'monaco-editor';
 import { initMonacoWorkers, defineEditorThemes } from '@/helpers/monaco';
 import { useSettings } from '@/hooks/use-settings';
+import { useIdentity } from '@/hooks/use-identity';
+import { useTheme } from '@/providers/theme-provider';
 import { getLanguage } from '@/constants/languages';
+import { MONACO_THEMES } from '@/constants/themes';
 
 initMonacoWorkers();
 defineEditorThemes();
@@ -18,6 +21,8 @@ export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly 
     const [lineNumbers] = useSettings('lineNumbers');
     const [minimap] = useSettings('minimap');
     const [monacoTheme] = useSettings('monacoTheme');
+    const { user } = useIdentity();
+    const { isDark } = useTheme();
 
     useEffect(() => {
         if (!$container.current) return;
@@ -88,10 +93,22 @@ export const MonacoEditor = ({ yText, clientId, language = 'markdown', readOnly 
     }, [readOnly]);
 
     useEffect(() => {
-        if (!$editor.current) return;
-        const themeId = monacoTheme === 'light' ? 'bins-light' : monacoTheme === 'dracula' ? 'bins-dracula' : 'bins-dark';
+        const userColor = isDark ? user?.colorDark : user?.colorLight;
+        const baseTheme = MONACO_THEMES.find(t => t.id === monacoTheme);
+        if (!baseTheme || !userColor) return;
+
+        const themeId = `bins-${monacoTheme}-user`;
+        monaco.editor.defineTheme(themeId, {
+            ...baseTheme.definition,
+            colors: {
+                ...baseTheme.definition.colors,
+                'editorCursor.foreground': userColor,
+                'editor.lineHighlightBackground': `${userColor}33`,
+                'editor.lineHighlightBorder': '#00000000',
+            },
+        });
         monaco.editor.setTheme(themeId);
-    }, [monacoTheme]);
+    }, [monacoTheme, user?.colorDark, user?.colorLight, isDark]);
 
     useEffect(() => {
         if (!$editor.current || !yText) return;

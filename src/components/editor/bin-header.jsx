@@ -4,9 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/helpers/utils';
 import { getProfile } from '@/services/profiles';
+import { useTheme } from '@/providers/theme-provider';
 import { UserAvatar } from '@/components/system/user-avatar';
 
 const AuthorChip = ({ authorId }) => {
+    const { isDark } = useTheme();
     const { data: profile } = useQuery({
         queryKey: ['profile', authorId],
         queryFn: () => getProfile(authorId),
@@ -15,10 +17,19 @@ const AuthorChip = ({ authorId }) => {
 
     if (!authorId) return null;
 
+    const color = isDark ? profile?.colorDark : profile?.colorLight;
+
     return (
         <div className='flex shrink-0 items-center gap-1.5'>
             <UserAvatar profileId={authorId} className='size-5' />
-            {profile?.name && <span className='text-xs text-muted-foreground'>{profile.name}</span>}
+            {profile?.name && (
+                <span
+                    className='font-mono font-regular text-[14px] text-(--author-color)'
+                    style={{ '--author-color': color }}
+                >
+                    {profile.name}
+                </span>
+            )}
         </div>
     );
 };
