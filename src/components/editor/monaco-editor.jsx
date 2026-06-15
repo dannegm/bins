@@ -185,39 +185,39 @@ export const MonacoEditor = ({
                 const safeName = peer.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
                 const labelColor = contrastColor(rawColor);
                 return `
-                .peer-cursor-${id} { position: relative; }
-                .peer-cursor-${id}::before {
-                    content: '';
-                    display: inline-block;
-                    width: 2px;
-                    height: 1.1em;
-                    background: ${color};
-                    margin-left: -1px;
-                    vertical-align: text-bottom;
-                }
-                .peer-cursor-${id}::after {
-                    content: '${safeName}';
-                    position: absolute;
-                    bottom: 100%;
-                    left: -1px;
-                    background: ${color};
-                    color: ${labelColor};
-                    padding: 1px 6px 2px;
-                    border-radius: 3px 3px 3px 0;
-                    font-size: 10px;
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-                    font-weight: 500;
-                    white-space: nowrap;
-                    line-height: 1.5;
-                    opacity: 0;
-                    pointer-events: none;
-                    transition: opacity 0.1s ease;
-                    z-index: 9999;
-                }
-                .peer-cursor-${id}:hover::after { opacity: 1; }
-                .peer-line-${id} { background: ${color}26 !important; }
-                .peer-selection-${id} { background: ${selColor}44 !important; }
-            `;
+                    .peer-cursor-${id} { position: relative; }
+                    .peer-cursor-${id}::before {
+                        content: '';
+                        display: inline-block;
+                        width: 2px;
+                        height: 1.1em;
+                        background: ${color};
+                        margin-left: -1px;
+                        vertical-align: text-bottom;
+                    }
+                    .peer-cursor-${id}::after {
+                        content: '${safeName}';
+                        position: absolute;
+                        bottom: 100%;
+                        left: -1px;
+                        background: ${color};
+                        color: ${labelColor};
+                        padding: 1px 6px 2px;
+                        border-radius: 3px 3px 3px 0;
+                        font-size: 10px;
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                        font-weight: 500;
+                        white-space: nowrap;
+                        line-height: 1.5;
+                        opacity: 0;
+                        pointer-events: none;
+                        transition: opacity 0.1s ease;
+                        z-index: 9999;
+                    }
+                    .peer-cursor-${id}:hover::after { opacity: 1; }
+                    .peer-line-${id} { background: ${color}26 !important; }
+                    .peer-selection-${id} { background: ${selColor}44 !important; }
+                `;
             })
             .join('');
 
