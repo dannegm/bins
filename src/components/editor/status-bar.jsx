@@ -142,9 +142,11 @@ const PeerList = ({ peers }) => {
     );
 };
 
-export const StatusBar = ({ language, cursor, saveStatus, peers = [], onLanguageChange }) => {
+export const StatusBar = ({ language, cursor, lineCount = 1, saveStatus, peers = [], onLanguageChange }) => {
     const { t } = useTranslation();
-    const [tabSize] = useSettings('tabSize');
+    const [prettier] = useSettings('prettier');
+    const tabWidth = prettier?.tabWidth ?? 4;
+    const useTabs = prettier?.useTabs ?? false;
 
     return (
         <div className='flex h-8 shrink-0 items-center gap-2 border-t border-border bg-surface px-3 text-xs text-muted-foreground'>
@@ -159,7 +161,15 @@ export const StatusBar = ({ language, cursor, saveStatus, peers = [], onLanguage
 
             <Divider />
 
-            <span>{t('editor.status_bar.spaces', { count: tabSize })}</span>
+            <span>{t('editor.status_bar.lines', { count: lineCount })}</span>
+
+            <Divider />
+
+            <span>
+                {useTabs
+                    ? t('editor.status_bar.tabs', { count: tabWidth })
+                    : t('editor.status_bar.spaces', { count: tabWidth })}
+            </span>
 
             <Divider />
 

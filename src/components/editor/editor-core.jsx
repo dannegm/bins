@@ -24,6 +24,7 @@ export const EditorCore = ({
     const { user } = useIdentity();
     const [saveStatus, setSaveStatus] = useState('idle');
     const [cursor, setCursor] = useState({ lineNumber: 1, column: 1 });
+    const [lineCount, setLineCount] = useState(1);
     const [yContext, setYContext] = useState(null);
     const $saveTimer = useRef(null);
     const $hasLocalEdits = useRef(false);
@@ -61,6 +62,14 @@ export const EditorCore = ({
         },
         [file.id, onFirstSave],
     );
+
+    useEffect(() => {
+        if (!yContext) return;
+        const count = () => setLineCount((yContext.yText.toString().match(/\n/g)?.length ?? 0) + 1);
+        count();
+        yContext.yText.observe(count);
+        return () => yContext.yText.unobserve(count);
+    }, [yContext]);
 
     useEffect(() => {
         if (!yContext || readOnly) return;
@@ -118,6 +127,7 @@ export const EditorCore = ({
             <StatusBar
                 language={file.language}
                 cursor={cursor}
+                lineCount={lineCount}
                 saveStatus={saveStatus}
                 peers={binPeers}
                 onLanguageChange={lang => onLanguageChange(file.id, lang)}

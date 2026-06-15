@@ -50,11 +50,11 @@ export const MonacoEditor = ({
     $revealRef.current = revealPosition;
 
     const [fontSize] = useSettings('fontSize');
-    const [tabSize] = useSettings('tabSize');
     const [wordWrap] = useSettings('wordWrap');
     const [lineNumbers] = useSettings('lineNumbers');
     const [minimap] = useSettings('minimap');
     const [monacoTheme] = useSettings('monacoTheme');
+    const [prettier] = useSettings('prettier');
     const { user } = useIdentity();
     const { isDark } = useTheme();
 
@@ -74,7 +74,9 @@ export const MonacoEditor = ({
             language: langDef.monacoId,
             theme: themeId,
             fontSize,
-            tabSize,
+            tabSize: prettier?.tabWidth ?? 4,
+            insertSpaces: !(prettier?.useTabs ?? false),
+            rulers: [{ column: prettier?.printWidth ?? 100, color: isDark ? '#ffffff18' : '#00000018' }],
             wordWrap: wordWrap ? 'on' : 'off',
             lineNumbers: lineNumbers ? 'on' : 'off',
             minimap: { enabled: minimap },
@@ -131,12 +133,20 @@ export const MonacoEditor = ({
         if (!$editor.current) return;
         $editor.current.updateOptions({
             fontSize,
-            tabSize,
+            tabSize: prettier?.tabWidth ?? 4,
+            insertSpaces: !(prettier?.useTabs ?? false),
             wordWrap: wordWrap ? 'on' : 'off',
             lineNumbers: lineNumbers ? 'on' : 'off',
             minimap: { enabled: minimap },
         });
-    }, [fontSize, tabSize, wordWrap, lineNumbers, minimap]);
+    }, [fontSize, prettier?.tabWidth, prettier?.useTabs, wordWrap, lineNumbers, minimap]);
+
+    useEffect(() => {
+        if (!$editor.current) return;
+        $editor.current.updateOptions({
+            rulers: [{ column: prettier?.printWidth ?? 100, color: isDark ? '#ffffff18' : '#00000018' }],
+        });
+    }, [prettier?.printWidth, isDark]);
 
     useEffect(() => {
         if (!$editor.current) return;

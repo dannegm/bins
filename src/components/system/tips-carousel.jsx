@@ -26,7 +26,7 @@ export const TipsCarousel = () => {
             className='relative flex flex-col gap-4 rounded-xl p-6 transition-colors duration-700 bg-(--tip-bg-light) dark:bg-(--tip-bg-dark)'
             style={{
                 '--tip-color-dark': tip.color,
-                '--tip-color-light': `color-mix(in srgb, ${tip.color} 10%, white)`,
+                '--tip-color-light': `color-mix(in srgb, ${tip.color} 5%, white)`,
                 '--tip-bg-dark': `color-mix(in srgb, ${tip.color} 12%, transparent)`,
                 '--tip-bg-light': `color-mix(in srgb, ${tip.color} 60%, transparent)`,
                 '--tip-icon-bg-dark': `color-mix(in srgb, ${tip.color} 20%, transparent)`,
@@ -46,10 +46,10 @@ export const TipsCarousel = () => {
                         <DynamicIcon name={tip.icon} />
                     </div>
                     <div className='flex flex-col gap-1'>
-                        <span className='text-sm font-semibold text-zinc-100 dark:text-zinc-100'>
+                        <span className='text-sm font-semibold text-(--tip-color-light) dark:text-(--tip-color-dark)'>
                             {tip.title}
                         </span>
-                        <span className='text-sm text-zinc-150 dark:text-zinc-300'>{tip.body}</span>
+                        <span className='text-sm text-(--tip-color-light) dark:text-(--tip-color-dark)'>{tip.body}</span>
                     </div>
                 </motion.div>
             </AnimatePresence>

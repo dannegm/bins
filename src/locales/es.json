@@ -195,7 +195,9 @@
         "status_bar": {
             "ln": "Lín",
             "col": "Col",
+            "lines": "{{count}} líneas",
             "spaces": "Espacios: {{count}}",
+            "tabs": "Tabs: {{count}}",
             "saving": "Guardando…",
             "saved": "Guardado",
             "unsaved": "Cambios sin guardar"

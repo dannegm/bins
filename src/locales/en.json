@@ -195,7 +195,9 @@
         "status_bar": {
             "ln": "Ln",
             "col": "Col",
+            "lines": "{{count}} lines",
             "spaces": "Spaces: {{count}}",
+            "tabs": "Tabs: {{count}}",
             "saving": "Saving…",
             "saved": "Saved",
             "unsaved": "Unsaved changes"
