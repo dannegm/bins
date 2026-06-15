@@ -168,10 +168,13 @@ export const EditorPage = () => {
         });
     }, [activeFileId]);
 
-    useListener('peer:focus', useCallback(({ fileId, cursor }) => {
-        setActiveFileId(fileId);
-        setPendingReveal(cursor ?? null);
-    }, []));
+    useListener(
+        'peer:focus',
+        useCallback(({ fileId, cursor }) => {
+            setActiveFileId(fileId);
+            setPendingReveal(cursor ?? null);
+        }, []),
+    );
 
     const handleEditorCursorChange = useCallback(
         cursor => {

@@ -149,8 +149,7 @@ export const TabBar = ({
 
     const getTabGradient = fileId => {
         const colors = [];
-        if (fileId === activeFileId && user)
-            colors.push(isDark ? user.colorDark : user.colorLight);
+        if (fileId === activeFileId && user) colors.push(isDark ? user.colorDark : user.colorLight);
         for (const peer of Object.values(peers)) {
             if (peer.activeFileId === fileId)
                 colors.push(isDark ? peer.colorDark : peer.colorLight);
