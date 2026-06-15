@@ -4,39 +4,12 @@ import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
 import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker';
 import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker';
 import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
+import { MONACO_THEMES } from '@/constants/themes';
 
 export const defineEditorThemes = () => {
-    monaco.editor.defineTheme('bins-dark', {
-        base: 'vs-dark',
-        inherit: true,
-        rules: [],
-        colors: {
-            'editor.lineHighlightBackground': '#ffffff0f',
-            'editor.lineHighlightBorder': '#00000000',
-        },
-    });
-
-    monaco.editor.defineTheme('bins-light', {
-        base: 'vs',
-        inherit: true,
-        rules: [],
-        colors: {
-            'editor.lineHighlightBackground': '#0000000a',
-            'editor.lineHighlightBorder': '#00000000',
-        },
-    });
-
-    monaco.editor.defineTheme('bins-dracula', {
-        base: 'vs-dark',
-        inherit: true,
-        rules: [],
-        colors: {
-            'editor.background': '#282a36',
-            'editor.foreground': '#f8f8f2',
-            'editor.lineHighlightBackground': '#44475a80',
-            'editor.lineHighlightBorder': '#00000000',
-        },
-    });
+    for (const theme of MONACO_THEMES) {
+        monaco.editor.defineTheme(`bins-${theme.id}`, theme.definition);
+    }
 };
 
 export const initMonacoWorkers = () => {
