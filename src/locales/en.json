@@ -1,4 +1,5 @@
 {
+    "language": "English",
     "formats": {
         "date": {
             "short": "MMM d, yyyy"

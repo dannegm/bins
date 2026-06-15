@@ -1,4 +1,5 @@
 {
+    "language": "Español",
     "formats": {
         "date": {
             "short": "d MMM yyyy"
