@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Check, Copy } from 'lucide-react';
 import { useCopyToClipboard } from '@uidotdev/usehooks';
+import { useDebouncedCallback } from '@/hooks/use-debounce-callback';
 import { useIdentity } from '@/hooks/use-identity';
 import { Input } from '@/ui/input';
 import { Button } from '@/ui/button';
@@ -56,10 +57,13 @@ export const IdentitySection = () => {
     const { user, update } = useIdentity();
     const [name, setName] = useState(user?.name ?? '');
 
-    const commitName = () => {
-        const trimmed = name.trim();
+    const commitName = useDebouncedCallback(value => {
+        const trimmed = value.trim();
         if (trimmed && trimmed !== user?.name) update({ name: trimmed });
-    };
+    }, 600);
+
+    const commitColorLight = useDebouncedCallback(v => update({ colorLight: v }), 400);
+    const commitColorDark = useDebouncedCallback(v => update({ colorDark: v }), 400);
 
     return (
         <section id='settings-identity'>
@@ -73,9 +77,17 @@ export const IdentitySection = () => {
                         {user?.uuid && <UserAvatar className='size-7 shrink-0' />}
                         <Input
                             value={name}
-                            onChange={e => setName(e.target.value)}
-                            onBlur={commitName}
-                            onKeyDown={e => e.key === 'Enter' && commitName()}
+                            onChange={e => {
+                                setName(e.target.value);
+                                commitName(e.target.value);
+                            }}
+                            onKeyDown={e => {
+                                if (e.key === 'Enter') {
+                                    commitName.cancel();
+                                    const trimmed = e.target.value.trim();
+                                    if (trimmed && trimmed !== user?.name) update({ name: trimmed });
+                                }
+                            }}
                             placeholder={t('settings.identity.name_placeholder')}
                             className='w-40'
                         />
@@ -88,12 +100,12 @@ export const IdentitySection = () => {
                     <div className='flex items-center gap-4'>
                         <ColorSwatch
                             value={user?.colorLight}
-                            onChange={v => update({ colorLight: v })}
+                            onChange={commitColorLight}
                             label={t('settings.identity.color_light')}
                         />
                         <ColorSwatch
                             value={user?.colorDark}
-                            onChange={v => update({ colorDark: v })}
+                            onChange={commitColorDark}
                             label={t('settings.identity.color_dark')}
                         />
                     </div>

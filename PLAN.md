@@ -308,9 +308,11 @@ create schema if not exists bins;
 
 -- Perfiles de usuarios anónimos
 create table bins.profiles (
-  uuid        uuid primary key,
-  name        text not null,
-  updated_at  timestamptz default now()
+  uuid         uuid primary key,
+  name         text not null,
+  color_light  text not null default '#e67e22',
+  color_dark   text not null default '#f39c12',
+  updated_at   timestamptz default now()
 );
 
 -- Bins
@@ -547,13 +549,13 @@ export const $schema = supabase.schema('bins');
 **DB** (`bins.profiles`):
 
 ```js
-{ uuid: "...", name: "lazy-panda" }  // siempre actualizado via upsert
+{ uuid: "...", name: "lazy-panda", color_light: "#e67e22", color_dark: "#f39c12" }  // siempre actualizado via upsert
 ```
 
 **Ciclo de vida:**
 
-1. Al arrancar la app → upsert silencioso de `{ uuid, name }` en `bins.profiles`
-2. Al cambiar el nombre en settings → upsert inmediato en `bins.profiles`
+1. Al arrancar la app → upsert silencioso de `{ uuid, name, color_light, color_dark }` en `bins.profiles`
+2. Al cambiar el nombre o los colores en settings → upsert inmediato en `bins.profiles`
 3. El `uuid` nunca cambia bajo ninguna circunstancia
 
 ### Schema de settings

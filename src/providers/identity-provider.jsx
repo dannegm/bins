@@ -14,7 +14,12 @@ const initIdentity = async () => {
 
     settings.set('user', { uuid, name, colorDark, colorLight });
 
-    await supabase().from('profiles').upsert({ uuid, name });
+    await supabase().from('profiles').upsert({
+        uuid,
+        name,
+        color_light: colorLight,
+        color_dark: colorDark,
+    });
 };
 
 export const IdentityProvider = ({ children }) => {

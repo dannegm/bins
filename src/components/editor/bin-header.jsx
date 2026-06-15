@@ -1,24 +1,24 @@
 import { useState, useEffect, useRef } from 'react';
 import { Lock, LockOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/helpers/utils';
-import { getAvatarUrl } from '@/helpers/avatar';
 import { getProfile } from '@/services/profiles';
+import { UserAvatar } from '@/components/system/user-avatar';
 
 const AuthorChip = ({ authorId }) => {
-    const [name, setName] = useState(null);
-
-    useEffect(() => {
-        if (!authorId) return;
-        getProfile(authorId).then(p => setName(p?.name ?? null));
-    }, [authorId]);
+    const { data: profile } = useQuery({
+        queryKey: ['profile', authorId],
+        queryFn: () => getProfile(authorId),
+        enabled: !!authorId,
+    });
 
     if (!authorId) return null;
 
     return (
         <div className='flex shrink-0 items-center gap-1.5'>
-            <img src={getAvatarUrl(authorId)} className='size-5 rounded-full' aria-hidden />
-            {name && <span className='text-xs text-muted-foreground'>{name}</span>}
+            <UserAvatar profileId={authorId} className='size-5' />
+            {profile?.name && <span className='text-xs text-muted-foreground'>{profile.name}</span>}
         </div>
     );
 };
