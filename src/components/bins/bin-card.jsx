@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/helpers/utils';
+import { getLanguage } from '@/constants/languages';
 import { useIdentity } from '@/hooks/use-identity';
 import { useAdmin } from '@/hooks/use-admin';
 import { deleteBin } from '@/services/bins';
@@ -20,6 +21,49 @@ import {
 } from '@/ui/popover';
 
 const dateFnsLocales = { en: enUS, es };
+
+const getLangForeground = hex => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.55 ? '#1a1a1a' : '#ffffff';
+};
+
+const LangDot = ({ lang }) => (
+    <span
+        className='flex size-5 shrink-0 items-center justify-center rounded-full border border-background bg-(--lang-bg) text-[10px] text-(--lang-fg)'
+        style={{ '--lang-bg': lang.color, '--lang-fg': getLangForeground(lang.color) }}
+    >
+        {lang.icon ? (
+            <i className={lang.icon} />
+        ) : (
+            <span className='text-[8px] font-bold'>{lang.label[0]}</span>
+        )}
+    </span>
+);
+
+const LanguageStack = ({ files }) => {
+    const seen = new Set();
+    const unique = files
+        .map(f => getLanguage(f.language))
+        .filter(l => { if (seen.has(l.id)) return false; seen.add(l.id); return true; });
+
+    if (!unique.length) return null;
+
+    const visible = unique.slice(0, 3);
+    const extra = unique.length - 3;
+
+    return (
+        <div className='flex items-center -space-x-1.5'>
+            {visible.map(lang => <LangDot key={lang.id} lang={lang} />)}
+            {extra > 0 && (
+                <span className='flex size-5 shrink-0 items-center justify-center rounded-full border border-background bg-surface text-[9px] font-medium text-muted-foreground'>
+                    +{extra}
+                </span>
+            )}
+        </div>
+    );
+};
 
 const AccessBadge = ({ bin, t, canDelete }) => {
     const queryClient = useQueryClient();
@@ -120,13 +164,14 @@ export const BinCard = ({ bin }) => {
             </div>
 
             <div className='flex items-center gap-3 text-xs text-muted-foreground'>
+                <LanguageStack files={bin.bin_files ?? []} />
                 <span className='flex items-center gap-1 [&>svg]:size-3'>
                     <Eye />
                     {bin.views}
                 </span>
                 <span className='flex items-center gap-1 [&>svg]:size-3'>
                     <File />
-                    {bin.bin_files?.[0]?.count ?? 0}
+                    {bin.bin_files?.length ?? 0}
                 </span>
                 {bin.forked_from && (
                     <span className='flex items-center gap-1 [&>svg]:size-3'>

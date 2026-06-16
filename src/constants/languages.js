@@ -4,7 +4,7 @@ export const LANGUAGES = {
         monacoId: 'markdown',
         label: 'Markdown',
         extensions: ['.md', '.mdx'],
-        icon: null,
+        icon: 'devicon-markdown-plain',
         color: '#083fa1',
     },
     javascript: {
@@ -68,7 +68,7 @@ export const LANGUAGES = {
         monacoId: 'json',
         label: 'JSON',
         extensions: ['.json'],
-        icon: null,
+        icon: 'devicon-json-plain',
         color: '#292929',
     },
     yaml: {
@@ -76,7 +76,7 @@ export const LANGUAGES = {
         monacoId: 'yaml',
         label: 'YAML',
         extensions: ['.yaml', '.yml'],
-        icon: null,
+        icon: 'devicon-yaml-plain',
         color: '#cb171e',
     },
     toml: {
@@ -164,7 +164,7 @@ export const LANGUAGES = {
         monacoId: 'sql',
         label: 'SQL',
         extensions: ['.sql'],
-        icon: null,
+        icon: 'devicon-azuresqldatabase-plain',
         color: '#d9272e',
     },
     graphql: {
@@ -188,7 +188,7 @@ export const LANGUAGES = {
         monacoId: 'xml',
         label: 'XML',
         extensions: ['.xml'],
-        icon: null,
+        icon: 'devicon-xml-plain',
         color: '#fb8c00',
     },
     c: {
