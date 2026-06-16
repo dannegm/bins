@@ -4,6 +4,7 @@ export const UI_THEMES = [
     { id: 'rose-pine-dawn', label: 'Rosé Pine Dawn', isDark: false },
     { id: 'dracula', label: 'Dracula', isDark: true },
     { id: 'tlapalli-quartz', label: 'Tlapalli Quartz', isDark: false },
+    { id: 'tlapalli-fire-opal', label: 'Tlapalli Fire Opal', isDark: true },
 ];
 
 export const THEME_ATTRIBUTIONS = {
@@ -12,6 +13,7 @@ export const THEME_ATTRIBUTIONS = {
     'rose-pine-dawn': { name: 'Rosé Pine', license: 'MIT', url: 'https://github.com/rose-pine/rose-pine-theme' },
     dracula: { name: 'Dracula Theme', license: 'MIT', url: 'https://github.com/dracula/dracula-theme' },
     'tlapalli-quartz': { nick: 'ackzell', license: 'MIT', url: 'https://github.com/ackzell/tlapalli-vscode-theme' },
+    'tlapalli-fire-opal': { nick: 'ackzell', license: 'MIT', url: 'https://github.com/ackzell/tlapalli-vscode-theme' },
 };
 
 export const MONACO_THEMES = [
@@ -418,6 +420,123 @@ export const MONACO_THEMES = [
                 'editorBracketMatch.background': '#faf5f900',
                 'editorBracketMatch.border': '#d2b8c8',
                 'editorGutter.background': '#faf5f9',
+            },
+        },
+    },
+    {
+        id: 'tlapalli-fire-opal',
+        label: 'Tlapalli Fire Opal',
+        isDark: true,
+        preview: {
+            bg: '#0c0707',
+            keyword: '#c94d5a',
+            string: '#ffb3b8',
+            comment: '#6d4a4a',
+            text: '#e85d7a',
+        },
+        definition: {
+            base: 'vs-dark',
+            inherit: false,
+            rules: [
+                { token: '', foreground: 'e85d7a', background: '0c0707' },
+
+                // Comments
+                { token: 'comment', foreground: '6d4a4a', fontStyle: 'italic' },
+
+                // Keywords & storage
+                { token: 'keyword', foreground: 'c94d5a', fontStyle: 'italic' },
+                { token: 'keyword.control', foreground: 'c94d5a', fontStyle: 'italic' },
+                { token: 'keyword.operator', foreground: 'ff8599' },
+                { token: 'storage', foreground: 'c94d5a' },
+                { token: 'storage.type', foreground: 'c94d5a' },
+                { token: 'storage.modifier', foreground: 'c94d5a', fontStyle: 'italic' },
+
+                // Strings
+                { token: 'string', foreground: 'ffb3b8' },
+                { token: 'string.escape', foreground: 'c94d5a' },
+                { token: 'string.regexp', foreground: 'c94d5a' },
+
+                // Numbers & constants
+                { token: 'number', foreground: 'ff9199' },
+                { token: 'constant', foreground: 'ff9199' },
+                { token: 'constant.numeric', foreground: 'ff9199' },
+                { token: 'constant.language', foreground: 'ff9199' },
+                { token: 'constant.character.escape', foreground: 'c94d5a' },
+
+                // Functions & methods
+                { token: 'entity.name.function', foreground: 'df4c4c', fontStyle: 'italic' },
+                { token: 'support.function', foreground: 'c94d5a' },
+                { token: 'function', foreground: 'df4c4c' },
+                { token: 'member', foreground: 'c94d5a' },
+
+                // Types & classes
+                { token: 'type', foreground: 'ff7070', fontStyle: 'italic' },
+                { token: 'type.identifier', foreground: 'ff7070', fontStyle: 'italic' },
+                { token: 'entity.name.type', foreground: 'ff7070', fontStyle: 'italic' },
+                { token: 'entity.name.class', foreground: 'ff7070', fontStyle: 'italic' },
+                { token: 'support.class', foreground: 'ff7070', fontStyle: 'italic' },
+                { token: 'support.type', foreground: 'ff7070', fontStyle: 'italic' },
+                { token: 'class', foreground: 'ff7070', fontStyle: 'italic' },
+                { token: 'interface', foreground: 'ff7070', fontStyle: 'italic' },
+                { token: 'namespace', foreground: 'ff7070', fontStyle: 'italic' },
+
+                // Variables & parameters
+                { token: 'variable', foreground: 'ea8e97' },
+                { token: 'variable.language', foreground: 'e85d7a' },
+                { token: 'variable.parameter', foreground: 'ff5d6a' },
+                { token: 'parameter', foreground: 'ff5d6a' },
+
+                // Properties & attributes
+                { token: 'property', foreground: 'ea8e97' },
+                { token: 'entity.other.attribute-name', foreground: 'df4c4c' },
+
+                // Operators & punctuation
+                { token: 'operator', foreground: 'ff8599' },
+                { token: 'delimiter', foreground: 'ffb3b8' },
+                { token: 'punctuation', foreground: 'ffb3b8' },
+
+                // HTML / XML
+                { token: 'tag', foreground: '804a4a' },
+                { token: 'tag.id', foreground: '804a4a' },
+                { token: 'tag.class', foreground: '804a4a' },
+                { token: 'metatag', foreground: '804a4a' },
+                { token: 'metatag.content', foreground: 'ffb3b8' },
+                { token: 'attribute.name', foreground: 'df4c4c' },
+                { token: 'attribute.value', foreground: 'ffb3b8' },
+                { token: 'attribute.value.number', foreground: 'ff9199' },
+                { token: 'delimiter.html', foreground: 'ffb3b8' },
+
+                // CSS
+                { token: 'attribute.name.css', foreground: 'ff7070' },
+                { token: 'attribute.value.css', foreground: 'ffb3b8' },
+                { token: 'number.css', foreground: 'ff9199' },
+                { token: 'unit.css', foreground: 'ff9199' },
+                { token: 'selector', foreground: 'c94d5a' },
+                { token: 'key.css', foreground: 'ff7070' },
+
+                // Markdown
+                { token: 'emphasis', fontStyle: 'italic' },
+                { token: 'strong', fontStyle: 'bold' },
+                { token: 'keyword.md', foreground: '7f3d3d', fontStyle: 'bold' },
+                { token: 'string.link.md', foreground: 'c94d5a' },
+            ],
+            colors: {
+                'editor.background': '#0c0707',
+                'editor.foreground': '#d96670',
+                'editor.lineHighlightBackground': '#180d0d',
+                'editor.lineHighlightBorder': '#00000000',
+                'editor.selectionBackground': '#842d2d77',
+                'editor.inactiveSelectionBackground': '#842d2d33',
+                'editor.selectionHighlightBackground': '#842d2d33',
+                'editorCursor.foreground': '#e85d7a',
+                'editorLineNumber.foreground': '#381e1e',
+                'editorLineNumber.activeForeground': '#662d2d',
+                'editorIndentGuide.background1': '#261d1d',
+                'editorIndentGuide.activeBackground1': '#7f3d3d',
+                'editorWhitespace.foreground': '#381e1e',
+                'editorBracketMatch.background': '#0c070700',
+                'editorBracketMatch.border': '#472d2d',
+                'editorGutter.background': '#0c0707',
             },
         },
     },

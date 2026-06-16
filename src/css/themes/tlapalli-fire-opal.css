@@ -1,0 +1,45 @@
+[data-theme='tlapalli-fire-opal'] {
+    --background: #0c0707;
+    --foreground: #ff4848;
+    --card: #150c0c;
+    --card-foreground: #ff4848;
+    --popover: #150c0c;
+    --popover-foreground: #ff4848;
+    --primary: #ff4848;
+    --primary-foreground: #0c0707;
+    --secondary: #180d0d;
+    --secondary-foreground: #ff4848;
+    --muted: #180d0d;
+    --muted-foreground: #7f3d3d;
+    --accent: #180d0d;
+    --accent-foreground: #ff4848;
+    --destructive: #c94d5a;
+    --border: #241313;
+    --input: #241313;
+    --ring: #381e1e;
+    --chart-1: #ff8599;
+    --chart-2: #ff7070;
+    --chart-3: #c94d5a;
+    --chart-4: #7f3d3d;
+    --chart-5: #472d2d;
+    --radius: 0.625rem;
+    --sidebar: #0c0707;
+    --sidebar-foreground: #7f3d3d;
+    --sidebar-primary: #ff4848;
+    --sidebar-primary-foreground: #0c0707;
+    --sidebar-accent: #180d0d;
+    --sidebar-accent-foreground: #ff4848;
+    --sidebar-border: #241313;
+    --sidebar-ring: #381e1e;
+    --surface: #180d0d;
+    --surface-raised: #221515;
+    --accent-hover: #ff7070;
+    --success: #4ade80;
+    --warning: #ffb450;
+    --warning-foreground: #1a0800;
+    --overlay: oklch(0 0 0 / 30%);
+    --brand: #ff8599;
+    --brand-foreground: #0c0707;
+
+    background-color: var(--background);
+}
