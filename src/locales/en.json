@@ -180,7 +180,8 @@
         "stats": {
             "bins": "bins",
             "views": "views",
-            "color": "colors"
+            "color": "colors",
+            "top_languages": "top languages"
         },
         "bins": {
             "title": "Bins",

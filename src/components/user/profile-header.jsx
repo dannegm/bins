@@ -5,6 +5,8 @@ import { cn } from '@/helpers/utils';
 import { useIdentity } from '@/hooks/use-identity';
 import { useTheme } from '@/providers/theme-provider';
 import { UserAvatar } from '@/components/system/user-avatar';
+import { LangDot } from '@/components/bins/lang-dot';
+import { getLanguage } from '@/constants/languages';
 import { FlickeringGrid } from '@/ui/flickering-grid';
 import { Skeleton } from '@/ui/skeleton';
 
@@ -14,6 +16,31 @@ const StatPill = ({ label, value }) => (
         <span className='text-xs text-muted-foreground'>{label}</span>
     </div>
 );
+
+const TopLanguagesStat = ({ bins, label }) => {
+    const counts = {};
+    bins.forEach(bin => {
+        (bin.bin_files ?? []).forEach(f => {
+            counts[f.language] = (counts[f.language] ?? 0) + 1;
+        });
+    });
+
+    const top = Object.entries(counts)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 5)
+        .map(([id]) => getLanguage(id));
+
+    if (!top.length) return null;
+
+    return (
+        <div className='flex flex-col items-center gap-1'>
+            <div className='flex items-center -space-x-1.5 py-1'>
+                {top.map(lang => <LangDot key={lang.id} lang={lang} className='size-6 text-xs' />)}
+            </div>
+            <span className='text-xs text-muted-foreground'>{label}</span>
+        </div>
+    );
+};
 
 const ColorStat = ({ colorDark, colorLight, label }) => (
     <div className='flex flex-col items-center gap-1'>
@@ -124,6 +151,8 @@ export const ProfileHeader = ({ profile, bins, isLoading }) => {
                     colorLight={profile.colorLight}
                     label={t('profile.stats.color')}
                 />
+                <div className='h-8 w-px bg-border' />
+                <TopLanguagesStat bins={bins} label={t('profile.stats.top_languages')} />
             </div>
         </div>
     );
