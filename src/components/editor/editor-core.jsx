@@ -3,6 +3,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { MonacoEditor } from '@/components/editor/monaco-editor';
 import { EditorSkeleton } from '@/components/editor/editor-skeleton';
 import { StatusBar } from '@/components/editor/status-bar';
+import { FileDropOverlay } from '@/components/editor/file-drop-overlay';
 import { updateFile } from '@/services/bin-files';
 import { initYDoc } from '@/services/yjs';
 import { useIdentity } from '@/hooks/use-identity';
@@ -21,6 +22,7 @@ export const EditorCore = ({
     onLanguageChange,
     onCursorChange,
     onSelectionChange,
+    onCreateFile,
 }) => {
     const { user } = useIdentity();
     const [saveStatus, setSaveStatus] = useState('idle');
@@ -29,6 +31,7 @@ export const EditorCore = ({
     const [yContext, setYContext] = useState(null);
     const $saveTimer = useRef(null);
     const $hasLocalEdits = useRef(false);
+    const [isDragging, setIsDragging] = useState(false);
 
     useEffect(() => {
         const ctx = initYDoc(binId, file.id, file.content ?? '');
@@ -108,9 +111,24 @@ export const EditorCore = ({
         onCursorChange?.(pos);
     };
 
+    const handleDragEnter = e => {
+        if (!e.dataTransfer.types.includes('Files') || readOnly || !yContext) return;
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = e => {
+        if (!e.currentTarget.contains(e.relatedTarget)) setIsDragging(false);
+    };
+
     return (
-        <div className='flex min-h-0 flex-1 flex-col'>
-            <div className='min-h-0 flex-1'>
+        <div
+            className='flex min-h-0 flex-1 flex-col'
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDragOver={e => e.preventDefault()}
+            onDrop={e => { e.preventDefault(); setIsDragging(false); }}
+        >
+            <div className='relative min-h-0 flex-1'>
                 {yContext ? (
                     <MonacoEditor
                         yText={yContext.yText}
@@ -126,6 +144,13 @@ export const EditorCore = ({
                     />
                 ) : (
                     <EditorSkeleton />
+                )}
+                {isDragging && yContext && !readOnly && (
+                    <FileDropOverlay
+                        yContext={yContext}
+                        onCreateFile={onCreateFile}
+                        onDismiss={() => setIsDragging(false)}
+                    />
                 )}
             </div>
             <StatusBar

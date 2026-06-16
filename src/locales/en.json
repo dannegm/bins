@@ -315,6 +315,18 @@
             "unsaved": "Unsaved changes"
         },
         "peer_joined": "joined the session",
-        "peer_left": "left the session"
+        "peer_left": "left the session",
+        "drop_overlay": {
+            "hint": "Drop to choose what to do with this file",
+            "replace": "Replace",
+            "replace_desc": "Overwrite the current content",
+            "append": "Append",
+            "append_desc": "Add to the end of the file",
+            "new_tab": "New tab",
+            "new_tab_desc": "Open as a new file in this bin",
+            "error_size": "File exceeds the 500 KB limit",
+            "error_type": "Multimedia files are not supported",
+            "error_read": "Could not read the file"
+        }
     }
 }

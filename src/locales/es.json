@@ -315,6 +315,18 @@
             "unsaved": "Cambios sin guardar"
         },
         "peer_joined": "se unió a la sesión",
-        "peer_left": "abandonó la sesión"
+        "peer_left": "abandonó la sesión",
+        "drop_overlay": {
+            "hint": "Suelta para elegir qué hacer con este archivo",
+            "replace": "Reemplazar",
+            "replace_desc": "Sobreescribir el contenido actual",
+            "append": "Añadir al final",
+            "append_desc": "Agregar al final del archivo",
+            "new_tab": "Nueva pestaña",
+            "new_tab_desc": "Abrir como un nuevo archivo en este bin",
+            "error_size": "El archivo supera el límite de 500 KB",
+            "error_type": "Los archivos multimedia no están soportados",
+            "error_read": "No se pudo leer el archivo"
+        }
     }
 }

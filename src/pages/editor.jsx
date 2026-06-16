@@ -354,13 +354,13 @@ export const EditorPage = () => {
         $binChannel.current?.send({ type: 'broadcast', event, payload });
     };
 
-    const handleCreateFile = async () => {
+    const handleCreateFile = async (override = {}) => {
         if (files.length >= 10) return;
         try {
             const newFile = await createFile(binId, {
-                name: nextUntitledName(files),
-                language: 'markdown',
-                content: '',
+                name: override.name ?? nextUntitledName(files),
+                language: override.language ?? 'markdown',
+                content: override.content ?? '',
                 position: files.length,
             });
             setFiles(prev => {
@@ -473,6 +473,7 @@ export const EditorPage = () => {
                         onCursorChange={handleEditorCursorChange}
                         onSelectionChange={handleEditorSelectionChange}
                         onLanguageChange={handleLanguageChange}
+                        onCreateFile={handleCreateFile}
                     />
                 )}
             </div>
