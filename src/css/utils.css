@@ -1,5 +1,12 @@
 @custom-variant adjacents (&::before, &::after);
 
+@utility absolute-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 @utility all-unset {
     all: unset;
 }
@@ -32,6 +39,10 @@
 @utility squircle-* {
     border-radius: --value(--radius-*);
     corner-shape: squircle;
+}
+
+@utility image-* {
+    image-rendering: --value('auto', 'smooth', 'crisp-edges', 'pixelated');
 }
 
 @layer utilities {

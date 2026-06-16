@@ -14,6 +14,8 @@ import { supabase } from '@/services/supabase';
 import { useIdentity } from '@/hooks/use-identity';
 import { useListener, useEvents } from '@/providers/bus-provider';
 import { getLanguageByFilename } from '@/constants/languages';
+import { FlickeringGrid } from '@/ui/flickering-grid';
+import CoffeeLoader from '@/components/system/coffee-loader';
 
 const PeerToast = ({ peer, message }) => (
     <div className='flex min-w-64 items-center gap-3 rounded-lg border border-border bg-surface px-4 py-3 shadow-lg shadow-black/25'>
@@ -179,19 +181,37 @@ export const EditorPage = () => {
 
     useListener(
         'editor:set-language',
-        useCallback(({ language }) => {
-            if (activeFileId) handleLanguageChange(activeFileId, language);
-        }, [activeFileId]),
+        useCallback(
+            ({ language }) => {
+                if (activeFileId) handleLanguageChange(activeFileId, language);
+            },
+            [activeFileId],
+        ),
     );
 
-    useListener('bin:share', useCallback(() => handleShare(), []));
-    useListener('bin:fork', useCallback(() => window.open(`/fork/${binId}`, '_blank', 'noopener,noreferrer'), [binId]));
-    useListener('bin:change-visibility', useCallback(() => handleReadonlyToggle(), [bin?.is_readonly]));
-    useListener('editor:new-file', useCallback(() => handleCreateFile(), [files.length]));
-    useListener('peer:nudge', useCallback(() => {
-        broadcast('peer:nudge', { sender: user?.uuid });
-        emit('peer:nudge:received');
-    }, [user?.uuid]));
+    useListener(
+        'bin:share',
+        useCallback(() => handleShare(), []),
+    );
+    useListener(
+        'bin:fork',
+        useCallback(() => window.open(`/fork/${binId}`, '_blank', 'noopener,noreferrer'), [binId]),
+    );
+    useListener(
+        'bin:change-visibility',
+        useCallback(() => handleReadonlyToggle(), [bin?.is_readonly]),
+    );
+    useListener(
+        'editor:new-file',
+        useCallback(() => handleCreateFile(), [files.length]),
+    );
+    useListener(
+        'peer:nudge',
+        useCallback(() => {
+            broadcast('peer:nudge', { sender: user?.uuid });
+            emit('peer:nudge:received');
+        }, [user?.uuid]),
+    );
 
     const handleEditorCursorChange = useCallback(
         cursor => {
@@ -400,8 +420,9 @@ export const EditorPage = () => {
     if (isLoading) {
         return (
             <Layout>
-                <div className='flex h-full items-center justify-center'>
-                    <div className='size-5 animate-spin rounded-full border-2 border-border border-t-brand' />
+                <div className='relative flex h-full items-center justify-center'>
+                    <CoffeeLoader className='absolute-center z-1 size-64' />
+                    <FlickeringGrid />
                 </div>
             </Layout>
         );
