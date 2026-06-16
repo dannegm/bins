@@ -42,3 +42,20 @@ export const deleteBin = async binId => {
     const { error } = await supabase().from('bins').delete().eq('id', binId);
     if (error) throw error;
 };
+
+export const incrementViews = async binId => {
+    const key = `viewed:${binId}`;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, '1');
+
+    const { data } = await supabase()
+        .from('bins')
+        .select('views')
+        .eq('id', binId)
+        .maybeSingle();
+
+    await supabase()
+        .from('bins')
+        .update({ views: (data?.views ?? 0) + 1 })
+        .eq('id', binId);
+};

@@ -7,7 +7,7 @@ import { BinHeader } from '@/components/editor/bin-header';
 import { TabBar } from '@/components/editor/tab-bar';
 import { EditorCore } from '@/components/editor/editor-core';
 import { UserAvatar } from '@/components/system/user-avatar';
-import { ensureBin, permanentizeBin, updateBin } from '@/services/bins';
+import { ensureBin, permanentizeBin, updateBin, incrementViews } from '@/services/bins';
 import { registerCollaborator } from '@/services/bin-collaborators';
 import { getFiles, createFile, updateFile, deleteFile } from '@/services/bin-files';
 import { supabase } from '@/services/supabase';
@@ -237,6 +237,8 @@ export const EditorPage = () => {
                 const binData = await ensureBin(binId);
                 if (!mounted) return;
                 setBin(binData);
+
+                incrementViews(binId).catch(() => {});
 
                 const clientId = user?.uuid;
                 if (clientId && binData.author_id !== clientId) {
