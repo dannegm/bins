@@ -12,6 +12,7 @@ const badgeVariants = cva(
                 destructive: 'bg-destructive/10 text-destructive',
                 success: 'bg-success/10 text-success',
                 warning: 'bg-warning/10 text-warning',
+                brand: 'border border-(--ro-border-light) bg-(--ro-bg-light) text-(--ro-text-light) dark:border-(--ro-border-dark) dark:bg-(--ro-bg-dark) dark:text-(--ro-text-dark)',
             },
         },
         defaultVariants: { variant: 'default' },

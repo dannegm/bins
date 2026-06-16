@@ -60,18 +60,25 @@ const AccessBadge = ({ bin, t, canDelete }) => {
         },
     });
 
-    const stopProp = e => e.stopPropagation();
-
     const badgeClass = cn(
-        'flex shrink-0 items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-medium [&>svg]:size-2.5',
+        'flex shrink-0 items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] font-medium [&>svg]:size-2.5',
         {
-            'bg-warning/10 text-warning': bin.is_readonly,
-            'bg-success/10 text-success': !bin.is_readonly,
+            'border-(--ro-border-light) bg-(--ro-bg-light) text-(--ro-text-light) dark:border-(--ro-border-dark) dark:bg-(--ro-bg-dark) dark:text-(--ro-text-dark)': bin.is_readonly,
+            'border-success/40 bg-success/10 text-success': !bin.is_readonly,
         },
     );
 
+    const roStyle = bin.is_readonly ? {
+        '--ro-border-light': '#6366f150',
+        '--ro-bg-light': '#6366f115',
+        '--ro-text-light': '#4338ca',
+        '--ro-border-dark': '#818cf850',
+        '--ro-bg-dark': '#818cf815',
+        '--ro-text-dark': '#a5b4fc',
+    } : undefined;
+
     const badge = (
-        <span className={badgeClass}>
+        <span className={badgeClass} style={roStyle}>
             {bin.is_readonly ? <Lock /> : <LockOpen />}
             {bin.is_readonly ? t('bins.card.readonly') : t('bins.card.editable')}
         </span>
@@ -83,16 +90,16 @@ const AccessBadge = ({ bin, t, canDelete }) => {
         <Popover open={open} onOpenChange={setOpen}>
             <div className='flex items-center overflow-hidden'>
                 {badge}
-                <div
-                    className='w-0 overflow-hidden transition-all duration-200 group-hover/card:ml-1.5 group-hover/card:w-4'
-                    onClick={stopProp}
-                >
-                    <PopoverTrigger className='flex size-4 cursor-pointer items-center justify-center text-muted-foreground transition-colors hover:text-destructive'>
+                <div className='w-0 overflow-hidden transition-all duration-200 group-hover/card:ml-1.5 group-hover/card:w-4'>
+                    <PopoverTrigger
+                        className='flex size-4 cursor-pointer items-center justify-center text-muted-foreground transition-colors hover:text-destructive'
+                        onClick={e => { e.preventDefault(); e.stopPropagation(); }}
+                    >
                         <Trash2 className='size-3.5' />
                     </PopoverTrigger>
                 </div>
             </div>
-            <PopoverContent side='top' className='w-60' onClick={stopProp}>
+            <PopoverContent side='bottom' align='end' className='w-60' onClick={e => { e.preventDefault(); e.stopPropagation(); }}>
                 <PopoverHeader>
                     <PopoverTitle>{t('bins.card.delete_title')}</PopoverTitle>
                     <PopoverDescription>{t('bins.card.delete_description')}</PopoverDescription>

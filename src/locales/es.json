@@ -2,7 +2,8 @@
     "language": "Español",
     "formats": {
         "date": {
-            "short": "d MMM yyyy"
+            "short": "d MMM yyyy",
+            "short_time": "d MMM yyyy HH:mm"
         }
     },
     "command_palette": {

@@ -2,7 +2,8 @@
     "language": "English",
     "formats": {
         "date": {
-            "short": "MMM d, yyyy"
+            "short": "MMM d, yyyy",
+            "short_time": "MMM d, yyyy HH:mm"
         }
     },
     "command_palette": {

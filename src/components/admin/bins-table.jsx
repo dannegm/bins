@@ -265,7 +265,17 @@ const BinRow = ({ bin, t, formatDate }) => {
             </TableCell>
 
             <TableCell>
-                <Badge variant={bin.is_readonly ? 'warning' : 'success'}>
+                <Badge
+                    variant={bin.is_readonly ? 'brand' : 'success'}
+                    style={bin.is_readonly ? {
+                        '--ro-border-light': '#6366f150',
+                        '--ro-bg-light': '#6366f115',
+                        '--ro-text-light': '#4338ca',
+                        '--ro-border-dark': '#818cf850',
+                        '--ro-bg-dark': '#818cf815',
+                        '--ro-text-dark': '#a5b4fc',
+                    } : undefined}
+                >
                     {bin.is_readonly ? (
                         <Lock className='size-2.5' />
                     ) : (
@@ -344,7 +354,7 @@ export const BinsTable = () => {
     const [search, setSearch] = useState('');
     const { data: bins = [], isLoading } = useAdminBins();
     const locale = dateFnsLocales[i18n.language] ?? enUS;
-    const formatDate = iso => format(new Date(iso), t('formats.date.short'), { locale });
+    const formatDate = iso => format(new Date(iso), t('formats.date.short_time'), { locale });
 
     const filtered = useMemo(() => {
         const q = search.toLowerCase().trim();
