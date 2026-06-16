@@ -25,11 +25,18 @@ export const NudgeProvider = ({ children }) => {
         navigator.vibrate?.([80, 40, 60, 30, 50, 20, 40, 15, 30, 10]);
         $audio.current.currentTime = 0;
         $audio.current.play();
-        await animate(scope.current, { x: randShake(10, 14), y: randShake(10, 14) }, { duration: 0.6, ease: 'easeOut' });
+        await animate(
+            scope.current,
+            { x: randShake(10, 14), y: randShake(10, 14) },
+            { duration: 0.6, ease: 'easeOut' },
+        );
     });
 
     return (
-        <motion.div ref={scope} className='flex h-full w-full flex-col ring-2 ring-border rounded-xs overflow-hidden'>
+        <motion.div
+            ref={scope}
+            className='flex h-full w-full flex-col ring-2 ring-border rounded-xs overflow-hidden'
+        >
             {children}
         </motion.div>
     );

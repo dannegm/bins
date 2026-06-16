@@ -94,11 +94,10 @@ const HeadlessNotice = () => (
             <Bot className='size-5' />
         </div>
         <div className='flex flex-col gap-0.5'>
-            <span className='text-base font-semibold text-brand'>
-                You're a headless browser.
-            </span>
+            <span className='text-base font-semibold text-brand'>You're a headless browser.</span>
             <span className='text-sm text-muted-foreground'>
-                This view exists only for automated crawlers and bots. If you're a real person seeing this, congrats — you found the ghost mode.
+                This view exists only for automated crawlers and bots. If you're a real person
+                seeing this, congrats — you found the ghost mode.
             </span>
         </div>
     </div>

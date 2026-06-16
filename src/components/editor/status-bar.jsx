@@ -10,7 +10,14 @@ import { UserAvatar } from '@/components/system/user-avatar';
 import { ScrambleText } from '@/components/system/scramble-text';
 import { LANGUAGE_LIST, getLanguage } from '@/constants/languages';
 import { Popover, PopoverTrigger, PopoverContent } from '@/ui/popover';
-import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '@/ui/command';
+import {
+    Command,
+    CommandInput,
+    CommandList,
+    CommandEmpty,
+    CommandGroup,
+    CommandItem,
+} from '@/ui/command';
 import { useEvents } from '@/providers/bus-provider';
 
 const contrastColor = color => {
@@ -24,7 +31,13 @@ const contrastColor = color => {
 
 const LangIcon = ({ lang, color }) => {
     const iconColor = color ?? lang.color;
-    if (lang.icon) return <i className={cn(lang.icon, 'colored text-xs leading-none')} style={{ color: iconColor }} />;
+    if (lang.icon)
+        return (
+            <i
+                className={cn(lang.icon, 'colored text-xs leading-none')}
+                style={{ color: iconColor }}
+            />
+        );
     return <span className='size-1.5 rounded-full bg-(--dot)' style={{ '--dot': iconColor }} />;
 };
 
@@ -112,7 +125,12 @@ const PeerList = ({ peers, t }) => {
                     <Users className='size-3' />
                     {peers.length}
                 </PopoverTrigger>
-                <PopoverContent side='top' sideOffset={16} align='end' className='w-auto min-w-44 p-0'>
+                <PopoverContent
+                    side='top'
+                    sideOffset={16}
+                    align='end'
+                    className='w-auto min-w-44 p-0'
+                >
                     {peers.map(peer => {
                         const color = isDark ? peer.colorDark : peer.colorLight;
                         return (
@@ -173,7 +191,9 @@ const IndentationPicker = ({ t }) => {
                         className='flex w-full items-center gap-2 rounded px-2 py-1.5 text-xs text-foreground transition-colors hover:bg-muted'
                     >
                         <Check className={cn('size-3', { 'opacity-0': useTabs !== tabs })} />
-                        {tabs ? t('editor.status_bar.tabs_label') : t('editor.status_bar.spaces_label')}
+                        {tabs
+                            ? t('editor.status_bar.tabs_label')
+                            : t('editor.status_bar.spaces_label')}
                     </button>
                 ))}
                 <div className='my-1 border-t border-border' />
@@ -195,7 +215,15 @@ const IndentationPicker = ({ t }) => {
     );
 };
 
-export const StatusBar = ({ language, cursor, lineCount = 1, isLoading = false, saveStatus, peers = [], onLanguageChange }) => {
+export const StatusBar = ({
+    language,
+    cursor,
+    lineCount = 1,
+    isLoading = false,
+    saveStatus,
+    peers = [],
+    onLanguageChange,
+}) => {
     const { t } = useTranslation();
     return (
         <div className='flex h-8 shrink-0 items-center gap-2 sm:gap-3 border-t border-border bg-surface px-3 text-xs text-muted-foreground'>
@@ -211,9 +239,16 @@ export const StatusBar = ({ language, cursor, lineCount = 1, isLoading = false, 
             <Divider />
 
             <span>
-                {isLoading
-                    ? <><ScrambleText chars='@#$%&'>{String(lineCount).padStart(2, '0')}</ScrambleText> {t('editor.status_bar.lines_label')}</>
-                    : t('editor.status_bar.lines', { count: lineCount })}
+                {isLoading ? (
+                    <>
+                        <ScrambleText chars='@#$%&'>
+                            {String(lineCount).padStart(2, '0')}
+                        </ScrambleText>{' '}
+                        {t('editor.status_bar.lines_label')}
+                    </>
+                ) : (
+                    t('editor.status_bar.lines', { count: lineCount })
+                )}
             </span>
 
             <Divider />

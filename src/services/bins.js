@@ -57,16 +57,14 @@ export const forkBin = async sourceBinId => {
 
     const newId = nanoid(10);
 
-    const { error: binError } = await supabase()
-        .from('bins')
-        .insert({
-            id: newId,
-            title: source.title,
-            author_id: authorId,
-            is_readonly: source.is_readonly,
-            forked_from: sourceBinId,
-            expires_at: null,
-        });
+    const { error: binError } = await supabase().from('bins').insert({
+        id: newId,
+        title: source.title,
+        author_id: authorId,
+        is_readonly: source.is_readonly,
+        forked_from: sourceBinId,
+        expires_at: null,
+    });
 
     if (binError) throw binError;
 
@@ -94,11 +92,7 @@ export const incrementViews = async binId => {
     if (sessionStorage.getItem(key)) return;
     sessionStorage.setItem(key, '1');
 
-    const { data } = await supabase()
-        .from('bins')
-        .select('views')
-        .eq('id', binId)
-        .maybeSingle();
+    const { data } = await supabase().from('bins').select('views').eq('id', binId).maybeSingle();
 
     await supabase()
         .from('bins')

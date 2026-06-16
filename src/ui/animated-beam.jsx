@@ -49,7 +49,16 @@ export const AnimatedBeam = ({
         const ro = new ResizeObserver(update);
         if (containerRef?.current) ro.observe(containerRef.current);
         return () => ro.disconnect();
-    }, [containerRef, fromRef, toRef, curvature, startXOffset, startYOffset, endXOffset, endYOffset]);
+    }, [
+        containerRef,
+        fromRef,
+        toRef,
+        curvature,
+        startXOffset,
+        startYOffset,
+        endXOffset,
+        endYOffset,
+    ]);
 
     useEffect(() => {
         if ($path.current && pathD) {

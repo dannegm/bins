@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 
-const DEFAULT_CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-={}[];:,.<>/?';
+const DEFAULT_CHARS =
+    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-={}[];:,.<>/?';
 
 const scramble = (text, chars) =>
     String(text)

@@ -2,13 +2,7 @@ import { Code2, GitFork, Globe, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/helpers/utils';
 import { Skeleton } from '@/ui/skeleton';
-import {
-    Empty,
-    EmptyHeader,
-    EmptyMedia,
-    EmptyTitle,
-    EmptyDescription,
-} from '@/ui/empty';
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/ui/empty';
 import { BinCard } from '@/components/bins/bin-card';
 
 const ProfileBinsLoading = () => (

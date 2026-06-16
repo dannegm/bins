@@ -9,7 +9,7 @@ export const ColorPicker = ({ value, onChange, children }) => {
         if (value) setLocalColor(value);
     }, [value]);
 
-    const handleChange = (hex) => {
+    const handleChange = hex => {
         setLocalColor(hex);
         onChange?.(hex);
     };

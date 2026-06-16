@@ -78,7 +78,9 @@ export const MonacoEditor = ({
             fontSize,
             tabSize: prettier?.tabWidth ?? 4,
             insertSpaces: !(prettier?.useTabs ?? false),
-            rulers: [{ column: prettier?.printWidth ?? 100, color: isDark ? '#ffffff18' : '#00000018' }],
+            rulers: [
+                { column: prettier?.printWidth ?? 100, color: isDark ? '#ffffff18' : '#00000018' },
+            ],
             wordWrap: wordWrap ? 'on' : 'off',
             lineNumbers: lineNumbers ? 'on' : 'off',
             minimap: { enabled: minimap },
@@ -148,7 +150,9 @@ export const MonacoEditor = ({
     useEffect(() => {
         if (!$editor.current) return;
         $editor.current.updateOptions({
-            rulers: [{ column: prettier?.printWidth ?? 100, color: isDark ? '#ffffff18' : '#00000018' }],
+            rulers: [
+                { column: prettier?.printWidth ?? 100, color: isDark ? '#ffffff18' : '#00000018' },
+            ],
         });
     }, [prettier?.printWidth, isDark]);
 
@@ -356,9 +360,12 @@ export const MonacoEditor = ({
         };
     }, [yText, clientId]);
 
-    useListener('editor:format', useCallback(() => {
-        $editor.current?.getAction('editor.action.formatDocument')?.run();
-    }, []));
+    useListener(
+        'editor:format',
+        useCallback(() => {
+            $editor.current?.getAction('editor.action.formatDocument')?.run();
+        }, []),
+    );
 
     return <div ref={$container} className='h-full w-full' />;
 };

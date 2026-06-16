@@ -26,24 +26,24 @@ Real-time collaborative code editor and playground. Think Pastebin meets VS Code
 
 ## Stack
 
-| Layer | Tool |
-|---|---|
-| Framework | Vite + React 19 |
-| Styles | Tailwind CSS v4 |
-| UI primitives | shadcn/ui with Base UI (`@base-ui/react`) |
-| Routing | TanStack Router (file-based) |
-| Server state | TanStack Query |
-| URL state | nuqs |
-| Real-time sync | Yjs (CRDT) + Supabase Realtime Broadcast |
-| Database | Supabase (PostgreSQL) |
-| Editor | Monaco Editor |
-| Animations | Motion (Framer Motion v12) |
-| Hotkeys | react-hotkeys-hook |
-| Command palette | cmdk |
-| Avatars | DiceBear `rings` style, seeded from UUID |
-| Language icons | Devicon |
-| i18n | react-i18next |
-| Deploy | Vercel |
+| Layer           | Tool                                      |
+| --------------- | ----------------------------------------- |
+| Framework       | Vite + React 19                           |
+| Styles          | Tailwind CSS v4                           |
+| UI primitives   | shadcn/ui with Base UI (`@base-ui/react`) |
+| Routing         | TanStack Router (file-based)              |
+| Server state    | TanStack Query                            |
+| URL state       | nuqs                                      |
+| Real-time sync  | Yjs (CRDT) + Supabase Realtime Broadcast  |
+| Database        | Supabase (PostgreSQL)                     |
+| Editor          | Monaco Editor                             |
+| Animations      | Motion (Framer Motion v12)                |
+| Hotkeys         | react-hotkeys-hook                        |
+| Command palette | cmdk                                      |
+| Avatars         | DiceBear `rings` style, seeded from UUID  |
+| Language icons  | Devicon                                   |
+| i18n            | react-i18next                             |
+| Deploy          | Vercel                                    |
 
 ---
 

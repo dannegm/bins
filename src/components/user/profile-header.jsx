@@ -35,7 +35,9 @@ const TopLanguagesStat = ({ bins, label }) => {
     return (
         <div className='flex flex-col items-center gap-1'>
             <div className='flex items-center -space-x-1.5 py-1'>
-                {top.map(lang => <LangDot key={lang.id} lang={lang} className='size-6 text-xs' />)}
+                {top.map(lang => (
+                    <LangDot key={lang.id} lang={lang} className='size-6 text-xs' />
+                ))}
             </div>
             <span className='text-xs text-muted-foreground'>{label}</span>
         </div>

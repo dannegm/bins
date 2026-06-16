@@ -28,7 +28,10 @@ export const CommandPalette = () => {
     const $list = useRef(null);
 
     useEffect(() => {
-        if (!search) { setIsTyping(false); return; }
+        if (!search) {
+            setIsTyping(false);
+            return;
+        }
         setIsTyping(true);
         const id = setTimeout(() => setIsTyping(false), 500);
         return () => clearTimeout(id);
@@ -65,33 +68,41 @@ export const CommandPalette = () => {
         setSearch('');
     }, [close]);
 
-    const run = useCallback(action => {
-        action();
-        handleClose();
-    }, [handleClose]);
+    const run = useCallback(
+        action => {
+            action();
+            handleClose();
+        },
+        [handleClose],
+    );
 
-    const handleKeyDown = useCallback(e => {
-        const digit = parseInt(e.key);
-        if (digit >= 1 && digit <= 9 && !isTyping && !e.metaKey && !e.ctrlKey && !e.altKey) {
-            e.preventDefault();
-            const items = [...($list.current?.querySelectorAll('[cmdk-item]') ?? [])]
-                .filter(el => el.offsetParent !== null);
-            items[digit - 1]?.click();
-            return;
-        }
-        if (e.key === 'Escape') {
-            if (pages.length > 0) goBack();
-            else handleClose();
-        }
-        if (e.key === 'Backspace' && !search && pages.length > 0) goBack();
-    }, [pages, search, isTyping, goBack, handleClose]);
+    const handleKeyDown = useCallback(
+        e => {
+            const digit = parseInt(e.key);
+            if (digit >= 1 && digit <= 9 && !isTyping && !e.metaKey && !e.ctrlKey && !e.altKey) {
+                e.preventDefault();
+                const items = [...($list.current?.querySelectorAll('[cmdk-item]') ?? [])].filter(
+                    el => el.offsetParent !== null,
+                );
+                items[digit - 1]?.click();
+                return;
+            }
+            if (e.key === 'Escape') {
+                if (pages.length > 0) goBack();
+                else handleClose();
+            }
+            if (e.key === 'Backspace' && !search && pages.length > 0) goBack();
+        },
+        [pages, search, isTyping, goBack, handleClose],
+    );
 
     const pageData = currentPage !== 'root' ? pages_map[currentPage] : null;
 
     useEffect(() => {
         const id = setTimeout(() => {
-            const visible = [...($list.current?.querySelectorAll('[cmdk-item]') ?? [])]
-                .filter(el => el.offsetParent !== null);
+            const visible = [...($list.current?.querySelectorAll('[cmdk-item]') ?? [])].filter(
+                el => el.offsetParent !== null,
+            );
             const map = {};
             visible.slice(0, 9).forEach((el, i) => {
                 const val = el.getAttribute('data-value');
@@ -133,16 +144,28 @@ export const CommandPalette = () => {
                                     <div className='flex shrink-0 items-center gap-1 pl-4'>
                                         {pages.map((p, i) => (
                                             <div key={p} className='flex items-center gap-1'>
-                                                {i > 0 && <ChevronRight className='size-3 text-muted-foreground' />}
+                                                {i > 0 && (
+                                                    <ChevronRight className='size-3 text-muted-foreground' />
+                                                )}
                                                 <button
-                                                    onClick={i < pages.length - 1 ? () => setPages(prev => prev.slice(0, i + 1)) : undefined}
+                                                    onClick={
+                                                        i < pages.length - 1
+                                                            ? () =>
+                                                                  setPages(prev =>
+                                                                      prev.slice(0, i + 1),
+                                                                  )
+                                                            : undefined
+                                                    }
                                                     className='flex items-center gap-1 rounded bg-accent px-2 py-0.5 text-xs text-accent-foreground'
                                                 >
                                                     {pages_map[p]?.title ?? p}
                                                     {i === pages.length - 1 && (
                                                         <X
                                                             className='size-3 opacity-60 hover:opacity-100'
-                                                            onClick={e => { e.stopPropagation(); goBack(); }}
+                                                            onClick={e => {
+                                                                e.stopPropagation();
+                                                                goBack();
+                                                            }}
                                                         />
                                                     )}
                                                 </button>
@@ -154,23 +177,29 @@ export const CommandPalette = () => {
                                     value={search}
                                     onValueChange={setSearch}
                                     autoFocus
-                                    placeholder={pageData ? `Filter ${pageData.title}…` : t('command_palette.placeholder')}
+                                    placeholder={
+                                        pageData
+                                            ? `Filter ${pageData.title}…`
+                                            : t('command_palette.placeholder')
+                                    }
                                     className='min-w-0 flex-1 bg-transparent px-4 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none'
                                 />
                             </div>
 
                             <Command.List ref={$list} className='max-h-80 overflow-y-auto p-2'>
-                                        <Command.Empty className='py-8 text-center text-sm text-muted-foreground'>
-                                            {t('command_palette.empty')}
-                                        </Command.Empty>
+                                <Command.Empty className='py-8 text-center text-sm text-muted-foreground'>
+                                    {t('command_palette.empty')}
+                                </Command.Empty>
 
-                                        {currentPage === 'root' && commands.map(({ group, items }) => (
-                                            <Command.Group
-                                                key={group}
-                                                heading={group}
-                                                className='**:[[cmdk-group-heading]]:px-2 **:[[cmdk-group-heading]]:pb-1.5 **:[[cmdk-group-heading]]:pt-3 **:[[cmdk-group-heading]]:text-[11px] **:[[cmdk-group-heading]]:font-semibold **:[[cmdk-group-heading]]:uppercase **:[[cmdk-group-heading]]:tracking-widest **:[[cmdk-group-heading]]:text-muted-foreground'
-                                            >
-                                                {items.map(({ id, label, icon, shortcutId, action, page }) => {
+                                {currentPage === 'root' &&
+                                    commands.map(({ group, items }) => (
+                                        <Command.Group
+                                            key={group}
+                                            heading={group}
+                                            className='**:[[cmdk-group-heading]]:px-2 **:[[cmdk-group-heading]]:pb-1.5 **:[[cmdk-group-heading]]:pt-3 **:[[cmdk-group-heading]]:text-[11px] **:[[cmdk-group-heading]]:font-semibold **:[[cmdk-group-heading]]:uppercase **:[[cmdk-group-heading]]:tracking-widest **:[[cmdk-group-heading]]:text-muted-foreground'
+                                        >
+                                            {items.map(
+                                                ({ id, label, icon, shortcutId, action, page }) => {
                                                     const keys = shortcut(shortcutId);
                                                     const num = quickMap[id] ?? null;
                                                     return (
@@ -178,14 +207,18 @@ export const CommandPalette = () => {
                                                             key={id}
                                                             value={id}
                                                             keywords={[label]}
-                                                            onSelect={() => page ? navigate(page) : run(action)}
+                                                            onSelect={() =>
+                                                                page ? navigate(page) : run(action)
+                                                            }
                                                             className='flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors aria-selected:bg-accent aria-selected:text-accent-foreground [&>svg]:size-4'
                                                         >
                                                             <div className='text-muted-foreground [&>svg]:size-4'>
                                                                 <DynamicIcon name={icon} />
                                                             </div>
                                                             <span className='flex-1'>{label}</span>
-                                                            {page && <ChevronRight className='size-3.5 opacity-40' />}
+                                                            {page && (
+                                                                <ChevronRight className='size-3.5 opacity-40' />
+                                                            )}
                                                             {keys && (
                                                                 <KbdGroup>
                                                                     {keys.map((k, i) => (
@@ -193,36 +226,57 @@ export const CommandPalette = () => {
                                                                     ))}
                                                                 </KbdGroup>
                                                             )}
-                                                            {num && <Kbd className={isTyping ? '' : 'bg-brand/15 text-brand'}>{num}</Kbd>}
+                                                            {num && (
+                                                                <Kbd
+                                                                    className={
+                                                                        isTyping
+                                                                            ? ''
+                                                                            : 'bg-brand/15 text-brand'
+                                                                    }
+                                                                >
+                                                                    {num}
+                                                                </Kbd>
+                                                            )}
                                                         </Command.Item>
                                                     );
-                                                })}
-                                            </Command.Group>
-                                        ))}
+                                                },
+                                            )}
+                                        </Command.Group>
+                                    ))}
 
-                                        {currentPage !== 'root' && pageData && (
-                                            <Command.Group>
-                                                {pageData.items.map(({ id, label, icon, action }) => {
-                                                    const num = quickMap[id] ?? null;
-                                                    return (
-                                                        <Command.Item
-                                                            key={id}
-                                                            value={id}
-                                                            keywords={[label]}
-                                                            onSelect={() => run(action)}
-                                                            className='flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors aria-selected:bg-accent aria-selected:text-accent-foreground [&>svg]:size-4'
+                                {currentPage !== 'root' && pageData && (
+                                    <Command.Group>
+                                        {pageData.items.map(({ id, label, icon, action }) => {
+                                            const num = quickMap[id] ?? null;
+                                            return (
+                                                <Command.Item
+                                                    key={id}
+                                                    value={id}
+                                                    keywords={[label]}
+                                                    onSelect={() => run(action)}
+                                                    className='flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors aria-selected:bg-accent aria-selected:text-accent-foreground [&>svg]:size-4'
+                                                >
+                                                    <div className='text-muted-foreground [&>svg]:size-4'>
+                                                        <DynamicIcon name={icon} />
+                                                    </div>
+                                                    <span className='flex-1'>{label}</span>
+                                                    {num && (
+                                                        <Kbd
+                                                            className={
+                                                                isTyping
+                                                                    ? ''
+                                                                    : 'bg-brand/15 text-brand'
+                                                            }
                                                         >
-                                                            <div className='text-muted-foreground [&>svg]:size-4'>
-                                                                <DynamicIcon name={icon} />
-                                                            </div>
-                                                            <span className='flex-1'>{label}</span>
-                                                            {num && <Kbd className={isTyping ? '' : 'bg-brand/15 text-brand'}>{num}</Kbd>}
-                                                        </Command.Item>
-                                                    );
-                                                })}
-                                            </Command.Group>
-                                        )}
-                                    </Command.List>
+                                                            {num}
+                                                        </Kbd>
+                                                    )}
+                                                </Command.Item>
+                                            );
+                                        })}
+                                    </Command.Group>
+                                )}
+                            </Command.List>
 
                             <div className='flex items-center gap-4 border-t border-border px-4 py-2.5 text-[11px] text-muted-foreground'>
                                 <KbdGroup>
@@ -236,10 +290,15 @@ export const CommandPalette = () => {
                                     <Kbd>1</Kbd>
                                     <Kbd>9</Kbd> {t('command_palette.hint_pick')}
                                 </KbdGroup>
-                                {pages.length > 0
-                                    ? <KbdGroup><Kbd>⌫</Kbd> {t('command_palette.hint_back')}</KbdGroup>
-                                    : <KbdGroup><Kbd>esc</Kbd> {t('command_palette.hint_close')}</KbdGroup>
-                                }
+                                {pages.length > 0 ? (
+                                    <KbdGroup>
+                                        <Kbd>⌫</Kbd> {t('command_palette.hint_back')}
+                                    </KbdGroup>
+                                ) : (
+                                    <KbdGroup>
+                                        <Kbd>esc</Kbd> {t('command_palette.hint_close')}
+                                    </KbdGroup>
+                                )}
                             </div>
                         </Command>
                     </motion.div>

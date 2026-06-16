@@ -218,7 +218,11 @@ export const MONACO_THEMES = [
                 { token: 'type.identifier', foreground: '8be9fd', fontStyle: 'italic' },
                 { token: 'entity.name.type', foreground: '8be9fd', fontStyle: 'italic' },
                 { token: 'entity.name.class', foreground: '8be9fd' },
-                { token: 'entity.other.inherited-class', foreground: '8be9fd', fontStyle: 'italic' },
+                {
+                    token: 'entity.other.inherited-class',
+                    foreground: '8be9fd',
+                    fontStyle: 'italic',
+                },
                 { token: 'support.class', foreground: '8be9fd' },
                 { token: 'support.type', foreground: '8be9fd', fontStyle: 'italic' },
                 { token: 'class', foreground: '8be9fd' },

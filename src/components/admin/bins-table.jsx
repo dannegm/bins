@@ -6,7 +6,15 @@ import { enUS, es } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import {
-    Eye, File, Lock, LockOpen, Search, ExternalLink, Pencil, Trash2, Share2,
+    Eye,
+    File,
+    Lock,
+    LockOpen,
+    Search,
+    ExternalLink,
+    Pencil,
+    Trash2,
+    Share2,
 } from 'lucide-react';
 import { supabase } from '@/services/supabase';
 import { deleteBin, updateBin } from '@/services/bins';
@@ -19,13 +27,7 @@ import { Input } from '@/ui/input';
 import { Switch } from '@/ui/switch';
 import { Badge } from '@/ui/badge';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/ui/table';
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogFooter,
-} from '@/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/ui/dialog';
 import {
     Popover,
     PopoverContent,
@@ -84,9 +86,7 @@ const AuthorCell = ({ profiles, t }) => {
     const { isDark } = useTheme();
 
     if (!profiles) {
-        return (
-            <span className='text-xs text-muted-foreground'>{t('admin.bins.no_author')}</span>
-        );
+        return <span className='text-xs text-muted-foreground'>{t('admin.bins.no_author')}</span>;
     }
 
     const color = isDark ? profiles.color_dark : profiles.color_light;
@@ -267,14 +267,18 @@ const BinRow = ({ bin, t, formatDate }) => {
             <TableCell>
                 <Badge
                     variant={bin.is_readonly ? 'brand' : 'success'}
-                    style={bin.is_readonly ? {
-                        '--ro-border-light': '#6366f150',
-                        '--ro-bg-light': '#6366f115',
-                        '--ro-text-light': '#4338ca',
-                        '--ro-border-dark': '#818cf850',
-                        '--ro-bg-dark': '#818cf815',
-                        '--ro-text-dark': '#a5b4fc',
-                    } : undefined}
+                    style={
+                        bin.is_readonly
+                            ? {
+                                  '--ro-border-light': '#6366f150',
+                                  '--ro-bg-light': '#6366f115',
+                                  '--ro-text-light': '#4338ca',
+                                  '--ro-border-dark': '#818cf850',
+                                  '--ro-bg-dark': '#818cf815',
+                                  '--ro-text-dark': '#a5b4fc',
+                              }
+                            : undefined
+                    }
                 >
                     {bin.is_readonly ? (
                         <Lock className='size-2.5' />
@@ -393,11 +397,17 @@ export const BinsTable = () => {
                             <TableHead>{t('admin.bins.col_bin')}</TableHead>
                             <TableHead>{t('admin.bins.col_author')}</TableHead>
                             <TableHead>{t('admin.bins.col_languages')}</TableHead>
-                            <TableHead className='text-right'>{t('admin.bins.col_files')}</TableHead>
-                            <TableHead className='text-right'>{t('admin.bins.col_views')}</TableHead>
+                            <TableHead className='text-right'>
+                                {t('admin.bins.col_files')}
+                            </TableHead>
+                            <TableHead className='text-right'>
+                                {t('admin.bins.col_views')}
+                            </TableHead>
                             <TableHead>{t('admin.bins.col_status')}</TableHead>
                             <TableHead>{t('admin.bins.col_updated')}</TableHead>
-                            <TableHead className='text-right'>{t('admin.bins.col_actions')}</TableHead>
+                            <TableHead className='text-right'>
+                                {t('admin.bins.col_actions')}
+                            </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>

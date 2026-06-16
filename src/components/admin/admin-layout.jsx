@@ -43,7 +43,11 @@ export const AdminLayout = ({ children }) => {
                             </span>
                         </div>
                         <div className='mt-3 flex gap-1'>
-                            <NavTab to='/admin/bins' icon={LayoutGrid} label={t('admin.nav.bins')} />
+                            <NavTab
+                                to='/admin/bins'
+                                icon={LayoutGrid}
+                                label={t('admin.nav.bins')}
+                            />
                             <NavTab to='/admin/users' icon={Users} label={t('admin.nav.users')} />
                         </div>
                     </div>

@@ -49,7 +49,9 @@ export const TipsCarousel = () => {
                         <span className='text-sm font-semibold text-(--tip-color-light) dark:text-(--tip-color-dark)'>
                             {tip.title}
                         </span>
-                        <span className='text-sm text-(--tip-color-light) dark:text-(--tip-color-dark)'>{tip.body}</span>
+                        <span className='text-sm text-(--tip-color-light) dark:text-(--tip-color-dark)'>
+                            {tip.body}
+                        </span>
                     </div>
                 </motion.div>
             </AnimatePresence>

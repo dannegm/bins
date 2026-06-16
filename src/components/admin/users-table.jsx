@@ -41,10 +41,7 @@ const DeleteUserAction = ({ profile, t }) => {
 
     const { mutate, isPending } = useMutation({
         mutationFn: async () => {
-            const { error } = await supabase()
-                .from('profiles')
-                .delete()
-                .eq('uuid', profile.uuid);
+            const { error } = await supabase().from('profiles').delete().eq('uuid', profile.uuid);
             if (error) throw error;
         },
         onSuccess: () => {
@@ -67,7 +64,12 @@ const DeleteUserAction = ({ profile, t }) => {
                     <PopoverDescription>{t('admin.users.delete_description')}</PopoverDescription>
                 </PopoverHeader>
                 <div className='flex gap-2 pt-1'>
-                    <Button variant='outline' size='sm' className='flex-1' onClick={() => setOpen(false)}>
+                    <Button
+                        variant='outline'
+                        size='sm'
+                        className='flex-1'
+                        onClick={() => setOpen(false)}
+                    >
                         {t('bins.card.delete_cancel')}
                     </Button>
                     <Button
@@ -130,11 +132,7 @@ const UserRow = ({ profile, t, formatDate, isMe }) => {
                 >
                     {profile.uuid}
                     <span className='[&>svg]:size-3'>
-                        {copied ? (
-                            <Check className='text-success' />
-                        ) : (
-                            <Copy />
-                        )}
+                        {copied ? <Check className='text-success' /> : <Copy />}
                     </span>
                 </button>
             </TableCell>
@@ -213,9 +211,7 @@ export const UsersTable = () => {
         const q = search.toLowerCase().trim();
         if (!q) return users;
         return users.filter(
-            u =>
-                u.name?.toLowerCase().includes(q) ||
-                u.uuid.toLowerCase().includes(q),
+            u => u.name?.toLowerCase().includes(q) || u.uuid.toLowerCase().includes(q),
         );
     }, [users, search]);
 
@@ -245,9 +241,13 @@ export const UsersTable = () => {
                             <TableHead>{t('admin.users.col_user')}</TableHead>
                             <TableHead>{t('admin.users.col_id')}</TableHead>
                             <TableHead>{t('admin.users.col_colors')}</TableHead>
-                            <TableHead className='text-right'>{t('admin.users.col_bins')}</TableHead>
+                            <TableHead className='text-right'>
+                                {t('admin.users.col_bins')}
+                            </TableHead>
                             <TableHead>{t('admin.users.col_registered')}</TableHead>
-                            <TableHead className='text-right'>{t('admin.users.col_actions')}</TableHead>
+                            <TableHead className='text-right'>
+                                {t('admin.users.col_actions')}
+                            </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -272,7 +272,13 @@ export const UsersTable = () => {
                             </TableRow>
                         )}
                         {filtered.map(u => (
-                            <UserRow key={u.uuid} profile={u} t={t} formatDate={formatDate} isMe={u.uuid === user?.uuid} />
+                            <UserRow
+                                key={u.uuid}
+                                profile={u}
+                                t={t}
+                                formatDate={formatDate}
+                                isMe={u.uuid === user?.uuid}
+                            />
                         ))}
                     </TableBody>
                 </Table>

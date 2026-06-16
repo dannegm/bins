@@ -216,8 +216,18 @@ export const createPages = ({ emit }) => ({
     'indentation-type': {
         title: 'Indentation',
         items: [
-            { id: 'indent-spaces', label: 'Spaces', icon: 'space', action: () => emit('command:setting', { path: 'prettier.useTabs', value: false }) },
-            { id: 'indent-tabs', label: 'Tabs', icon: 'between-horizontal-start', action: () => emit('command:setting', { path: 'prettier.useTabs', value: true }) },
+            {
+                id: 'indent-spaces',
+                label: 'Spaces',
+                icon: 'space',
+                action: () => emit('command:setting', { path: 'prettier.useTabs', value: false }),
+            },
+            {
+                id: 'indent-tabs',
+                label: 'Tabs',
+                icon: 'between-horizontal-start',
+                action: () => emit('command:setting', { path: 'prettier.useTabs', value: true }),
+            },
         ],
     },
     'tab-size': {

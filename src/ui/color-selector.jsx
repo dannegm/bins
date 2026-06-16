@@ -8,7 +8,7 @@ import { cn } from '@/helpers/utils';
 
 const supportsEyeDropper = typeof window !== 'undefined' && 'EyeDropper' in window;
 
-const hexToHsl = (hex) => {
+const hexToHsl = hex => {
     try {
         const c = Color(hex);
         return [c.hue(), c.saturationl(), c.lightness()];
@@ -98,7 +98,7 @@ export const ColorSelector = ({ value = '#6366f1', onChange, className }) => {
     );
 
     const handlePointer = useCallback(
-        (e) => {
+        e => {
             if (!$gradient.current) return;
             const rect = $gradient.current.getBoundingClientRect();
             const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
@@ -112,8 +112,12 @@ export const ColorSelector = ({ value = '#6366f1', onChange, className }) => {
     );
 
     useEffect(() => {
-        const onMove = (e) => { if (isDragging.current) handlePointer(e); };
-        const onUp = () => { isDragging.current = false; };
+        const onMove = e => {
+            if (isDragging.current) handlePointer(e);
+        };
+        const onUp = () => {
+            isDragging.current = false;
+        };
         window.addEventListener('pointermove', onMove);
         window.addEventListener('pointerup', onUp);
         return () => {
@@ -123,12 +127,15 @@ export const ColorSelector = ({ value = '#6366f1', onChange, className }) => {
     }, [handlePointer]);
 
     const handleHueChange = useCallback(
-        (newH) => { setH(newH); emit(newH, s, l); },
+        newH => {
+            setH(newH);
+            emit(newH, s, l);
+        },
         [s, l, emit],
     );
 
     const handleHexInput = useCallback(
-        (e) => {
+        e => {
             const v = e.target.value;
             setHexInput(v);
             if (/^#[0-9a-fA-F]{6}$/.test(v)) {
@@ -171,7 +178,7 @@ export const ColorSelector = ({ value = '#6366f1', onChange, className }) => {
                 ref={$gradient}
                 className='relative h-36 w-full cursor-crosshair rounded-md'
                 style={{ background }}
-                onPointerDown={(e) => {
+                onPointerDown={e => {
                     e.preventDefault();
                     isDragging.current = true;
                     handlePointer(e.nativeEvent);
@@ -213,7 +220,9 @@ export const ColorSelector = ({ value = '#6366f1', onChange, className }) => {
                 <ColorFormatInput
                     mode={mode}
                     onModeChange={setMode}
-                    h={h} s={s} l={l}
+                    h={h}
+                    s={s}
+                    l={l}
                     hexInput={hexInput}
                     onHexChange={handleHexInput}
                 />

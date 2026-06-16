@@ -34,7 +34,9 @@ const LoadingHint = ({ t }) => {
         const id = setInterval(() => {
             setIndex(i => {
                 let next;
-                do { next = Math.floor(Math.random() * safeHints.length); } while (next === i);
+                do {
+                    next = Math.floor(Math.random() * safeHints.length);
+                } while (next === i);
                 return next;
             });
         }, 2500);
@@ -68,7 +70,10 @@ const LoadingState = ({ t, author }) => {
                 <div className='absolute inset-x-8 top-1/2 h-0.5 -translate-y-1/2 overflow-hidden rounded-full bg-foreground/15'>
                     <motion.div
                         className='absolute inset-y-0 w-1/3'
-                        style={{ background: 'linear-gradient(to right, transparent, var(--brand), transparent)' }}
+                        style={{
+                            background:
+                                'linear-gradient(to right, transparent, var(--brand), transparent)',
+                        }}
                         initial={{ left: '-33%' }}
                         animate={{ left: '100%' }}
                         transition={{
@@ -80,10 +85,11 @@ const LoadingState = ({ t, author }) => {
                 </div>
                 {/* From node — original author */}
                 <div className='relative z-10 flex size-16 items-center justify-center overflow-hidden rounded-full border-2 border-border bg-card p-0.5 shadow-lg shadow-black/20'>
-                    {author
-                        ? <UserAvatar user={author} isDark={isDark} />
-                        : <GitFork className='size-7 text-muted-foreground' />
-                    }
+                    {author ? (
+                        <UserAvatar user={author} isDark={isDark} />
+                    ) : (
+                        <GitFork className='size-7 text-muted-foreground' />
+                    )}
                 </div>
                 {/* To node — current user */}
                 <div className='relative z-10 flex size-16 items-center justify-center overflow-hidden rounded-full border-2 border-brand/40 bg-card p-0.5 shadow-lg shadow-black/20'>
@@ -134,7 +140,13 @@ export const ForkPage = () => {
             .maybeSingle()
             .then(({ data }) => {
                 const p = data?.profiles;
-                if (p) setAuthor({ uuid: p.uuid, name: p.name, colorDark: p.color_dark, colorLight: p.color_light });
+                if (p)
+                    setAuthor({
+                        uuid: p.uuid,
+                        name: p.name,
+                        colorDark: p.color_dark,
+                        colorLight: p.color_light,
+                    });
             });
     }, [binId]);
 
@@ -145,13 +157,19 @@ export const ForkPage = () => {
             .catch(err => setError(err?.message ?? t('fork.error_unknown')));
     };
 
-    useEffect(() => { run(); }, [binId]);
+    useEffect(() => {
+        run();
+    }, [binId]);
 
     return (
         <div className='relative flex min-h-screen flex-col items-center justify-center gap-6 bg-background p-8 overflow-hidden'>
             <FlickeringGrid className='absolute inset-0 z-0' />
             <div className='relative z-10 flex w-full justify-center'>
-                {error ? <ErrorState error={error} onRetry={run} t={t} /> : <LoadingState t={t} author={author} />}
+                {error ? (
+                    <ErrorState error={error} onRetry={run} t={t} />
+                ) : (
+                    <LoadingState t={t} author={author} />
+                )}
             </div>
         </div>
     );

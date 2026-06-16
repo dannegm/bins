@@ -293,7 +293,9 @@ export const TabBar = ({
 
     return (
         <div className='flex h-10 shrink-0 items-stretch border-b border-border bg-surface'>
-            {!isReadonly && <UndoRedo canUndo={canUndo} canRedo={canRedo} onUndo={onUndo} onRedo={onRedo} />}
+            {!isReadonly && (
+                <UndoRedo canUndo={canUndo} canRedo={canRedo} onUndo={onUndo} onRedo={onRedo} />
+            )}
             <TabStrip
                 files={files}
                 activeFileId={activeFileId}

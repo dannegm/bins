@@ -23,12 +23,15 @@ import {
 
 const dateFnsLocales = { en: enUS, es };
 
-
 const LanguageStack = ({ files }) => {
     const seen = new Set();
     const unique = files
         .map(f => getLanguage(f.language))
-        .filter(l => { if (seen.has(l.id)) return false; seen.add(l.id); return true; });
+        .filter(l => {
+            if (seen.has(l.id)) return false;
+            seen.add(l.id);
+            return true;
+        });
 
     if (!unique.length) return null;
 
@@ -37,7 +40,9 @@ const LanguageStack = ({ files }) => {
 
     return (
         <div className='flex items-center -space-x-1.5'>
-            {visible.map(lang => <LangDot key={lang.id} lang={lang} />)}
+            {visible.map(lang => (
+                <LangDot key={lang.id} lang={lang} />
+            ))}
             {extra > 0 && (
                 <span className='flex size-5 shrink-0 items-center justify-center rounded-full border border-background bg-surface text-[9px] font-medium text-muted-foreground'>
                     +{extra}
@@ -63,19 +68,22 @@ const AccessBadge = ({ bin, t, canDelete }) => {
     const badgeClass = cn(
         'flex shrink-0 items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] font-medium [&>svg]:size-2.5',
         {
-            'border-(--ro-border-light) bg-(--ro-bg-light) text-(--ro-text-light) dark:border-(--ro-border-dark) dark:bg-(--ro-bg-dark) dark:text-(--ro-text-dark)': bin.is_readonly,
+            'border-(--ro-border-light) bg-(--ro-bg-light) text-(--ro-text-light) dark:border-(--ro-border-dark) dark:bg-(--ro-bg-dark) dark:text-(--ro-text-dark)':
+                bin.is_readonly,
             'border-success/40 bg-success/10 text-success': !bin.is_readonly,
         },
     );
 
-    const roStyle = bin.is_readonly ? {
-        '--ro-border-light': '#6366f150',
-        '--ro-bg-light': '#6366f115',
-        '--ro-text-light': '#4338ca',
-        '--ro-border-dark': '#818cf850',
-        '--ro-bg-dark': '#818cf815',
-        '--ro-text-dark': '#a5b4fc',
-    } : undefined;
+    const roStyle = bin.is_readonly
+        ? {
+              '--ro-border-light': '#6366f150',
+              '--ro-bg-light': '#6366f115',
+              '--ro-text-light': '#4338ca',
+              '--ro-border-dark': '#818cf850',
+              '--ro-bg-dark': '#818cf815',
+              '--ro-text-dark': '#a5b4fc',
+          }
+        : undefined;
 
     const badge = (
         <span className={badgeClass} style={roStyle}>
@@ -93,13 +101,24 @@ const AccessBadge = ({ bin, t, canDelete }) => {
                 <div className='w-0 overflow-hidden transition-all duration-200 group-hover/card:ml-1.5 group-hover/card:w-4'>
                     <PopoverTrigger
                         className='flex size-4 cursor-pointer items-center justify-center text-muted-foreground transition-colors hover:text-destructive'
-                        onClick={e => { e.preventDefault(); e.stopPropagation(); }}
+                        onClick={e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }}
                     >
                         <Trash2 className='size-3.5' />
                     </PopoverTrigger>
                 </div>
             </div>
-            <PopoverContent side='bottom' align='end' className='w-60' onClick={e => { e.preventDefault(); e.stopPropagation(); }}>
+            <PopoverContent
+                side='bottom'
+                align='end'
+                className='w-60'
+                onClick={e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }}
+            >
                 <PopoverHeader>
                     <PopoverTitle>{t('bins.card.delete_title')}</PopoverTitle>
                     <PopoverDescription>{t('bins.card.delete_description')}</PopoverDescription>
@@ -118,7 +137,11 @@ const AccessBadge = ({ bin, t, canDelete }) => {
                         size='sm'
                         className='flex-1'
                         disabled={isPending}
-                        onClick={e => { e.preventDefault(); e.stopPropagation(); remove(); }}
+                        onClick={e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            remove();
+                        }}
                     >
                         {t('bins.card.delete_confirm')}
                     </Button>
