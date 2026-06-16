@@ -24,6 +24,7 @@ export const CommandPalette = () => {
     const [pages, setPages] = useState([]);
     const [search, setSearch] = useState('');
     const [isTyping, setIsTyping] = useState(false);
+    const [quickMap, setQuickMap] = useState({});
     const $list = useRef(null);
 
     useEffect(() => {
@@ -87,6 +88,20 @@ export const CommandPalette = () => {
 
     const pageData = currentPage !== 'root' ? pages_map[currentPage] : null;
 
+    useEffect(() => {
+        const id = setTimeout(() => {
+            const visible = [...($list.current?.querySelectorAll('[cmdk-item]') ?? [])]
+                .filter(el => el.offsetParent !== null);
+            const map = {};
+            visible.slice(0, 9).forEach((el, i) => {
+                const val = el.getAttribute('data-value');
+                if (val) map[val] = i + 1;
+            });
+            setQuickMap(map);
+        }, 0);
+        return () => clearTimeout(id);
+    }, [search, isTyping, currentPage, isOpen]);
+
     return (
         <AnimatePresence>
             {isOpen && (
@@ -144,10 +159,7 @@ export const CommandPalette = () => {
                                 />
                             </div>
 
-                            {(() => {
-                                let quickIdx = 0;
-                                return (
-                                    <Command.List ref={$list} className='max-h-80 overflow-y-auto p-2'>
+                            <Command.List ref={$list} className='max-h-80 overflow-y-auto p-2'>
                                         <Command.Empty className='py-8 text-center text-sm text-muted-foreground'>
                                             {t('command_palette.empty')}
                                         </Command.Empty>
@@ -160,7 +172,7 @@ export const CommandPalette = () => {
                                             >
                                                 {items.map(({ id, label, icon, shortcutId, action, page }) => {
                                                     const keys = shortcut(shortcutId);
-                                                    const num = quickIdx < 9 ? ++quickIdx : null;
+                                                    const num = quickMap[id] ?? null;
                                                     return (
                                                         <Command.Item
                                                             key={id}
@@ -191,7 +203,7 @@ export const CommandPalette = () => {
                                         {currentPage !== 'root' && pageData && (
                                             <Command.Group>
                                                 {pageData.items.map(({ id, label, icon, action }) => {
-                                                    const num = quickIdx < 9 ? ++quickIdx : null;
+                                                    const num = quickMap[id] ?? null;
                                                     return (
                                                         <Command.Item
                                                             key={id}
@@ -211,8 +223,6 @@ export const CommandPalette = () => {
                                             </Command.Group>
                                         )}
                                     </Command.List>
-                                );
-                            })()}
 
                             <div className='flex items-center gap-4 border-t border-border px-4 py-2.5 text-[11px] text-muted-foreground'>
                                 <KbdGroup>

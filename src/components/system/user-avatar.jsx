@@ -16,7 +16,7 @@ export const UserAvatar = ({ className, profileId }) => {
     });
 
     const source = profileId ? profile : user;
-    const seed = source?.name + source?.uuid;
+    const seed = source ? source.name + source.uuid : null;
     const color = isDark ? source?.colorDark : source?.colorLight;
 
     return (
@@ -24,7 +24,7 @@ export const UserAvatar = ({ className, profileId }) => {
             className={cn('size-10 bg-(--user-color) rounded-full overflow-hidden', className)}
             style={{ '--user-color': color }}
         >
-            <img src={getAvatarUrl(seed)} alt='User Avatar' className='size-full' />
+            {seed && <img src={getAvatarUrl(seed)} alt='User Avatar' className='size-full' />}
         </div>
     );
 };
