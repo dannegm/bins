@@ -167,6 +167,20 @@
             "export_session_button": "Generar enlace de sesión"
         }
     },
+    "profile": {
+        "you": "tú",
+        "not_found_title": "Perfil no encontrado",
+        "not_found_description": "Este usuario no existe o todavía no ha sido visto.",
+        "stats": {
+            "bins": "bins",
+            "views": "vistas"
+        },
+        "bins": {
+            "title": "Bins",
+            "empty_title": "Aún no hay bins",
+            "empty_description": "Este usuario todavía no ha publicado ningún bin."
+        }
+    },
     "editor": {
         "bin_header": {
             "untitled": "Sin título",

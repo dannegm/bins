@@ -167,6 +167,20 @@
             "export_session_button": "Generate session link"
         }
     },
+    "profile": {
+        "you": "you",
+        "not_found_title": "Profile not found",
+        "not_found_description": "This user doesn't exist or hasn't been seen yet.",
+        "stats": {
+            "bins": "bins",
+            "views": "views"
+        },
+        "bins": {
+            "title": "Bins",
+            "empty_title": "No bins yet",
+            "empty_description": "This user hasn't published any bins yet."
+        }
+    },
     "editor": {
         "bin_header": {
             "untitled": "Untitled",
