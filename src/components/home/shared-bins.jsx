@@ -10,7 +10,7 @@ const useSharedBins = uuid =>
         queryFn: async () => {
             const { data, error } = await supabase()
                 .from('bin_collaborators')
-                .select('bin:bins(*)')
+                .select('bin:bins(*, bin_files(count))')
                 .eq('user_id', uuid)
                 .neq('bins.author_id', uuid)
                 .order('joined_at', { ascending: false });

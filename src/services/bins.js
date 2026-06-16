@@ -37,3 +37,8 @@ export const updateBin = async (binId, data) => {
     const { error } = await supabase().from('bins').update(data).eq('id', binId);
     if (error) throw error;
 };
+
+export const deleteBin = async binId => {
+    const { error } = await supabase().from('bins').delete().eq('id', binId);
+    if (error) throw error;
+};

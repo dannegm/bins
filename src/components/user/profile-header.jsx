@@ -2,20 +2,31 @@ import { useCopyToClipboard } from '@uidotdev/usehooks';
 import { Copy, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/helpers/utils';
-import { getAvatarUrl } from '@/helpers/avatar';
 import { useIdentity } from '@/hooks/use-identity';
 import { useTheme } from '@/providers/theme-provider';
+import { UserAvatar } from '@/components/system/user-avatar';
 import { FlickeringGrid } from '@/ui/flickering-grid';
 import { Skeleton } from '@/ui/skeleton';
 
-const StatPill = ({ label, value, color }) => (
+const StatPill = ({ label, value }) => (
     <div className='flex flex-col items-center gap-0.5'>
-        <span
-            className='text-2xl font-bold tabular-nums text-(--stat-color)'
-            style={{ '--stat-color': color }}
-        >
-            {value}
-        </span>
+        <span className='text-2xl font-bold tabular-nums text-foreground'>{value}</span>
+        <span className='text-xs text-muted-foreground'>{label}</span>
+    </div>
+);
+
+const ColorStat = ({ colorDark, colorLight, label }) => (
+    <div className='flex flex-col items-center gap-1'>
+        <div className='flex items-center -space-x-2 py-1'>
+            <span
+                className='size-6 rounded-full border-2 border-background bg-(--cd) shadow-sm shadow-black/20'
+                style={{ '--cd': colorDark }}
+            />
+            <span
+                className='size-6 rounded-full border-2 border-background bg-(--cl) shadow-sm shadow-black/20'
+                style={{ '--cl': colorLight }}
+            />
+        </div>
         <span className='text-xs text-muted-foreground'>{label}</span>
     </div>
 );
@@ -53,7 +64,6 @@ export const ProfileHeader = ({ profile, bins, isLoading }) => {
     if (!profile) return <ProfileNotFound t={t} />;
 
     const color = isDark ? profile.colorDark : profile.colorLight;
-    const seed = profile.name + profile.uuid;
     const isMe = user?.uuid === profile.uuid;
     const totalViews = bins.reduce((sum, bin) => sum + (bin.views || 0), 0);
 
@@ -74,9 +84,10 @@ export const ProfileHeader = ({ profile, bins, isLoading }) => {
             <div className='absolute top-0 inset-x-0 h-0.5 bg-(--user-color)' />
 
             <div className='relative z-10'>
-                <div className='size-24 overflow-hidden rounded-full border-2 border-(--user-color) shadow-lg shadow-black/30'>
-                    <img src={getAvatarUrl(seed)} alt={profile.name} className='size-full' />
-                </div>
+                <UserAvatar
+                    profileId={profile.uuid}
+                    className='size-24 border-2 border-(--user-color) shadow-lg shadow-black/30'
+                />
                 {isMe && (
                     <span className='absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-border bg-surface px-2 py-0.5 text-[10px] font-medium text-muted-foreground'>
                         {t('profile.you')}
@@ -104,12 +115,14 @@ export const ProfileHeader = ({ profile, bins, isLoading }) => {
             </div>
 
             <div className='relative z-10 flex items-center gap-10'>
-                <StatPill label={t('profile.stats.bins')} value={bins.length} color={color} />
+                <StatPill label={t('profile.stats.bins')} value={bins.length} />
                 <div className='h-8 w-px bg-border' />
-                <StatPill
-                    label={t('profile.stats.views')}
-                    value={totalViews.toLocaleString()}
-                    color={color}
+                <StatPill label={t('profile.stats.views')} value={totalViews.toLocaleString()} />
+                <div className='h-8 w-px bg-border' />
+                <ColorStat
+                    colorDark={profile.colorDark}
+                    colorLight={profile.colorLight}
+                    label={t('profile.stats.color')}
                 />
             </div>
         </div>

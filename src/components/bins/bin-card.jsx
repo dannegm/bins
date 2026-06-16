@@ -1,39 +1,132 @@
+import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
-import { Eye, Globe, Lock, GitFork } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Eye, File, GitFork, Lock, LockOpen, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/helpers/utils';
+import { useIdentity } from '@/hooks/use-identity';
+import { useAdmin } from '@/hooks/use-admin';
+import { deleteBin } from '@/services/bins';
+import { Button } from '@/ui/button';
+import {
+    Popover,
+    PopoverContent,
+    PopoverHeader,
+    PopoverTitle,
+    PopoverDescription,
+    PopoverTrigger,
+} from '@/ui/popover';
 
 const dateFnsLocales = { en: enUS, es };
 
+const AccessBadge = ({ bin, t, canDelete }) => {
+    const queryClient = useQueryClient();
+    const [open, setOpen] = useState(false);
+
+    const { mutate: remove, isPending } = useMutation({
+        mutationFn: () => deleteBin(bin.id),
+        onSuccess: () => {
+            setOpen(false);
+            queryClient.invalidateQueries({ queryKey: ['bins'] });
+            queryClient.invalidateQueries({ queryKey: ['profile-bins'] });
+        },
+    });
+
+    const stopProp = e => e.stopPropagation();
+
+    const badgeClass = cn(
+        'flex shrink-0 items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-medium [&>svg]:size-2.5',
+        {
+            'bg-warning/10 text-warning': bin.is_readonly,
+            'bg-success/10 text-success': !bin.is_readonly,
+        },
+    );
+
+    const badge = (
+        <span className={badgeClass}>
+            {bin.is_readonly ? <Lock /> : <LockOpen />}
+            {bin.is_readonly ? t('bins.card.readonly') : t('bins.card.editable')}
+        </span>
+    );
+
+    if (!canDelete) return badge;
+
+    return (
+        <Popover open={open} onOpenChange={setOpen}>
+            <div className='flex items-center overflow-hidden'>
+                {badge}
+                <div
+                    className='w-0 overflow-hidden transition-all duration-200 group-hover/card:ml-1.5 group-hover/card:w-4'
+                    onClick={stopProp}
+                >
+                    <PopoverTrigger className='flex size-4 cursor-pointer items-center justify-center text-muted-foreground transition-colors hover:text-destructive'>
+                        <Trash2 className='size-3.5' />
+                    </PopoverTrigger>
+                </div>
+            </div>
+            <PopoverContent side='top' className='w-60' onClick={stopProp}>
+                <PopoverHeader>
+                    <PopoverTitle>{t('bins.card.delete_title')}</PopoverTitle>
+                    <PopoverDescription>{t('bins.card.delete_description')}</PopoverDescription>
+                </PopoverHeader>
+                <div className='flex gap-2 pt-1'>
+                    <Button
+                        variant='outline'
+                        size='sm'
+                        className='flex-1'
+                        onClick={() => setOpen(false)}
+                    >
+                        {t('bins.card.delete_cancel')}
+                    </Button>
+                    <Button
+                        variant='destructive'
+                        size='sm'
+                        className='flex-1'
+                        disabled={isPending}
+                        onClick={e => { e.preventDefault(); e.stopPropagation(); remove(); }}
+                    >
+                        {t('bins.card.delete_confirm')}
+                    </Button>
+                </div>
+            </PopoverContent>
+        </Popover>
+    );
+};
+
 export const BinCard = ({ bin }) => {
     const { t, i18n } = useTranslation();
+    const { user } = useIdentity();
+    const { isAdmin } = useAdmin();
     const locale = dateFnsLocales[i18n.language] ?? enUS;
     const formatDate = iso => format(new Date(iso), t('formats.date.short'), { locale });
+    const canDelete = user?.uuid === bin.author_id || isAdmin;
 
     return (
         <Link
             to='/editor/$binId'
             params={{ binId: bin.id }}
             className={cn(
-                'group flex flex-col gap-3 rounded-xl border border-border bg-card p-4',
-                'transition-all hover:border-border/60 hover:bg-accent',
+                'group/card flex flex-col gap-3 rounded-xl border border-border bg-card p-4',
+                'transition-all hover:border-border/60 hover:bg-surface-raised',
             )}
         >
             <div className='flex items-start justify-between gap-2'>
                 <span className='truncate text-sm font-medium text-card-foreground'>
                     {bin.title || t('bins.card.untitled')}
                 </span>
-                <span className='[&>svg]:size-3.5 shrink-0 text-muted-foreground'>
-                    {bin.visibility === 'public' ? <Globe /> : <Lock />}
-                </span>
+                <AccessBadge bin={bin} t={t} canDelete={canDelete} />
             </div>
 
             <div className='flex items-center gap-3 text-xs text-muted-foreground'>
                 <span className='flex items-center gap-1 [&>svg]:size-3'>
                     <Eye />
                     {bin.views}
+                </span>
+                <span className='flex items-center gap-1 [&>svg]:size-3'>
+                    <File />
+                    {bin.bin_files?.[0]?.count ?? 0}
                 </span>
                 {bin.forked_from && (
                     <span className='flex items-center gap-1 [&>svg]:size-3'>

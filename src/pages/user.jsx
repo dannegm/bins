@@ -20,7 +20,7 @@ const useProfileBins = uuid =>
         queryFn: async () => {
             const { data, error } = await supabase()
                 .from('bins')
-                .select('*')
+                .select('*, bin_files(count)')
                 .eq('author_id', uuid)
                 .order('updated_at', { ascending: false });
             if (error) throw error;

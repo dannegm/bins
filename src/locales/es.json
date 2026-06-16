@@ -42,7 +42,13 @@
     "bins": {
         "card": {
             "untitled": "Sin título",
-            "forked": "bifurcado"
+            "forked": "bifurcado",
+            "readonly": "solo lectura",
+            "editable": "editable",
+            "delete_title": "¿Eliminar bin?",
+            "delete_description": "Esto eliminará permanentemente el bin y todos sus archivos. No se puede deshacer.",
+            "delete_cancel": "Cancelar",
+            "delete_confirm": "Eliminar"
         }
     },
     "settings": {
@@ -173,7 +179,8 @@
         "not_found_description": "Este usuario no existe o todavía no ha sido visto.",
         "stats": {
             "bins": "bins",
-            "views": "vistas"
+            "views": "vistas",
+            "color": "colores"
         },
         "bins": {
             "title": "Bins",

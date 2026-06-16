@@ -42,7 +42,13 @@
     "bins": {
         "card": {
             "untitled": "Untitled",
-            "forked": "forked"
+            "forked": "forked",
+            "readonly": "read-only",
+            "editable": "editable",
+            "delete_title": "Delete bin?",
+            "delete_description": "This will permanently delete the bin and all its files. This cannot be undone.",
+            "delete_cancel": "Cancel",
+            "delete_confirm": "Delete"
         }
     },
     "settings": {
@@ -173,7 +179,8 @@
         "not_found_description": "This user doesn't exist or hasn't been seen yet.",
         "stats": {
             "bins": "bins",
-            "views": "views"
+            "views": "views",
+            "color": "colors"
         },
         "bins": {
             "title": "Bins",
