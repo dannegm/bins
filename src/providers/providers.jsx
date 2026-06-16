@@ -3,6 +3,7 @@ import '@/css/index.css';
 
 import { NuqsAdapter } from 'nuqs/adapters/tanstack-router';
 import { createProviders } from '@/helpers/providers';
+import { HeadlessGuard } from './headless-guard';
 import { QueryProvider } from './query-provider';
 import { BusProvider } from './bus-provider';
 import { IdentityProvider } from './identity-provider';
@@ -23,6 +24,7 @@ const CommandsBridge = ({ children }) => {
 };
 
 export const Providers = createProviders([
+    [HeadlessGuard],
     [NuqsAdapter],
     [IdentityProvider],
     [BusProvider],
