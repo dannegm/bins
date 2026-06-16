@@ -312,6 +312,11 @@ create table bins.profiles (
   name         text not null,
   color_light  text not null default '#e67e22',
   color_dark   text not null default '#f39c12',
+  ip_hash      text,                              -- SHA-256 del IP público (registrado en primer visit)
+  country      text,                              -- ej: "MX", "US"
+  city         text,                              -- ej: "Mexico City"
+  user_agent   text,                              -- UA completo (browser, OS, device se infieren en runtime)
+  is_bot       boolean not null default false,    -- true si webdriver o patrón de bot detectado en UA
   created_at   timestamptz not null default now(),
   updated_at   timestamptz default now()
 );
@@ -486,9 +491,16 @@ create policy "bin_collaborators: dejar de seguir"
   using (user_id = (current_setting('request.headers')::json->>'x-client-id')::uuid);
 ```
 
-### Cron job de limpieza
+### Índices
 
 ```sql
+create index if not exists idx_profiles_is_bot on bins.profiles (is_bot);
+```
+
+### Cron jobs de limpieza
+
+```sql
+-- Cada 5 minutos: borrar bins expirados
 select cron.schedule(
   'cleanup-expired-bins',
   '*/5 * * * *',
@@ -497,6 +509,13 @@ select cron.schedule(
     where expires_at is not null
     and expires_at < now();
   $$
+);
+
+-- Cada lunes a las 3am: borrar perfiles de bots (cascada a bins y archivos)
+select cron.schedule(
+  'delete-bot-profiles',
+  '0 3 * * 1',
+  $$delete from bins.profiles where is_bot = true$$
 );
 ```
 
@@ -531,6 +550,10 @@ export const $schema = supabase.schema('bins');
 - El `uuid` **nunca cambia**
 - `ydoc_state` persiste el estado de Yjs para usuarios que entran tarde
 - `content` es snapshot de texto plano para preview sin cargar Yjs
+- El fingerprint (`ip_hash`, `country`, `city`, `user_agent`, `is_bot`) se registra **solo en el primer visit** (cuando el perfil se crea). No se actualiza en visitas posteriores
+- `ip_hash` es SHA-256 del IP público obtenido vía `ip-api.com` — nunca se guarda el IP crudo
+- `is_bot` se calcula client-side: `true` si `navigator.webdriver === true`, o si el UA contiene patrones conocidos de bots (Googlebot, GPTBot, Claude-User, Headless*, etc.)
+- El cron semanal de bots hace delete en cascada — si un bot creó bins, también se borran
 
 ---
 
@@ -556,8 +579,9 @@ export const $schema = supabase.schema('bins');
 **Ciclo de vida:**
 
 1. Al arrancar la app → upsert silencioso de `{ uuid, name, color_light, color_dark }` en `bins.profiles`
-2. Al cambiar el nombre o los colores en settings → upsert inmediato en `bins.profiles`
-3. El `uuid` nunca cambia bajo ninguna circunstancia
+2. Si es el **primer visit** (perfil recién creado) → recoger fingerprint vía `ip-api.com` + `navigator.userAgent` + `navigator.webdriver` → UPDATE `bins.profiles` con `{ ip_hash, country, city, user_agent, is_bot }`
+3. Al cambiar el nombre o los colores en settings → upsert inmediato en `bins.profiles`
+4. El `uuid` nunca cambia bajo ninguna circunstancia
 
 ### Schema de settings
 
@@ -1543,7 +1567,10 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA bins GRANT ALL ON SEQUENCES
 - [x] Crear función y trigger `enforce_bin_files_limit`
 - [x] Ejecutar SQL de RLS
 - [x] Habilitar `pg_cron` desde Dashboard → Database → Extensions
-- [x] Registrar cron job de limpieza
+- [x] Registrar cron job de limpieza de bins expirados
+- [ ] Agregar columnas de fingerprint a `bins.profiles` (migration 004)
+- [ ] Crear índice `idx_profiles_is_bot`
+- [ ] Registrar cron job de borrado de bots
 - [x] Habilitar Realtime para las tablas necesarias
 
 **Extensiones**

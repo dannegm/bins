@@ -207,7 +207,9 @@
             "total_views": "total views",
             "total_files": "total files",
             "readonly_bins": "read-only bins",
-            "total_users": "total users"
+            "total_users": "total users",
+            "human_users": "humans",
+            "bot_users": "bots"
         },
         "bins": {
             "search_placeholder": "Search by title, ID, or author…",
@@ -247,11 +249,28 @@
             "col_actions": "Actions",
             "delete": "Delete user",
             "delete_title": "Delete user?",
-            "delete_description": "This will permanently delete the user profile. Their bins will remain but become authorless."
+            "delete_description": "This will permanently delete the user profile. Their bins will remain but become authorless.",
+            "col_type": "Type",
+            "col_browser": "Browser",
+            "col_os": "OS",
+            "col_device": "Device",
+            "col_location": "Location",
+            "filter_all": "All",
+            "filter_human": "Humans",
+            "filter_bot": "Bots",
+            "badge_bot": "Bot",
+            "badge_human": "Human",
+            "mark_as_bot": "Mark as bot",
+            "mark_as_human": "Mark as human",
+            "scheduled_deletion": "Scheduled for deletion on {{date}}",
+            "unknown_bot": "Bot",
+            "os_na": "N/A"
         }
     },
     "profile": {
         "you": "you",
+        "bot_badge": "Bot",
+        "scheduled_deletion": "Scheduled for deletion on {{date}}",
         "not_found_title": "Profile not found",
         "not_found_description": "This user doesn't exist or hasn't been seen yet.",
         "stats": {

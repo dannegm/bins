@@ -1,5 +1,8 @@
 import { useCopyToClipboard } from '@uidotdev/usehooks';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, Bot } from 'lucide-react';
+import { nextBotDeletion } from '@/helpers/ua-parser';
+import { format } from 'date-fns';
+import { enUS, es } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/helpers/utils';
 import { useIdentity } from '@/hooks/use-identity';
@@ -83,11 +86,17 @@ const ProfileNotFound = ({ t }) => (
     </div>
 );
 
+const dateFnsLocales = { en: enUS, es };
+
 export const ProfileHeader = ({ profile, bins, isLoading }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { user } = useIdentity();
     const { isDark } = useTheme();
     const [copiedText, copy] = useCopyToClipboard();
+    const locale = dateFnsLocales[i18n.language] ?? enUS;
+    const deletionDate = profile?.isBot
+        ? format(nextBotDeletion(), t('formats.date.short_time'), { locale })
+        : null;
 
     if (isLoading) return <ProfileHeaderLoading />;
     if (!profile) return <ProfileNotFound t={t} />;
@@ -120,6 +129,14 @@ export const ProfileHeader = ({ profile, bins, isLoading }) => {
                 {isMe && (
                     <span className='absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-border bg-surface px-2 py-0.5 text-[10px] font-medium text-muted-foreground'>
                         {t('profile.you')}
+                    </span>
+                )}
+                {profile.isBot && !isMe && (
+                    <span className='absolute -bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1 whitespace-nowrap rounded-full border border-destructive/30 bg-destructive/10 px-2 py-0.5 text-[10px] font-medium text-destructive'
+                        title={deletionDate ? t('profile.scheduled_deletion', { date: deletionDate }) : undefined}
+                    >
+                        <Bot className='size-2.5' />
+                        {t('profile.bot_badge')}
                     </span>
                 )}
             </div>
