@@ -320,7 +320,7 @@ create table bins.profiles (
 create table bins.bins (
   id            text primary key,         -- nanoid corto, ej: "xK3mPq"
   title         text default 'Untitled',
-  author_id     uuid not null references bins.profiles(uuid) on delete set null,
+  author_id     uuid not null references bins.profiles(uuid) on delete cascade,
   visibility    text default 'public',    -- 'public' | 'unlisted'
   is_readonly   boolean default true,
   views         int default 0,
