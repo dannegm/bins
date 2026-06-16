@@ -1,3 +1,4 @@
+import Color from 'color';
 import { uniqueNamesGenerator, adjectives, animals, colors } from 'unique-names-generator';
 import { nouns } from '@/constants/word-lists';
 
@@ -22,7 +23,7 @@ export const generateBinName = () =>
 export const generateColors = () => {
     const hue = Math.floor(Math.random() * 360);
     return {
-        colorDark: `hsl(${hue}, 90%, 68%)`,
-        colorLight: `hsl(${hue}, 72%, 35%)`,
+        colorDark: Color.hsl(hue, 90, 68).hex(),
+        colorLight: Color.hsl(hue, 72, 35).hex(),
     };
 };
