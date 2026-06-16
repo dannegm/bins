@@ -102,6 +102,14 @@ export const createCommands = ({ emit }) => [
                 keywords: ['lock', 'unlock', 'readonly', 'read-only', 'edit', 'visibility'],
                 action: () => emit('bin:change-visibility'),
             },
+            {
+                id: 'peer-nudge',
+                label: 'Nudge peers',
+                icon: 'bell',
+                scope: ['/editor'],
+                keywords: ['nudge', 'shake', 'notify', 'ping', 'buzz'],
+                action: () => emit('peer:nudge'),
+            },
         ],
     },
     {
