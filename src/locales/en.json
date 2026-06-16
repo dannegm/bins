@@ -268,7 +268,8 @@
             "per_page": "Rows per page",
             "page_of": "{{page}} of {{total}}"
         },
-        "count_chip": "{{shown}} of {{total}} total"
+        "count_chip": "{{shown}} of {{total}} total",
+        "refresh": "Refresh data"
     },
     "profile": {
         "you": "you",

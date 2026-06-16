@@ -15,6 +15,7 @@ import {
     Pencil,
     Trash2,
     Share2,
+    RefreshCw,
 } from 'lucide-react';
 import { supabase } from '@/services/supabase';
 import { deleteBin, updateBin } from '@/services/bins';
@@ -51,6 +52,7 @@ const useAdminBins = () =>
             if (error) throw error;
             return data ?? [];
         },
+        refetchOnWindowFocus: false,
     });
 
 const LangStack = ({ files }) => {
@@ -356,7 +358,7 @@ const StatsBar = ({ bins, t }) => {
 export const BinsTable = () => {
     const { t, i18n } = useTranslation();
     const [search, setSearch] = useState('');
-    const { data: bins = [], isLoading } = useAdminBins();
+    const { data: bins = [], isLoading, isFetching, refetch } = useAdminBins();
     const locale = dateFnsLocales[i18n.language] ?? enUS;
     const formatDate = iso => format(new Date(iso), t('formats.date.short_time'), { locale });
 
@@ -388,6 +390,14 @@ export const BinsTable = () => {
                 <span className='whitespace-nowrap rounded-full border border-border bg-surface px-2.5 py-0.5 text-xs text-muted-foreground'>
                     {t('admin.count_chip', { shown: filtered.length, total: bins.length })}
                 </span>
+                <button
+                    onClick={() => refetch()}
+                    disabled={isFetching}
+                    title={t('admin.refresh')}
+                    className='flex size-7 items-center justify-center rounded-lg border border-border bg-surface text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50 [&>svg]:size-3.5'
+                >
+                    <RefreshCw className={isFetching ? 'animate-spin' : ''} />
+                </button>
             </div>
 
             <div className='overflow-hidden rounded-xl border border-border'>

@@ -268,7 +268,8 @@
             "per_page": "Filas por página",
             "page_of": "{{page}} de {{total}}"
         },
-        "count_chip": "{{shown}} de {{total}} total"
+        "count_chip": "{{shown}} de {{total}} total",
+        "refresh": "Actualizar datos"
     },
     "profile": {
         "you": "tú",

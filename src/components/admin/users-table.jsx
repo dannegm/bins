@@ -25,6 +25,7 @@ import {
     ArrowDown,
     ChevronLeft,
     ChevronRight,
+    RefreshCw,
 } from 'lucide-react';
 import { supabase } from '@/services/supabase';
 import { getAvatarUrl } from '@/helpers/avatar';
@@ -591,8 +592,10 @@ export const UsersTable = () => {
     const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
     const [perPage, setPerPage] = useQueryState('per_page', parseAsInteger.withDefault(25));
 
-    const { data: stats } = useAdminUsersStats();
-    const { data: { rows = [], total = 0 } = {}, isLoading } = useAdminUsers({
+    const queryClient = useQueryClient();
+
+    const { data: stats, isFetching: isFetchingStats } = useAdminUsersStats();
+    const { data: { rows = [], total = 0 } = {}, isLoading, isFetching } = useAdminUsers({
         page,
         perPage,
         filter,
@@ -601,6 +604,11 @@ export const UsersTable = () => {
         search,
     });
     const { mutate: toggleBot, isPending: isTogglingBot } = useToggleBot();
+
+    const handleRefresh = () => {
+        queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+        queryClient.invalidateQueries({ queryKey: ['admin-users-stats'] });
+    };
 
     const totalPages = Math.ceil(total / perPage);
 
@@ -663,6 +671,15 @@ export const UsersTable = () => {
                 <span className='whitespace-nowrap rounded-full border border-border bg-surface px-2.5 py-0.5 text-xs text-muted-foreground'>
                     {t('admin.count_chip', { shown: rows.length, total })}
                 </span>
+
+                <button
+                    onClick={handleRefresh}
+                    disabled={isFetching || isFetchingStats}
+                    title={t('admin.refresh')}
+                    className='flex size-7 items-center justify-center rounded-lg border border-border bg-surface text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50 [&>svg]:size-3.5'
+                >
+                    <RefreshCw className={(isFetching || isFetchingStats) ? 'animate-spin' : ''} />
+                </button>
 
                 <div className='ml-auto'>
                     <PerPageSelector perPage={perPage} onPerPage={handlePerPage} t={t} />
