@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { ShieldCheck, LayoutGrid, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { cn } from '@/helpers/utils';
 import { useAdmin } from '@/hooks/use-admin';
 import { Layout } from '@/components/layout/layout';
 import { Footer } from '@/components/layout/footer';
@@ -43,12 +42,12 @@ export const AdminLayout = ({ children }) => {
                             </span>
                         </div>
                         <div className='mt-3 flex gap-1'>
+                            <NavTab to='/admin/users' icon={Users} label={t('admin.nav.users')} />
                             <NavTab
                                 to='/admin/bins'
                                 icon={LayoutGrid}
                                 label={t('admin.nav.bins')}
                             />
-                            <NavTab to='/admin/users' icon={Users} label={t('admin.nav.users')} />
                         </div>
                     </div>
                     <div className='flex-1 p-6 sm:p-8'>{children}</div>

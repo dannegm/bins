@@ -378,6 +378,14 @@ export const BinsTable = () => {
             <StatsBar bins={bins} t={t} />
 
             <div className='mb-4 flex items-center gap-3'>
+                <button
+                    onClick={() => refetch()}
+                    disabled={isFetching}
+                    title={t('admin.refresh')}
+                    className='flex size-7 items-center justify-center rounded-lg border border-border bg-surface text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50 [&>svg]:size-3.5'
+                >
+                    <RefreshCw className={isFetching ? 'animate-spin' : ''} />
+                </button>
                 <div className='relative max-w-sm flex-1'>
                     <Search className='pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground' />
                     <Input
@@ -390,14 +398,6 @@ export const BinsTable = () => {
                 <span className='whitespace-nowrap rounded-full border border-border bg-surface px-2.5 py-0.5 text-xs text-muted-foreground'>
                     {t('admin.count_chip', { shown: filtered.length, total: bins.length })}
                 </span>
-                <button
-                    onClick={() => refetch()}
-                    disabled={isFetching}
-                    title={t('admin.refresh')}
-                    className='flex size-7 items-center justify-center rounded-lg border border-border bg-surface text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50 [&>svg]:size-3.5'
-                >
-                    <RefreshCw className={isFetching ? 'animate-spin' : ''} />
-                </button>
             </div>
 
             <div className='overflow-hidden rounded-xl border border-border'>

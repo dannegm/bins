@@ -56,7 +56,7 @@ export const Sidebar = () => {
             <Spacer />
             <Separator />
 
-            {isAdmin && <NavItem to='/admin/bins' icon={ShieldCheck} label={t('sidebar.admin')} />}
+            {isAdmin && <NavItem to='/admin/users' icon={ShieldCheck} label={t('sidebar.admin')} />}
             <NavItem to='/settings' icon={Settings} label={t('sidebar.settings')} />
             {user?.uuid && <ProfileButton uuid={user.uuid} label={t('sidebar.profile')} />}
         </aside>
