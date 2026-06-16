@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Check } from 'lucide-react';
 import { useSettings } from '@/hooks/use-settings';
 import { UI_THEMES, MONACO_THEMES } from '@/constants/themes';
-import { SUPPORTED_LANGUAGES } from '@/services/i18n';
+import i18n, { SUPPORTED_LANGUAGES } from '@/services/i18n';
 import { cn } from '@/helpers/utils';
 import { SectionHeading, SettingGroup, SettingRow } from './settings-ui';
 
@@ -138,7 +138,10 @@ export const AppearanceSection = () => {
                     <SettingRow label={t('settings.appearance.language_label')}>
                         <select
                             value={language}
-                            onChange={e => setLanguage(e.target.value)}
+                            onChange={e => {
+                                setLanguage(e.target.value);
+                                i18n.changeLanguage(e.target.value);
+                            }}
                             className='h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
                         >
                             {SUPPORTED_LANGUAGES.map(l => (
