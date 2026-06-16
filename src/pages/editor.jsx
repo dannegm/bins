@@ -12,6 +12,7 @@ import { registerCollaborator } from '@/services/bin-collaborators';
 import { getFiles, createFile, updateFile, deleteFile } from '@/services/bin-files';
 import { supabase } from '@/services/supabase';
 import { useIdentity } from '@/hooks/use-identity';
+import { useAdmin } from '@/hooks/use-admin';
 import { useListener, useEvents } from '@/providers/bus-provider';
 import { getLanguageByFilename } from '@/constants/languages';
 import { FlickeringGrid } from '@/ui/flickering-grid';
@@ -41,6 +42,7 @@ export const EditorPage = () => {
     const { t } = useTranslation();
     const { binId } = Route.useParams();
     const { user } = useIdentity();
+    const { isAdmin } = useAdmin();
     const { emit } = useEvents();
 
     const [bin, setBin] = useState(null);
@@ -346,7 +348,7 @@ export const EditorPage = () => {
     }, [binId]);
 
     const isAuthor = user?.uuid === bin?.author_id;
-    const isGuestReadonly = !isAuthor && (bin?.is_readonly ?? true);
+    const isGuestReadonly = !isAuthor && !isAdmin && (bin?.is_readonly ?? true);
 
     const broadcast = (event, payload) => {
         $binChannel.current?.send({ type: 'broadcast', event, payload });
@@ -435,7 +437,8 @@ export const EditorPage = () => {
             <div className='flex h-full flex-col overflow-hidden'>
                 <BinHeader
                     bin={bin}
-                    isAuthor={isAuthor}
+                    isAuthor={isAuthor || isAdmin}
+                    isAdmin={isAdmin && !isAuthor}
                     onTitleChange={handleTitleChange}
                     onReadonlyToggle={handleReadonlyToggle}
                     onShare={handleShare}

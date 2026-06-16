@@ -286,7 +286,8 @@
             "fork_title": "Fork this bin",
             "fork_description": "A copy of this bin will be created with all its files. You will be the author of the new bin.",
             "fork_cancel": "Cancel",
-            "fork_confirm": "Fork"
+            "fork_confirm": "Fork",
+            "admin_override": "You can edit this bin because you're an admin"
         },
         "tab_bar": {
             "undo": "Undo",

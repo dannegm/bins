@@ -28,7 +28,7 @@ const LangIcon = ({ lang, color }) => {
     return <span className='size-1.5 rounded-full bg-(--dot)' style={{ '--dot': iconColor }} />;
 };
 
-const Divider = () => <span className='text-border'>│</span>;
+const Divider = () => <span className='bg-border h-2/4 w-px'></span>;
 
 const SaveIndicator = ({ status, t }) => {
     const config = {
@@ -198,7 +198,7 @@ const IndentationPicker = ({ t }) => {
 export const StatusBar = ({ language, cursor, lineCount = 1, isLoading = false, saveStatus, peers = [], onLanguageChange }) => {
     const { t } = useTranslation();
     return (
-        <div className='flex h-8 shrink-0 items-center gap-2 border-t border-border bg-surface px-3 text-xs text-muted-foreground'>
+        <div className='flex h-8 shrink-0 items-center gap-2 sm:gap-3 border-t border-border bg-surface px-3 text-xs text-muted-foreground'>
             <LanguagePicker language={language} onLanguageChange={onLanguageChange} />
 
             <Divider />
@@ -221,8 +221,6 @@ export const StatusBar = ({ language, cursor, lineCount = 1, isLoading = false, 
             <IndentationPicker t={t} />
 
             <Divider />
-
-            <span>UTF-8</span>
 
             <SaveIndicator status={saveStatus} t={t} />
 

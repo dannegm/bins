@@ -1,5 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
-import { Lock, LockOpen, Pencil, Share2, Check, GitFork, MoreHorizontal } from 'lucide-react';
+import {
+    Lock,
+    LockOpen,
+    Pencil,
+    Share2,
+    Check,
+    GitFork,
+    MoreHorizontal,
+    ShieldCheck,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { lighten } from 'polished';
 import { useQuery } from '@tanstack/react-query';
@@ -73,7 +82,7 @@ const AuthorChip = ({ authorId, t, className }) => {
     );
 };
 
-export const BinHeader = ({ bin, isAuthor, onTitleChange, onReadonlyToggle, onShare }) => {
+export const BinHeader = ({ bin, isAuthor, isAdmin, onTitleChange, onReadonlyToggle, onShare }) => {
     const { t } = useTranslation();
     const [isEditing, setIsEditing] = useState(false);
     const [draft, setDraft] = useState('');
@@ -133,6 +142,20 @@ export const BinHeader = ({ bin, isAuthor, onTitleChange, onReadonlyToggle, onSh
 
     return (
         <div className='flex h-10 shrink-0 items-center gap-2 border-b border-border px-3'>
+            {/* Admin override indicator */}
+            {isAdmin && bin?.is_readonly && (
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger className='flex shrink-0 items-center text-green-700 dark:text-green-500'>
+                            <ShieldCheck className='size-3.5' />
+                        </TooltipTrigger>
+                        <TooltipContent side='bottom' align='start'>
+                            {t('editor.bin_header.admin_override')}
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+            )}
+
             {/* Lock button */}
             <div className='flex'>
                 <TooltipProvider>
@@ -166,7 +189,7 @@ export const BinHeader = ({ bin, isAuthor, onTitleChange, onReadonlyToggle, onSh
                                 ? t('editor.bin_header.locked_label')
                                 : t('editor.bin_header.unlocked_label')}
                         </TooltipTrigger>
-                        <TooltipContent side='bottom'>
+                        <TooltipContent side='bottom' align='start'>
                             {isAuthor
                                 ? bin?.is_readonly
                                     ? t('editor.bin_header.locked_action')
