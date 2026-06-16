@@ -173,6 +173,63 @@
             "export_session_button": "Generate session link"
         }
     },
+    "admin": {
+        "title": "Admin",
+        "loading": "Loading…",
+        "cancel": "Cancel",
+        "save": "Save",
+        "nav": {
+            "bins": "Bins",
+            "users": "Users"
+        },
+        "stats": {
+            "total_bins": "total bins",
+            "total_views": "total views",
+            "total_files": "total files",
+            "readonly_bins": "read-only bins",
+            "total_users": "total users"
+        },
+        "bins": {
+            "search_placeholder": "Search by title, ID, or author…",
+            "count_label": "bins",
+            "empty": "No bins found.",
+            "no_author": "Unknown",
+            "anonymous": "Anonymous",
+            "view": "View in editor",
+            "copy_link": "Copy link",
+            "copy_link_success": "Link copied!",
+            "edit": "Edit bin",
+            "delete": "Delete bin",
+            "edit_title": "Edit bin",
+            "edit_title_label": "Title",
+            "edit_readonly_label": "Read-only",
+            "col_bin": "Bin",
+            "col_author": "Author",
+            "col_languages": "Languages",
+            "col_files": "Files",
+            "col_views": "Views",
+            "col_status": "Status",
+            "col_updated": "Updated",
+            "col_actions": "Actions"
+        },
+        "users": {
+            "search_placeholder": "Search by name or ID…",
+            "count_label": "users",
+            "empty": "No users found.",
+            "anonymous": "Anonymous",
+            "view_profile": "View profile",
+            "copy_uuid": "Click to copy UUID",
+            "col_user": "User",
+            "col_id": "UUID",
+            "col_colors": "Colors",
+            "col_bins": "Bins",
+            "col_registered": "Registered",
+            "col_actions": "Actions",
+            "delete": "Delete user",
+            "delete_title": "Delete user?",
+            "delete_description": "This will permanently delete the user profile. Their bins will remain but become authorless."
+        }
+    },
     "profile": {
         "you": "you",
         "not_found_title": "Profile not found",
