@@ -187,6 +187,9 @@
             "title": "Bins",
             "empty_title": "No bins yet",
             "empty_description": "This user hasn't published any bins yet."
+        },
+        "shared_with_me": {
+            "title": "Shared with you by this user"
         }
     },
     "editor": {
