@@ -81,7 +81,9 @@
             "title": "Apariencia",
             "ui_theme_label": "Tema de interfaz",
             "monaco_theme_label": "Tema del editor",
-            "language_label": "Idioma"
+            "language_label": "Idioma",
+            "view_source": "Ver fuente",
+            "created_by": "Creado por"
         },
         "editor": {
             "title": "Editor",

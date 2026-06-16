@@ -81,7 +81,9 @@
             "title": "Appearance",
             "ui_theme_label": "Interface theme",
             "monaco_theme_label": "Editor theme",
-            "language_label": "Language"
+            "language_label": "Language",
+            "view_source": "View source",
+            "created_by": "Created by"
         },
         "editor": {
             "title": "Editor",

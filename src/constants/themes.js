@@ -3,7 +3,16 @@ export const UI_THEMES = [
     { id: 'dark', label: 'Dark', isDark: true },
     { id: 'rose-pine-dawn', label: 'Rosé Pine Dawn', isDark: false },
     { id: 'dracula', label: 'Dracula', isDark: true },
+    { id: 'tlapalli-quartz', label: 'Tlapalli Quartz', isDark: false },
 ];
+
+export const THEME_ATTRIBUTIONS = {
+    light: { nick: 'shadcn', license: 'MIT', url: 'https://github.com/shadcn-ui/ui' },
+    dark: { nick: 'shadcn', license: 'MIT', url: 'https://github.com/shadcn-ui/ui' },
+    'rose-pine-dawn': { name: 'Rosé Pine', license: 'MIT', url: 'https://github.com/rose-pine/rose-pine-theme' },
+    dracula: { name: 'Dracula Theme', license: 'MIT', url: 'https://github.com/dracula/dracula-theme' },
+    'tlapalli-quartz': { nick: 'ackzell', license: 'MIT', url: 'https://github.com/ackzell/tlapalli-vscode-theme' },
+};
 
 export const MONACO_THEMES = [
     {
@@ -292,6 +301,123 @@ export const MONACO_THEMES = [
                 'editorBracketMatch.background': '#44475a',
                 'editorBracketMatch.border': '#ff79c6',
                 'editorGutter.background': '#282a36',
+            },
+        },
+    },
+    {
+        id: 'tlapalli-quartz',
+        label: 'Tlapalli Quartz',
+        isDark: false,
+        preview: {
+            bg: '#faf5f9',
+            keyword: '#ac778b',
+            string: '#4c002e',
+            comment: '#b592a9',
+            text: '#7a0033',
+        },
+        definition: {
+            base: 'vs',
+            inherit: false,
+            rules: [
+                { token: '', foreground: '7a0033', background: 'faf5f9' },
+
+                // Comments
+                { token: 'comment', foreground: 'b592a9', fontStyle: 'italic' },
+
+                // Keywords & storage
+                { token: 'keyword', foreground: 'ac778b', fontStyle: 'italic' },
+                { token: 'keyword.control', foreground: 'ac778b', fontStyle: 'italic' },
+                { token: 'keyword.operator', foreground: '5c002e' },
+                { token: 'storage', foreground: 'b5446d' },
+                { token: 'storage.type', foreground: 'b5446d' },
+                { token: 'storage.modifier', foreground: 'ac778b', fontStyle: 'italic' },
+
+                // Strings
+                { token: 'string', foreground: '4c002e' },
+                { token: 'string.escape', foreground: '94264f' },
+                { token: 'string.regexp', foreground: '94264f' },
+
+                // Numbers & constants
+                { token: 'number', foreground: '660029' },
+                { token: 'constant', foreground: 'be4878' },
+                { token: 'constant.numeric', foreground: '660029' },
+                { token: 'constant.language', foreground: 'be4878' },
+                { token: 'constant.character.escape', foreground: '94264f' },
+
+                // Functions & methods
+                { token: 'entity.name.function', foreground: '7a0028', fontStyle: 'italic' },
+                { token: 'support.function', foreground: '94264f' },
+                { token: 'function', foreground: '7a0028' },
+                { token: 'member', foreground: '94264f' },
+
+                // Types & classes
+                { token: 'type', foreground: '8f003d' },
+                { token: 'type.identifier', foreground: '8f003d' },
+                { token: 'entity.name.type', foreground: '8f003d' },
+                { token: 'entity.name.class', foreground: '8f003d' },
+                { token: 'support.class', foreground: '8f003d' },
+                { token: 'support.type', foreground: '8f003d' },
+                { token: 'class', foreground: '8f003d' },
+                { token: 'interface', foreground: '8f003d' },
+                { token: 'namespace', foreground: '8f003d' },
+
+                // Variables & parameters
+                { token: 'variable', foreground: 'a1627f' },
+                { token: 'variable.language', foreground: '7a0033' },
+                { token: 'variable.parameter', foreground: '990047' },
+                { token: 'parameter', foreground: '990047' },
+
+                // Properties & attributes
+                { token: 'property', foreground: 'a1627f' },
+                { token: 'entity.other.attribute-name', foreground: 'a00e3f', fontStyle: 'italic' },
+
+                // Operators & punctuation
+                { token: 'operator', foreground: '5c002e' },
+                { token: 'delimiter', foreground: '9e7b8e' },
+                { token: 'punctuation', foreground: '9e7b8e' },
+
+                // HTML / XML
+                { token: 'tag', foreground: 'b57f9b' },
+                { token: 'tag.id', foreground: 'b57f9b' },
+                { token: 'tag.class', foreground: 'b57f9b' },
+                { token: 'metatag', foreground: 'b57f9b' },
+                { token: 'metatag.content', foreground: '4c002e' },
+                { token: 'attribute.name', foreground: 'a00e3f' },
+                { token: 'attribute.value', foreground: '4c002e' },
+                { token: 'attribute.value.number', foreground: '660029' },
+                { token: 'delimiter.html', foreground: '9e7b8e' },
+
+                // CSS
+                { token: 'attribute.name.css', foreground: '8f003d' },
+                { token: 'attribute.value.css', foreground: '4c002e' },
+                { token: 'number.css', foreground: '660029' },
+                { token: 'unit.css', foreground: '660029' },
+                { token: 'selector', foreground: '94264f' },
+                { token: 'key.css', foreground: '8f003d' },
+
+                // Markdown
+                { token: 'emphasis', fontStyle: 'italic' },
+                { token: 'strong', fontStyle: 'bold' },
+                { token: 'keyword.md', foreground: 'c280a2', fontStyle: 'bold' },
+                { token: 'string.link.md', foreground: '94264f' },
+            ],
+            colors: {
+                'editor.background': '#faf5f9',
+                'editor.foreground': '#75083c',
+                'editor.lineHighlightBackground': '#f2e7ee',
+                'editor.lineHighlightBorder': '#00000000',
+                'editor.selectionBackground': '#d27bb177',
+                'editor.inactiveSelectionBackground': '#d27bb133',
+                'editor.selectionHighlightBackground': '#d27bb133',
+                'editorCursor.foreground': '#7a0033',
+                'editorLineNumber.foreground': '#e1c7d7',
+                'editorLineNumber.activeForeground': '#d299be',
+                'editorIndentGuide.background1': '#e2d9de',
+                'editorIndentGuide.activeBackground1': '#7a003371',
+                'editorWhitespace.foreground': '#e1c7d7',
+                'editorBracketMatch.background': '#faf5f900',
+                'editorBracketMatch.border': '#d2b8c8',
+                'editorGutter.background': '#faf5f9',
             },
         },
     },

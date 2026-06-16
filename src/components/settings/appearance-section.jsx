@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { Check } from 'lucide-react';
+import { Check, ExternalLink } from 'lucide-react';
 import { useSettings } from '@/hooks/use-settings';
-import { UI_THEMES, MONACO_THEMES } from '@/constants/themes';
+import { UI_THEMES, MONACO_THEMES, THEME_ATTRIBUTIONS } from '@/constants/themes';
 import i18n, { SUPPORTED_LANGUAGES } from '@/services/i18n';
 import { cn } from '@/helpers/utils';
 import { SectionHeading, SettingGroup, SettingRow } from './settings-ui';
@@ -90,6 +90,43 @@ const MonacoThemeThumbnail = ({ theme, selected, onSelect, label }) => {
     );
 };
 
+const formatAuthor = ({ name, nick }) => {
+    if (name && nick) return `${name} (@${nick})`;
+    if (nick) return `@${nick}`;
+    return name ?? '';
+};
+
+const ThemeAttribution = ({ themeId, t }) => {
+    const attribution = THEME_ATTRIBUTIONS[themeId];
+    if (!attribution) return null;
+    const { name, nick, license, url } = attribution;
+    const author = formatAuthor({ name, nick });
+    const displayUrl = url?.replace(/^https?:\/\//, '');
+
+    return (
+        <div className='mt-3 flex items-center gap-2.5 rounded-lg border border-border bg-surface px-3 py-2 text-xs text-muted-foreground'>
+            {license && (
+                <span className='shrink-0 rounded border border-border px-1.5 py-0.5 font-mono text-[10px] font-medium text-foreground'>
+                    {license}
+                </span>
+            )}
+            <span className='shrink-0'>
+                {t('settings.appearance.created_by')}{' '}
+                <span className='text-foreground'>{author}</span>
+            </span>
+            <a
+                href={url}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='ml-auto flex min-w-0 items-center gap-1 transition-colors hover:text-foreground [&>svg]:size-3'
+            >
+                <span className='min-w-0 truncate'>{displayUrl}</span>
+                <ExternalLink className='shrink-0' />
+            </a>
+        </div>
+    );
+};
+
 export const AppearanceSection = () => {
     const { t } = useTranslation();
     const [uiTheme, setUiTheme] = useSettings('uiTheme', 'dark');
@@ -115,6 +152,7 @@ export const AppearanceSection = () => {
                             />
                         ))}
                     </div>
+                    <ThemeAttribution themeId={uiTheme} t={t} />
                 </div>
 
                 <div>
@@ -132,6 +170,7 @@ export const AppearanceSection = () => {
                             />
                         ))}
                     </div>
+                    <ThemeAttribution themeId={monacoTheme} t={t} />
                 </div>
 
                 <SettingGroup>

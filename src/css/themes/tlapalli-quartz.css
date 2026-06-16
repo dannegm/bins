@@ -1,0 +1,45 @@
+[data-theme='tlapalli-quartz'] {
+    --background: #faf5f9;
+    --foreground: #73002c;
+    --card: #f6ebf4;
+    --card-foreground: #73002c;
+    --popover: #f6ebf4;
+    --popover-foreground: #73002c;
+    --primary: #73002c;
+    --primary-foreground: #faf5f9;
+    --secondary: #f2e7ee;
+    --secondary-foreground: #73002c;
+    --muted: #f2e7ee;
+    --muted-foreground: #c280a2;
+    --accent: #f2e7ee;
+    --accent-foreground: #73002c;
+    --destructive: #94264f;
+    --border: #ebe5e9;
+    --input: #ebe5e9;
+    --ring: #d2b8c8;
+    --chart-1: #d27bb1;
+    --chart-2: #c280a2;
+    --chart-3: #94264f;
+    --chart-4: #8f003d;
+    --chart-5: #660029;
+    --radius: 0.625rem;
+    --sidebar: #faf5f9;
+    --sidebar-foreground: #c280a2;
+    --sidebar-primary: #73002c;
+    --sidebar-primary-foreground: #faf5f9;
+    --sidebar-accent: #f2e7ee;
+    --sidebar-accent-foreground: #73002c;
+    --sidebar-border: #ebe5e9;
+    --sidebar-ring: #d2b8c8;
+    --surface: #f2e7ee;
+    --surface-raised: #eadde4;
+    --accent-hover: #8f003d;
+    --success: #2e7d32;
+    --warning: #af6400;
+    --warning-foreground: #fff8f0;
+    --overlay: oklch(0 0 0 / 20%);
+    --brand: #be005f;
+    --brand-foreground: #faf5f9;
+
+    background-color: var(--background);
+}
