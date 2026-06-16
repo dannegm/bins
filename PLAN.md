@@ -1607,46 +1607,53 @@ curl -X POST 'https://endpoints.hckr.mx/proxys/custom' \
 
 ### Fase 1 — MVP
 
-1. Scaffold (Vite + React + Tailwind v4 + shadcn/Base UI + TanStack Router)
-2. Sistema de temas (`css/themes/`, `ThemeProvider`, `data-theme`)
-3. Setup Supabase (schema, `services/supabase.js`)
-4. Identidad anónima (`services/settings.js`, `providers/identity-provider.jsx`)
-5. Crear bin → `/new` → redirigir a `/editor/:id`
-6. Monaco básico con tema Dracula
-7. Persistencia de contenido en DB
-8. Multiarchivo con tabs
-9. Yjs + binding Monaco (sin red)
-10. Sync via Supabase Realtime (awareness + cursores)
-11. Persistencia de `ydoc_state`
-12. Home con hero, tus bins, compartidos contigo
-13. Página de Settings con miniaturas
-14. Share (copy link + toast), Fork
-15. Command palette + keybindings globales
-16. AI Completions
+- [x] Scaffold (Vite + React + Tailwind v4 + shadcn/Base UI + TanStack Router)
+- [x] Sistema de temas (`css/themes/`, `ThemeProvider`, `data-theme`) — incluye Dark, Light, Dracula, Rosé Pine Dawn
+- [x] Setup Supabase (schema, `services/supabase.js`)
+- [x] Identidad anónima (`services/settings.js`, `providers/identity-provider.jsx`)
+- [x] Crear bin → `/new` → redirigir a `/editor/:id`
+- [x] Monaco básico con tema Dracula
+- [x] Persistencia de contenido en DB
+- [x] Multiarchivo con tabs
+- [x] Yjs + binding Monaco (sin red)
+- [x] Sync via Supabase Realtime (awareness + cursores)
+- [x] Persistencia de `ydoc_state`
+- [x] Home con hero, tus bins, compartidos contigo
+- [x] Página de Settings con miniaturas (Identidad, Apariencia, Editor, Keybindings, Prettier, AI, Import/Export)
+- [x] Share (copy link + toast), Fork — incluyendo página `/fork/:binId` con animación
+- [x] Command palette + keybindings globales
+- [x] AI Completions (Claude, OpenAI, Gemini, OpenRouter, Ollama, Custom)
 
 ### Fase 2 — Runners
 
-17. Markdown runner
-18. HTML runner + import resolver
-19. JS/TS/JSX/TSX REPL (sucrase)
-20. Regex playground (regexp-tree + railroad diagrams)
-21. HTTP runner + proxy
+- [ ] Markdown runner
+- [ ] HTML runner + import resolver (`helpers/import-resolver.js`)
+- [ ] JS/TS/JSX/TSX REPL (sucrase)
+- [ ] Regex playground (regexp-tree + railroad diagrams)
+- [ ] HTTP runner + proxy
+- [ ] `src/services/runners.js` — registro pluggable de runners por lenguaje
+- [ ] `src/components/editor/runner-panel.jsx` — panel derecho (ResizablePanel desktop / Drawer mobile)
 
 ### Fase 3 — Polish
 
-22. Embed (`/embed/:id`)
-23. Lenguajes custom (Arduino, Minecraft, CSV, .env, logs)
-24. Descarga individual y ZIP
-25. Paquetes npm (esm.sh)
-26. Expiración de bins
-27. Modo admin (`/admin/bins`, `/admin/users`)
-28. Mobile nav + Safari fix
-29. Modo presentación (fullscreen)
+- [x] Embed (`/embed/:id`)
+- [x] Expiración de bins (cron job + `expires_at`)
+- [x] Modo admin (`/admin/bins`, `/admin/users`) — con permisos de edición override
+- [ ] Lenguajes custom (Arduino, Minecraft, CSV, .env, logs)
+- [ ] Descarga individual y ZIP (`helpers/download.js`, `JSZip`)
+- [ ] Paquetes npm (esm.sh) — `components/system/packages-modal.jsx`
+- [ ] Search widget flotante con drag+snap (`components/system/search-widget.jsx`)
+- [ ] Error boundary BSOD (`components/system/error-boundary.jsx`)
+- [ ] Mobile nav completo + Safari viewport fix
+- [ ] Favicon dinámico (`hooks/use-favicon.js`)
+- [ ] `document.title` dinámico (`hooks/use-document-title.js`)
+- [ ] Modo presentación (fullscreen)
 
 ### Fase 4 — Futuras
 
-- Comentarios inline por línea
-- Diff view entre archivos o bins
-- Detección automática de lenguaje
-- CSS preview, SVG preview
-- Más temas UI
+- [ ] Comentarios inline por línea
+- [ ] Diff view entre archivos o bins
+- [ ] Detección automática de lenguaje
+- [ ] CSS preview, SVG preview
+- [ ] Más temas UI
+- [ ] Perfil público de usuario (`/user/:uuid`) ✅ implementado antes de lo planeado
