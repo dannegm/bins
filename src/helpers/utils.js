@@ -3,6 +3,8 @@ import { twMerge } from 'tailwind-merge';
 
 export const cn = (...inputs) => twMerge(clsx(inputs));
 
+export const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 export const match = action => {
     let hasMatch = false;
     let finalHandler = null;

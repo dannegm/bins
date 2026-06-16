@@ -173,6 +173,25 @@
             "export_session_button": "Generar enlace de sesión"
         }
     },
+    "fork": {
+        "loading": "Bifurcando bin…",
+        "hints": [
+            "cocinando los archivos…",
+            "escribiendo letra por letra…",
+            "pidiéndole al programador que trabaje…",
+            "sobornando a la base de datos…",
+            "esperando a que se haga el café…",
+            "copiando y pegando con responsabilidad…",
+            "preguntándole a ChatGPT cómo hacer un fork…",
+            "fingiendo que esto es rápido…",
+            "convenciendo al servidor amablemente…",
+            "aplicando commits artesanales…"
+        ],
+        "error_title": "Error al bifurcar",
+        "error_unknown": "Ocurrió un error inesperado.",
+        "close": "Cerrar",
+        "retry": "Reintentar"
+    },
     "admin": {
         "title": "Admin",
         "loading": "Cargando…",

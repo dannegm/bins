@@ -173,6 +173,25 @@
             "export_session_button": "Generate session link"
         }
     },
+    "fork": {
+        "loading": "Forking bin…",
+        "hints": [
+            "cooking the files…",
+            "writing letter by letter…",
+            "asking the programmer to work…",
+            "bribing the database…",
+            "waiting for the coffee to finish…",
+            "copy-pasting responsibly…",
+            "asking ChatGPT how to fork…",
+            "pretending this is fast…",
+            "gently convincing the server…",
+            "applying artisanal commits…"
+        ],
+        "error_title": "Fork failed",
+        "error_unknown": "An unexpected error occurred.",
+        "close": "Close",
+        "retry": "Try again"
+    },
     "admin": {
         "title": "Admin",
         "loading": "Loading…",

@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { settings } from './settings';
 import { supabase } from './supabase';
 import { generateBinName } from '@/helpers/identity';
@@ -41,6 +42,51 @@ export const updateBin = async (binId, data) => {
 export const deleteBin = async binId => {
     const { error } = await supabase().from('bins').delete().eq('id', binId);
     if (error) throw error;
+};
+
+export const forkBin = async sourceBinId => {
+    const authorId = settings.get('user.uuid');
+
+    const { data: source, error: sourceError } = await supabase()
+        .from('bins')
+        .select('*, bin_files(*)')
+        .eq('id', sourceBinId)
+        .single();
+
+    if (sourceError) throw sourceError;
+
+    const newId = nanoid(10);
+
+    const { error: binError } = await supabase()
+        .from('bins')
+        .insert({
+            id: newId,
+            title: source.title,
+            author_id: authorId,
+            is_readonly: source.is_readonly,
+            forked_from: sourceBinId,
+            expires_at: null,
+        });
+
+    if (binError) throw binError;
+
+    const files = source.bin_files ?? [];
+    for (const file of files) {
+        const { error: fileError } = await supabase()
+            .from('bin_files')
+            .insert({
+                id: nanoid(8),
+                bin_id: newId,
+                name: file.name,
+                language: file.language,
+                content: file.content,
+                ydoc_state: file.ydoc_state,
+                position: file.position,
+            });
+        if (fileError) throw fileError;
+    }
+
+    return newId;
 };
 
 export const incrementViews = async binId => {
