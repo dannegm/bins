@@ -312,6 +312,7 @@ create table bins.profiles (
   name         text not null,
   color_light  text not null default '#e67e22',
   color_dark   text not null default '#f39c12',
+  created_at   timestamptz not null default now(),
   updated_at   timestamptz default now()
 );
 
