@@ -1,9 +1,9 @@
 [data-theme='dracula'] {
     --background: #282a36;
     --foreground: #f8f8f2;
-    --card: #1e1f29;
+    --card: #21222c;
     --card-foreground: #f8f8f2;
-    --popover: #1e1f29;
+    --popover: #21222c;
     --popover-foreground: #f8f8f2;
     --primary: #bd93f9;
     --primary-foreground: #282a36;
@@ -23,7 +23,7 @@
     --chart-4: #50fa7b;
     --chart-5: #ffb86c;
     --radius: 0.625rem;
-    --sidebar: #1e1f29;
+    --sidebar: #191a21;
     --sidebar-foreground: #f8f8f2;
     --sidebar-primary: #bd93f9;
     --sidebar-primary-foreground: #282a36;
@@ -31,15 +31,15 @@
     --sidebar-accent-foreground: #f8f8f2;
     --sidebar-border: #44475a;
     --sidebar-ring: #bd93f9;
-    --surface: #1e1f29;
+    --surface: #21222c;
     --surface-raised: #343746;
-    --accent-hover: #a879e6;
+    --accent-hover: #caa8fb;
     --success: #50fa7b;
     --warning: #ffb86c;
-    --warning-foreground: #431407;
+    --warning-foreground: #282a36;
     --overlay: oklch(0 0 0 / 30%);
-    --brand: #7c3aed;
-    --brand-foreground: #f8f8f2;
+    --brand: #bd93f9;
+    --brand-foreground: #282a36;
 
     background-color: var(--background);
 }

@@ -184,7 +184,7 @@ export const MONACO_THEMES = [
                 { token: 'comment', foreground: '6272a4', fontStyle: 'italic' },
                 { token: 'comment.doc', foreground: '6272a4', fontStyle: 'italic' },
 
-                // Keywords
+                // Keywords & storage
                 { token: 'keyword', foreground: 'ff79c6' },
                 { token: 'keyword.control', foreground: 'ff79c6' },
                 { token: 'keyword.operator', foreground: 'ff79c6' },
@@ -196,7 +196,7 @@ export const MONACO_THEMES = [
                 // Strings
                 { token: 'string', foreground: 'f1fa8c' },
                 { token: 'string.escape', foreground: 'ff79c6' },
-                { token: 'string.regexp', foreground: 'ff79c6' },
+                { token: 'string.regexp', foreground: 'f1fa8c' },
 
                 // Numbers & constants
                 { token: 'number', foreground: 'bd93f9' },
@@ -204,24 +204,21 @@ export const MONACO_THEMES = [
                 { token: 'constant.numeric', foreground: 'bd93f9' },
                 { token: 'constant.language', foreground: 'bd93f9' },
                 { token: 'constant.character', foreground: 'bd93f9' },
+                { token: 'constant.character.escape', foreground: 'ff79c6' },
                 { token: 'variable.predefined', foreground: 'bd93f9' },
 
                 // Functions & methods
                 { token: 'entity.name.function', foreground: '50fa7b' },
-                { token: 'support.function', foreground: '50fa7b' },
+                { token: 'support.function', foreground: '8be9fd', fontStyle: 'italic' },
                 { token: 'function', foreground: '50fa7b' },
                 { token: 'member', foreground: '50fa7b' },
 
                 // Types & classes
                 { token: 'type', foreground: '8be9fd', fontStyle: 'italic' },
                 { token: 'type.identifier', foreground: '8be9fd', fontStyle: 'italic' },
-                { token: 'entity.name.type', foreground: '8be9fd' },
+                { token: 'entity.name.type', foreground: '8be9fd', fontStyle: 'italic' },
                 { token: 'entity.name.class', foreground: '8be9fd' },
-                {
-                    token: 'entity.other.inherited-class',
-                    foreground: '8be9fd',
-                    fontStyle: 'italic',
-                },
+                { token: 'entity.other.inherited-class', foreground: '8be9fd', fontStyle: 'italic' },
                 { token: 'support.class', foreground: '8be9fd' },
                 { token: 'support.type', foreground: '8be9fd', fontStyle: 'italic' },
                 { token: 'class', foreground: '8be9fd' },
@@ -230,18 +227,21 @@ export const MONACO_THEMES = [
 
                 // Variables & parameters
                 { token: 'variable', foreground: 'f8f8f2' },
-                { token: 'variable.language', foreground: 'ff79c6' },
+                { token: 'variable.language', foreground: 'bd93f9', fontStyle: 'italic' },
                 { token: 'variable.parameter', foreground: 'ffb86c', fontStyle: 'italic' },
                 { token: 'parameter', foreground: 'ffb86c', fontStyle: 'italic' },
 
-                // Properties
+                // Properties & attributes
                 { token: 'property', foreground: 'f8f8f2' },
-                { token: 'entity.other.attribute-name', foreground: '50fa7b' },
+                { token: 'entity.other.attribute-name', foreground: '50fa7b', fontStyle: 'italic' },
 
                 // Operators & punctuation
                 { token: 'operator', foreground: 'ff79c6' },
                 { token: 'delimiter', foreground: 'f8f8f2' },
                 { token: 'punctuation', foreground: 'f8f8f2' },
+
+                // Invalid
+                { token: 'invalid', foreground: 'ff5555', fontStyle: 'italic underline' },
 
                 // HTML / XML
                 { token: 'tag', foreground: 'ff79c6' },
@@ -265,13 +265,16 @@ export const MONACO_THEMES = [
                 // Markdown
                 { token: 'emphasis', fontStyle: 'italic' },
                 { token: 'strong', fontStyle: 'bold' },
-                { token: 'keyword.md', foreground: 'ff79c6' },
+                { token: 'keyword.md', foreground: 'bd93f9', fontStyle: 'bold' },
                 { token: 'string.link.md', foreground: '8be9fd' },
+                { token: 'markup.bold', foreground: 'ffb86c', fontStyle: 'bold' },
+                { token: 'markup.italic', foreground: 'f1fa8c', fontStyle: 'italic' },
+                { token: 'markup.inline.raw', foreground: '50fa7b' },
             ],
             colors: {
                 'editor.background': '#282a36',
                 'editor.foreground': '#f8f8f2',
-                'editor.lineHighlightBackground': '#44475a80',
+                'editor.lineHighlightBackground': '#44475a75',
                 'editor.lineHighlightBorder': '#00000000',
                 'editor.selectionBackground': '#44475a',
                 'editor.inactiveSelectionBackground': '#44475a80',
@@ -281,7 +284,7 @@ export const MONACO_THEMES = [
                 'editorLineNumber.activeForeground': '#f8f8f2',
                 'editorIndentGuide.background1': '#44475a',
                 'editorIndentGuide.activeBackground1': '#6272a4',
-                'editorWhitespace.foreground': '#44475a',
+                'editorWhitespace.foreground': '#ffffff1a',
                 'editorBracketMatch.background': '#44475a',
                 'editorBracketMatch.border': '#ff79c6',
                 'editorGutter.background': '#282a36',
