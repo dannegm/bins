@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { Command } from 'cmdk';
 import { AnimatePresence, motion } from 'motion/react';
 import { DynamicIcon } from 'lucide-react/dynamic';
@@ -23,6 +23,15 @@ export const CommandPalette = () => {
     const [appKeybindings] = useSettings('appKeybindings', defaultSettings.appKeybindings);
     const [pages, setPages] = useState([]);
     const [search, setSearch] = useState('');
+    const [isTyping, setIsTyping] = useState(false);
+    const $list = useRef(null);
+
+    useEffect(() => {
+        if (!search) { setIsTyping(false); return; }
+        setIsTyping(true);
+        const id = setTimeout(() => setIsTyping(false), 500);
+        return () => clearTimeout(id);
+    }, [search]);
 
     const currentPage = pages[pages.length - 1] ?? 'root';
     const pages_map = createPages({ emit });
@@ -61,17 +70,20 @@ export const CommandPalette = () => {
     }, [handleClose]);
 
     const handleKeyDown = useCallback(e => {
+        const digit = parseInt(e.key);
+        if (digit >= 1 && digit <= 9 && !isTyping && !e.metaKey && !e.ctrlKey && !e.altKey) {
+            e.preventDefault();
+            const items = [...($list.current?.querySelectorAll('[cmdk-item]') ?? [])]
+                .filter(el => el.offsetParent !== null);
+            items[digit - 1]?.click();
+            return;
+        }
         if (e.key === 'Escape') {
-            if (pages.length > 0) {
-                goBack();
-            } else {
-                handleClose();
-            }
+            if (pages.length > 0) goBack();
+            else handleClose();
         }
-        if (e.key === 'Backspace' && !search && pages.length > 0) {
-            goBack();
-        }
-    }, [pages, search, goBack, handleClose]);
+        if (e.key === 'Backspace' && !search && pages.length > 0) goBack();
+    }, [pages, search, isTyping, goBack, handleClose]);
 
     const pageData = currentPage !== 'root' ? pages_map[currentPage] : null;
 
@@ -132,64 +144,75 @@ export const CommandPalette = () => {
                                 />
                             </div>
 
-                            <Command.List className='max-h-80 overflow-y-auto p-2'>
-                                <Command.Empty className='py-8 text-center text-sm text-muted-foreground'>
-                                    {t('command_palette.empty')}
-                                </Command.Empty>
+                            {(() => {
+                                let quickIdx = 0;
+                                return (
+                                    <Command.List ref={$list} className='max-h-80 overflow-y-auto p-2'>
+                                        <Command.Empty className='py-8 text-center text-sm text-muted-foreground'>
+                                            {t('command_palette.empty')}
+                                        </Command.Empty>
 
-                                {currentPage === 'root' && commands.map(({ group, items }) => (
-                                    <Command.Group
-                                        key={group}
-                                        heading={group}
-                                        className='**:[[cmdk-group-heading]]:px-2 **:[[cmdk-group-heading]]:pb-1.5 **:[[cmdk-group-heading]]:pt-3 **:[[cmdk-group-heading]]:text-[11px] **:[[cmdk-group-heading]]:font-semibold **:[[cmdk-group-heading]]:uppercase **:[[cmdk-group-heading]]:tracking-widest **:[[cmdk-group-heading]]:text-muted-foreground'
-                                    >
-                                        {items.map(({ id, label, icon, shortcutId, action, page }) => {
-                                            const keys = shortcut(shortcutId);
-                                            return (
-                                                <Command.Item
-                                                    key={id}
-                                                    value={id}
-                                                    keywords={[label]}
-                                                    onSelect={() => page ? navigate(page) : run(action)}
-                                                    className='flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors aria-selected:bg-accent aria-selected:text-accent-foreground [&>svg]:size-4'
-                                                >
-                                                    <div className='text-muted-foreground [&>svg]:size-4'>
-                                                        <DynamicIcon name={icon} />
-                                                    </div>
-                                                    <span className='flex-1'>{label}</span>
-                                                    {page && <ChevronRight className='size-3.5 opacity-40' />}
-                                                    {keys && (
-                                                        <KbdGroup>
-                                                            {keys.map((k, i) => (
-                                                                <Kbd key={i}>{k}</Kbd>
-                                                            ))}
-                                                        </KbdGroup>
-                                                    )}
-                                                </Command.Item>
-                                            );
-                                        })}
-                                    </Command.Group>
-                                ))}
-
-                                {currentPage !== 'root' && pageData && (
-                                    <Command.Group>
-                                        {pageData.items.map(({ id, label, icon, action }) => (
-                                            <Command.Item
-                                                key={id}
-                                                value={id}
-                                                keywords={[label]}
-                                                onSelect={() => run(action)}
-                                                className='flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors aria-selected:bg-accent aria-selected:text-accent-foreground [&>svg]:size-4'
+                                        {currentPage === 'root' && commands.map(({ group, items }) => (
+                                            <Command.Group
+                                                key={group}
+                                                heading={group}
+                                                className='**:[[cmdk-group-heading]]:px-2 **:[[cmdk-group-heading]]:pb-1.5 **:[[cmdk-group-heading]]:pt-3 **:[[cmdk-group-heading]]:text-[11px] **:[[cmdk-group-heading]]:font-semibold **:[[cmdk-group-heading]]:uppercase **:[[cmdk-group-heading]]:tracking-widest **:[[cmdk-group-heading]]:text-muted-foreground'
                                             >
-                                                <div className='text-muted-foreground [&>svg]:size-4'>
-                                                    <DynamicIcon name={icon} />
-                                                </div>
-                                                <span className='flex-1'>{label}</span>
-                                            </Command.Item>
+                                                {items.map(({ id, label, icon, shortcutId, action, page }) => {
+                                                    const keys = shortcut(shortcutId);
+                                                    const num = quickIdx < 9 ? ++quickIdx : null;
+                                                    return (
+                                                        <Command.Item
+                                                            key={id}
+                                                            value={id}
+                                                            keywords={[label]}
+                                                            onSelect={() => page ? navigate(page) : run(action)}
+                                                            className='flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors aria-selected:bg-accent aria-selected:text-accent-foreground [&>svg]:size-4'
+                                                        >
+                                                            <div className='text-muted-foreground [&>svg]:size-4'>
+                                                                <DynamicIcon name={icon} />
+                                                            </div>
+                                                            <span className='flex-1'>{label}</span>
+                                                            {page && <ChevronRight className='size-3.5 opacity-40' />}
+                                                            {keys && (
+                                                                <KbdGroup>
+                                                                    {keys.map((k, i) => (
+                                                                        <Kbd key={i}>{k}</Kbd>
+                                                                    ))}
+                                                                </KbdGroup>
+                                                            )}
+                                                            {num && <Kbd className={isTyping ? '' : 'bg-brand/15 text-brand'}>{num}</Kbd>}
+                                                        </Command.Item>
+                                                    );
+                                                })}
+                                            </Command.Group>
                                         ))}
-                                    </Command.Group>
-                                )}
-                            </Command.List>
+
+                                        {currentPage !== 'root' && pageData && (
+                                            <Command.Group>
+                                                {pageData.items.map(({ id, label, icon, action }) => {
+                                                    const num = quickIdx < 9 ? ++quickIdx : null;
+                                                    return (
+                                                        <Command.Item
+                                                            key={id}
+                                                            value={id}
+                                                            keywords={[label]}
+                                                            onSelect={() => run(action)}
+                                                            className='flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors aria-selected:bg-accent aria-selected:text-accent-foreground [&>svg]:size-4'
+                                                        >
+                                                            <div className='text-muted-foreground [&>svg]:size-4'>
+                                                                <DynamicIcon name={icon} />
+                                                            </div>
+                                                            <span className='flex-1'>{label}</span>
+                                                            {num && <Kbd className={isTyping ? '' : 'bg-brand/15 text-brand'}>{num}</Kbd>}
+                                                        </Command.Item>
+                                                    );
+                                                })}
+                                            </Command.Group>
+                                        )}
+                                    </Command.List>
+                                );
+                            })()}
 
                             <div className='flex items-center gap-4 border-t border-border px-4 py-2.5 text-[11px] text-muted-foreground'>
                                 <KbdGroup>
@@ -198,6 +221,10 @@ export const CommandPalette = () => {
                                 </KbdGroup>
                                 <KbdGroup>
                                     <Kbd>↵</Kbd> {t('command_palette.hint_select')}
+                                </KbdGroup>
+                                <KbdGroup>
+                                    <Kbd>1</Kbd>
+                                    <Kbd>9</Kbd> {t('command_palette.hint_pick')}
                                 </KbdGroup>
                                 {pages.length > 0
                                     ? <KbdGroup><Kbd>⌫</Kbd> {t('command_palette.hint_back')}</KbdGroup>
