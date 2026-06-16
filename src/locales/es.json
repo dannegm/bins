@@ -267,7 +267,8 @@
             "os_na": "N/A",
             "per_page": "Filas por página",
             "page_of": "{{page}} de {{total}}"
-        }
+        },
+        "count_chip": "{{shown}} de {{total}} total"
     },
     "profile": {
         "you": "tú",

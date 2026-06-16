@@ -607,8 +607,8 @@ export const UsersTable = () => {
                     ))}
                 </div>
 
-                <span className='whitespace-nowrap text-xs text-muted-foreground'>
-                    {total} {t('admin.users.count_label')}
+                <span className='whitespace-nowrap rounded-full border border-border bg-surface px-2.5 py-0.5 text-xs text-muted-foreground'>
+                    {t('admin.count_chip', { shown: rows.length, total })}
                 </span>
 
                 <div className='ml-auto'>

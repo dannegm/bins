@@ -21,77 +21,23 @@ const draw = (ctx, size, t, color) => {
 
     // Cup body
     [
-        [-3, 0],
-        [-2, 0],
-        [-1, 0],
-        [0, 0],
-        [1, 0],
-        [2, 0],
-        [3, 0],
-        [-3, 1],
-        [-2, 1],
-        [-1, 1],
-        [0, 1],
-        [1, 1],
-        [2, 1],
-        [3, 1],
-        [-3, 2],
-        [-2, 2],
-        [-1, 2],
-        [0, 2],
-        [1, 2],
-        [2, 2],
-        [3, 2],
-        [-3, 3],
-        [-2, 3],
-        [-1, 3],
-        [0, 3],
-        [1, 3],
-        [2, 3],
-        [3, 3],
+        [-3, 0], [-2, 0], [-1, 0], [0, 0], [1, 0], [2, 0], [3, 0],
+        [-3, 1], [-2, 1], [-1, 1], [0, 1], [1, 1], [2, 1], [3, 1],
+        [-3, 2], [-2, 2], [-1, 2], [0, 2], [1, 2], [2, 2], [3, 2],
+        [-3, 3], [-2, 3], [-1, 3], [0, 3], [1, 3], [2, 3], [3, 3],
     ].forEach(([x, y]) => dot(x, y, 0.62));
 
     // Cup rim
-    [
-        [-3, -1],
-        [-2, -1],
-        [-1, -1],
-        [0, -1],
-        [1, -1],
-        [2, -1],
-        [3, -1],
-    ].forEach(([x, y]) => dot(x, y, 0.72));
+    [[-3, -1], [-2, -1], [-1, -1], [0, -1], [1, -1], [2, -1], [3, -1]].forEach(([x, y]) => dot(x, y, 0.72));
 
     // Cup bottom
-    [
-        [-2, 4],
-        [-1, 4],
-        [0, 4],
-        [1, 4],
-        [2, 4],
-    ].forEach(([x, y]) => dot(x, y, 0.65));
+    [[-2, 4], [-1, 4], [0, 4], [1, 4], [2, 4]].forEach(([x, y]) => dot(x, y, 0.65));
 
     // Handle
-    [
-        [4, 0],
-        [5, 0],
-        [5, 1],
-        [5, 2],
-        [5, 3],
-        [5, 4],
-        [4, 4],
-        [4, 1],
-        [4, 3],
-    ].forEach(([x, y]) => dot(x, y, 0.58));
+    [[4, 0], [5, 0], [5, 1], [5, 2], [5, 3], [5, 4], [4, 4], [4, 1], [4, 3]].forEach(([x, y]) => dot(x, y, 0.58));
 
     // Liquid surface highlight
-    [
-        [-2, 0],
-        [-1, 0],
-        [0, 0],
-        [1, 0],
-        [2, 0],
-    ].forEach(([x, y]) => dot(x, y, 0.82));
+    [[-2, 0], [-1, 0], [0, 0], [1, 0], [2, 0]].forEach(([x, y]) => dot(x, y, 0.82));
 
     // Steam
     const maxH = size > 30 ? 11 : 7;
@@ -152,16 +98,8 @@ export default function CoffeeLoader({ className }) {
     }, []);
 
     return (
-        <div
-            className={cn(
-                'flex-center size-16 bg-radial from-background to-transparent',
-                className,
-            )}
-        >
-            <canvas
-                ref={$canvas}
-                className={cn('size-full image-pixelated translate-x-[-2%] translate-y-[-4%]')}
-            />
+        <div className={cn('flex-center size-16 bg-radial from-background to-transparent', className)}>
+            <canvas ref={$canvas} className='size-full image-pixelated translate-x-[-2%] translate-y-[-4%]' />
         </div>
     );
 }
