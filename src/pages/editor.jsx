@@ -12,7 +12,7 @@ import { registerCollaborator } from '@/services/bin-collaborators';
 import { getFiles, createFile, updateFile, deleteFile } from '@/services/bin-files';
 import { supabase } from '@/services/supabase';
 import { useIdentity } from '@/hooks/use-identity';
-import { useListener } from '@/providers/bus-provider';
+import { useListener, useEvents } from '@/providers/bus-provider';
 import { getLanguageByFilename } from '@/constants/languages';
 
 const PeerToast = ({ peer, message }) => (
@@ -39,6 +39,7 @@ export const EditorPage = () => {
     const { t } = useTranslation();
     const { binId } = Route.useParams();
     const { user } = useIdentity();
+    const { emit } = useEvents();
 
     const [bin, setBin] = useState(null);
     const [files, setFiles] = useState([]);
@@ -187,6 +188,10 @@ export const EditorPage = () => {
     useListener('bin:fork', useCallback(() => window.open(`/fork/${binId}`, '_blank', 'noopener,noreferrer'), [binId]));
     useListener('bin:change-visibility', useCallback(() => handleReadonlyToggle(), [bin?.is_readonly]));
     useListener('editor:new-file', useCallback(() => handleCreateFile(), [files.length]));
+    useListener('peer:nudge', useCallback(() => {
+        broadcast('peer:nudge', { sender: user?.uuid });
+        emit('peer:nudge:received');
+    }, [user?.uuid]));
 
     const handleEditorCursorChange = useCallback(
         cursor => {
@@ -264,6 +269,9 @@ export const EditorPage = () => {
                     );
                     return remaining;
                 });
+            })
+            .on('broadcast', { event: 'peer:nudge' }, ({ payload }) => {
+                if (payload.sender !== user?.uuid) emit('peer:nudge:received');
             })
             .on('broadcast', { event: 'cursor:move' }, ({ payload }) => {
                 setPeers(prev => {

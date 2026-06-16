@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Users, Check } from 'lucide-react';
+import { SmileyDead } from '@/ui/icons';
 import { parseToRgb } from 'polished';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/helpers/utils';
@@ -93,44 +94,53 @@ const LanguagePicker = ({ language, onLanguageChange }) => {
     );
 };
 
-const PeerList = ({ peers }) => {
+const PeerList = ({ peers, t }) => {
     const { isDark } = useTheme();
     const { emit } = useEvents();
 
     return (
-        <Popover>
-            <PopoverTrigger className='flex items-center gap-1 rounded-full bg-brand px-2 py-0.5 text-brand-foreground transition-opacity hover:opacity-80'>
-                <Users className='size-3' />
-                {peers.length}
-            </PopoverTrigger>
-            <PopoverContent side='top' sideOffset={16} align='end' className='w-auto min-w-44 p-0'>
-                {peers.map(peer => {
-                    const color = isDark ? peer.colorDark : peer.colorLight;
-                    return (
-                        <button
-                            key={peer.uuid}
-                            onClick={() =>
-                                peer.activeFileId &&
-                                emit('peer:focus', {
-                                    fileId: peer.activeFileId,
-                                    cursor: peer.cursor,
-                                })
-                            }
-                            className='flex w-full items-center gap-2.5 px-3 py-2 transition-colors hover:bg-muted'
-                        >
-                            <UserAvatar profileId={peer.uuid} className='size-5 shrink-0' />
-                            <span className='flex-1 truncate text-xs text-foreground'>
-                                {peer.name}
-                            </span>
-                            <span
-                                className='size-2 shrink-0 rounded-full bg-(--peer-color)'
-                                style={{ '--peer-color': color }}
-                            />
-                        </button>
-                    );
-                })}
-            </PopoverContent>
-        </Popover>
+        <div className='flex items-center gap-1'>
+            <button
+                onClick={() => emit('peer:nudge')}
+                className='flex items-center gap-1 rounded-full bg-rose-600 px-2 py-0.5 text-white transition-opacity hover:opacity-80 dark:bg-rose-400'
+            >
+                <SmileyDead className='size-3' />
+                {t('editor.status_bar.nudge')}
+            </button>
+            <Popover>
+                <PopoverTrigger className='flex items-center gap-1 rounded-full bg-brand px-2 py-0.5 text-brand-foreground transition-opacity hover:opacity-80'>
+                    <Users className='size-3' />
+                    {peers.length}
+                </PopoverTrigger>
+                <PopoverContent side='top' sideOffset={16} align='end' className='w-auto min-w-44 p-0'>
+                    {peers.map(peer => {
+                        const color = isDark ? peer.colorDark : peer.colorLight;
+                        return (
+                            <button
+                                key={peer.uuid}
+                                onClick={() =>
+                                    peer.activeFileId &&
+                                    emit('peer:focus', {
+                                        fileId: peer.activeFileId,
+                                        cursor: peer.cursor,
+                                    })
+                                }
+                                className='flex w-full items-center gap-2.5 px-3 py-2 transition-colors hover:bg-muted'
+                            >
+                                <UserAvatar profileId={peer.uuid} className='size-5 shrink-0' />
+                                <span className='flex-1 truncate text-xs text-foreground'>
+                                    {peer.name}
+                                </span>
+                                <span
+                                    className='size-2 shrink-0 rounded-full bg-(--peer-color)'
+                                    style={{ '--peer-color': color }}
+                                />
+                            </button>
+                        );
+                    })}
+                </PopoverContent>
+            </Popover>
+        </div>
     );
 };
 
@@ -218,7 +228,7 @@ export const StatusBar = ({ language, cursor, lineCount = 1, isLoading = false, 
 
             <span className='flex-1' />
 
-            {peers.length > 0 && <PeerList peers={peers} />}
+            {peers.length > 0 && <PeerList peers={peers} t={t} />}
         </div>
     );
 };

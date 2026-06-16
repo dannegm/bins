@@ -36,6 +36,7 @@
     --accent-hover: #4338ca;
     --success: #16a34a;
     --warning: #ea580c;
+    --warning-foreground: #fff7ed;
     --overlay: oklch(0 0 0 / 25%);
     --brand: #4f46e5;
     --brand-foreground: #ffffff;

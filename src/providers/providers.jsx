@@ -12,6 +12,7 @@ import { useGlobalCommands } from '@/hooks/use-global-commands';
 import { useKeybindingCommands } from '@/hooks/use-keybinding-commands';
 import { CommandPaletteProvider } from '@/providers/command-palette-provider';
 import { ToastProvider } from '@/providers/toast-provider';
+import { NudgeProvider } from '@/providers/nudge-provider';
 import { NyanCatProvider } from '@/components/system/nyan-cat';
 
 const CommandsBridge = ({ children }) => {
@@ -25,6 +26,7 @@ export const Providers = createProviders([
     [NuqsAdapter],
     [IdentityProvider],
     [BusProvider],
+    [NudgeProvider],
     [CommandsBridge],
     [QueryProvider],
     [ThemeProvider],
