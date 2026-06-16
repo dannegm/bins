@@ -37,7 +37,7 @@ export const createCommands = ({ emit }) => [
                 icon: 'user',
                 scope: '*',
                 keywords: ['profile', 'user', 'me'],
-                action: () => emit('app:navigate', { to: '/profile' }),
+                action: () => emit('user:go-profile'),
             },
         ],
     },
@@ -107,6 +107,15 @@ export const createCommands = ({ emit }) => [
     {
         group: 'Editor',
         items: [
+            {
+                id: 'editor-new-file',
+                label: 'New file',
+                icon: 'file-plus',
+                scope: ['/editor'],
+                shortcutId: 'new_file',
+                keywords: ['new', 'file', 'create', 'tab'],
+                action: () => emit('editor:new-file'),
+            },
             {
                 id: 'editor-language',
                 label: 'Change language…',

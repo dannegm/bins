@@ -17,7 +17,8 @@
         "home": "Inicio",
         "new_bin": "Nuevo bin",
         "admin": "Admin",
-        "settings": "Configuración"
+        "settings": "Configuración",
+        "profile": "Mi perfil"
     },
     "footer": {
         "tagline": "BINS. — editor de código colaborativo en tiempo real"

@@ -3,6 +3,8 @@ import { Home, Plus, Settings, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/ui/button';
 import { useAdmin } from '@/hooks/use-admin';
+import { useIdentity } from '@/hooks/use-identity';
+import { UserAvatar } from '@/components/system/user-avatar';
 import { AppIcon } from './app-icon';
 
 const NavItem = ({ to, icon: Icon, label }) => (
@@ -23,9 +25,23 @@ const Separator = () => (
 );
 const Spacer = () => <div className='hidden sm:flex flex-1' />;
 
+const ProfileButton = ({ uuid, label }) => (
+    <Button
+        render={<Link to={`/user/${uuid}`} />}
+        nativeButton={false}
+        variant='ghost'
+        size='icon'
+        className='text-sidebar-foreground/50 [&.active]:bg-sidebar-accent [&.active]:text-sidebar-accent-foreground'
+        title={label}
+    >
+        <UserAvatar profileId={uuid} className='size-5' />
+    </Button>
+);
+
 export const Sidebar = () => {
     const { t } = useTranslation();
     const { isAdmin } = useAdmin();
+    const { user } = useIdentity();
 
     return (
         <aside className='fixed bottom-0 left-0 right-0 z-40 flex h-14 flex-row items-center justify-evenly border-t border-sidebar-border bg-sidebar px-2 sm:relative sm:h-screen sm:w-14 sm:flex-col sm:justify-start sm:gap-2 sm:border-r sm:border-t-0 sm:px-0 sm:py-4 short:hidden sm:short:flex'>
@@ -42,6 +58,7 @@ export const Sidebar = () => {
 
             {isAdmin && <NavItem to='/admin/bins' icon={ShieldCheck} label={t('sidebar.admin')} />}
             <NavItem to='/settings' icon={Settings} label={t('sidebar.settings')} />
+            {user?.uuid && <ProfileButton uuid={user.uuid} label={t('sidebar.profile')} />}
         </aside>
     );
 };

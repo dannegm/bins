@@ -17,7 +17,8 @@
         "home": "Home",
         "new_bin": "New bin",
         "admin": "Admin",
-        "settings": "Settings"
+        "settings": "Settings",
+        "profile": "My profile"
     },
     "footer": {
         "tagline": "BINS. — real-time collaborative code editor"

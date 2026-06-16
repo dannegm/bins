@@ -186,6 +186,7 @@ export const EditorPage = () => {
     useListener('bin:share', useCallback(() => handleShare(), []));
     useListener('bin:fork', useCallback(() => window.open(`/fork/${binId}`, '_blank', 'noopener,noreferrer'), [binId]));
     useListener('bin:change-visibility', useCallback(() => handleReadonlyToggle(), [bin?.is_readonly]));
+    useListener('editor:new-file', useCallback(() => handleCreateFile(), [files.length]));
 
     const handleEditorCursorChange = useCallback(
         cursor => {
