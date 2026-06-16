@@ -264,7 +264,9 @@
             "mark_as_human": "Marcar como humano",
             "scheduled_deletion": "Programado para eliminarse el {{date}}",
             "unknown_bot": "Bot",
-            "os_na": "N/A"
+            "os_na": "N/A",
+            "per_page": "Filas por página",
+            "page_of": "{{page}} de {{total}}"
         }
     },
     "profile": {

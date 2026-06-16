@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Link as RouterLink } from '@tanstack/react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { useQueryState, parseAsStringLiteral } from 'nuqs';
+import { useQueryState, parseAsStringLiteral, parseAsInteger } from 'nuqs';
 import { format } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
 import {
@@ -23,6 +23,8 @@ import {
     ArrowUpDown,
     ArrowUp,
     ArrowDown,
+    ChevronLeft,
+    ChevronRight,
 } from 'lucide-react';
 import { supabase } from '@/services/supabase';
 import { getAvatarUrl } from '@/helpers/avatar';
@@ -45,20 +47,56 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/ui/t
 
 const FLAG_URL = cc => `https://flagicons.lipis.dev/flags/1x1/${cc.toLowerCase()}.svg`;
 
-const SORT_KEYS = ['created_at', 'name', 'country', 'bins'];
+const SORT_KEYS = ['created_at', 'name', 'country'];
 const FILTER_KEYS = ['all', 'human', 'bot'];
+const PER_PAGE_OPTIONS = [10, 25, 50];
 
-const useAdminUsers = () =>
+const useAdminUsersStats = () =>
     useQuery({
-        queryKey: ['admin-users'],
+        queryKey: ['admin-users-stats'],
         queryFn: async () => {
-            const { data, error } = await supabase()
+            const [{ count: total }, { count: bots }, { count: totalBins }] = await Promise.all([
+                supabase().from('profiles').select('*', { count: 'exact', head: true }),
+                supabase().from('profiles').select('*', { count: 'exact', head: true }).eq('is_bot', true),
+                supabase().from('bins').select('*', { count: 'exact', head: true }),
+            ]);
+            return {
+                total: total ?? 0,
+                bots: bots ?? 0,
+                humans: (total ?? 0) - (bots ?? 0),
+                totalBins: totalBins ?? 0,
+            };
+        },
+    });
+
+const useAdminUsers = ({ page, perPage, filter, sortBy, sortDir, search }) =>
+    useQuery({
+        queryKey: ['admin-users', page, perPage, filter, sortBy, sortDir, search],
+        queryFn: async () => {
+            let query = supabase()
                 .from('profiles')
-                .select('uuid, name, color_light, color_dark, country, city, user_agent, is_bot, created_at, bins(count)')
-                .order('created_at', { ascending: false })
-                .limit(500);
+                .select(
+                    'uuid, name, color_light, color_dark, country, city, user_agent, is_bot, created_at, bins(count)',
+                    { count: 'exact' },
+                );
+
+            if (filter === 'bot') query = query.eq('is_bot', true);
+            else if (filter === 'human') query = query.eq('is_bot', false);
+
+            const q = search.trim();
+            if (q) query = query.or(`name.ilike.%${q}%,uuid.ilike.%${q}%`);
+
+            const ascending = sortDir === 'asc';
+            if (sortBy === 'name') query = query.order('name', { ascending });
+            else if (sortBy === 'country') query = query.order('country', { ascending });
+            else query = query.order('created_at', { ascending });
+
+            const from = (page - 1) * perPage;
+            query = query.range(from, from + perPage - 1);
+
+            const { data, error, count } = await query;
             if (error) throw error;
-            return data ?? [];
+            return { rows: data ?? [], total: count ?? 0 };
         },
     });
 
@@ -69,11 +107,22 @@ const useToggleBot = () => {
             const { error } = await supabase().from('profiles').update({ is_bot }).eq('uuid', uuid);
             if (error) throw error;
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-users'] }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+            queryClient.invalidateQueries({ queryKey: ['admin-users-stats'] });
+        },
     });
 };
 
 const dateFnsLocales = { en: enUS, es };
+
+const getCountryName = (code, locale) => {
+    try {
+        return new Intl.DisplayNames([locale], { type: 'region' }).of(code);
+    } catch {
+        return code;
+    }
+};
 
 const TypeBadge = ({ isBot, t }) => (
     <span
@@ -91,7 +140,7 @@ const TypeBadge = ({ isBot, t }) => (
 );
 
 const BrowserCell = ({ ua, isBot, t }) => {
-    const parsed = useMemo(() => parseUA(ua), [ua]);
+    const parsed = parseUA(ua);
 
     if (isBot) {
         const bot = parsed.bot;
@@ -134,7 +183,7 @@ const BrowserCell = ({ ua, isBot, t }) => {
 
 const OsCell = ({ ua, isBot, t }) => {
     if (isBot) return <span className='text-xs text-muted-foreground'>{t('admin.users.os_na')}</span>;
-    const parsed = useMemo(() => parseUA(ua), [ua]);
+    const parsed = parseUA(ua);
     if (!parsed.os) return <span className='text-xs text-muted-foreground'>—</span>;
     return <span className='text-xs text-muted-foreground'>{parsed.os.name}</span>;
 };
@@ -156,10 +205,10 @@ const DEVICE_LABELS = {
 };
 
 const DeviceCell = ({ ua, isBot }) => {
-    const parsed = useMemo(() => parseUA(ua), [ua]);
+    const parsed = parseUA(ua);
     const device = isBot ? 'bot' : (parsed.device ?? 'unknown');
     const Icon = DEVICE_ICONS[device] ?? HelpCircle;
-    const label = DEVICE_LABELS[device] ?? '—';
+    const label = DEVICE_LABELS[device] ?? 'Unknown';
 
     return (
         <TooltipProvider>
@@ -171,14 +220,6 @@ const DeviceCell = ({ ua, isBot }) => {
             </Tooltip>
         </TooltipProvider>
     );
-};
-
-const getCountryName = (code, locale) => {
-    try {
-        return new Intl.DisplayNames([locale], { type: 'region' }).of(code);
-    } catch {
-        return code;
-    }
 };
 
 const LocationCell = ({ country, city }) => {
@@ -224,6 +265,7 @@ const DeleteUserAction = ({ profile, t, formatDate }) => {
         onSuccess: () => {
             setOpen(false);
             queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+            queryClient.invalidateQueries({ queryKey: ['admin-users-stats'] });
         },
     });
 
@@ -291,6 +333,81 @@ const SortableHead = ({ column, label, sortBy, sortDir, onSort, className }) => 
         </TableHead>
     );
 };
+
+const getPageNumbers = (page, totalPages) => {
+    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    if (page <= 4) return [1, 2, 3, 4, 5, '…', totalPages];
+    if (page >= totalPages - 3) return [1, '…', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    return [1, '…', page - 1, page, page + 1, '…', totalPages];
+};
+
+const PageNumbers = ({ page, totalPages, onPage }) => {
+    if (totalPages <= 1) return null;
+    const pages = getPageNumbers(page, totalPages);
+
+    return (
+        <div className='flex items-center gap-0.5'>
+            <button
+                disabled={page <= 1}
+                onClick={() => onPage(page - 1)}
+                className='flex size-7 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-surface hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40'
+            >
+                <ChevronLeft className='size-3.5' />
+            </button>
+            {pages.map((p, i) =>
+                p === '…' ? (
+                    <span key={`ellipsis-${i}`} className='flex size-7 items-center justify-center text-xs text-muted-foreground'>
+                        …
+                    </span>
+                ) : (
+                    <button
+                        key={p}
+                        onClick={() => onPage(p)}
+                        className={cn(
+                            'flex size-7 items-center justify-center rounded text-xs font-medium transition-colors',
+                            {
+                                'bg-brand text-white': p === page,
+                                'text-muted-foreground hover:bg-surface hover:text-foreground': p !== page,
+                            },
+                        )}
+                    >
+                        {p}
+                    </button>
+                ),
+            )}
+            <button
+                disabled={page >= totalPages}
+                onClick={() => onPage(page + 1)}
+                className='flex size-7 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-surface hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40'
+            >
+                <ChevronRight className='size-3.5' />
+            </button>
+        </div>
+    );
+};
+
+const PerPageSelector = ({ perPage, onPerPage, t }) => (
+    <div className='flex items-center gap-2'>
+        <span className='text-xs text-muted-foreground'>{t('admin.users.per_page')}</span>
+        <div className='flex items-center gap-1'>
+            {PER_PAGE_OPTIONS.map(n => (
+                <button
+                    key={n}
+                    onClick={() => onPerPage(n)}
+                    className={cn(
+                        'rounded px-2 py-0.5 text-xs font-medium transition-colors',
+                        {
+                            'bg-brand text-white': perPage === n,
+                            'text-muted-foreground hover:text-foreground': perPage !== n,
+                        },
+                    )}
+                >
+                    {n}
+                </button>
+            ))}
+        </div>
+    </div>
+);
 
 const UserRow = ({ profile, t, formatDate, isMe, onToggleBot, isTogglingBot }) => {
     const { isDark } = useTheme();
@@ -405,15 +522,11 @@ const UserRow = ({ profile, t, formatDate, isMe, onToggleBot, isTogglingBot }) =
     );
 };
 
-const StatsBar = ({ users, t }) => {
-    const totalBins = users.reduce((sum, u) => sum + parseInt(u.bins?.[0]?.count ?? 0), 0);
-    const botCount = users.filter(u => u.is_bot).length;
-    const humanCount = users.length - botCount;
-
+const StatsBar = ({ stats, t }) => {
     const item = (value, label) => (
         <div className='flex flex-col gap-0.5 rounded-xl border border-border bg-card p-4'>
             <span className='text-2xl font-semibold tabular-nums text-foreground'>
-                {value.toLocaleString()}
+                {(value ?? 0).toLocaleString()}
             </span>
             <span className='text-xs text-muted-foreground'>{label}</span>
         </div>
@@ -421,28 +534,12 @@ const StatsBar = ({ users, t }) => {
 
     return (
         <div className='mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4'>
-            {item(users.length, t('admin.stats.total_users'))}
-            {item(totalBins, t('admin.stats.total_bins'))}
-            {item(humanCount, t('admin.stats.human_users'))}
-            {item(botCount, t('admin.stats.bot_users'))}
+            {item(stats?.total, t('admin.stats.total_users'))}
+            {item(stats?.totalBins, t('admin.stats.total_bins'))}
+            {item(stats?.humans, t('admin.stats.human_users'))}
+            {item(stats?.bots, t('admin.stats.bot_users'))}
         </div>
     );
-};
-
-const sortUsers = (users, sortBy, sortDir) => {
-    const dir = sortDir === 'asc' ? 1 : -1;
-    return [...users].sort((a, b) => {
-        switch (sortBy) {
-            case 'name':
-                return dir * (a.name ?? '').localeCompare(b.name ?? '');
-            case 'country':
-                return dir * (a.country ?? '').localeCompare(b.country ?? '');
-            case 'bins':
-                return dir * (parseInt(a.bins?.[0]?.count ?? 0) - parseInt(b.bins?.[0]?.count ?? 0));
-            default: // created_at
-                return dir * (new Date(a.created_at) - new Date(b.created_at));
-        }
-    });
 };
 
 export const UsersTable = () => {
@@ -455,43 +552,38 @@ export const UsersTable = () => {
     const [filter, setFilter] = useQueryState('filter', parseAsStringLiteral(FILTER_KEYS).withDefault('all'));
     const [sortBy, setSortBy] = useQueryState('sort', parseAsStringLiteral(SORT_KEYS).withDefault('created_at'));
     const [sortDir, setSortDir] = useQueryState('dir', parseAsStringLiteral(['asc', 'desc']).withDefault('desc'));
+    const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
+    const [perPage, setPerPage] = useQueryState('per_page', parseAsInteger.withDefault(25));
 
-    const { data: users = [], isLoading } = useAdminUsers();
+    const { data: stats } = useAdminUsersStats();
+    const { data: { rows = [], total = 0 } = {}, isLoading } = useAdminUsers({
+        page, perPage, filter, sortBy, sortDir, search,
+    });
     const { mutate: toggleBot, isPending: isTogglingBot } = useToggleBot();
 
+    const totalPages = Math.ceil(total / perPage);
+
+    const handleFilter = val => { setFilter(val); setPage(1); };
     const handleSort = col => {
-        if (col === sortBy) {
-            setSortDir(prev => (prev === 'asc' ? 'desc' : 'asc'));
-        } else {
-            setSortBy(col);
-            setSortDir('desc');
-        }
+        if (col === sortBy) setSortDir(prev => prev === 'asc' ? 'desc' : 'asc');
+        else { setSortBy(col); setSortDir('desc'); }
+        setPage(1);
     };
-
-    const filtered = useMemo(() => {
-        let result = users;
-
-        if (filter === 'bot') result = result.filter(u => u.is_bot);
-        else if (filter === 'human') result = result.filter(u => !u.is_bot);
-
-        const q = search.toLowerCase().trim();
-        if (q) result = result.filter(u => u.name?.toLowerCase().includes(q) || u.uuid.toLowerCase().includes(q));
-
-        return sortUsers(result, sortBy, sortDir);
-    }, [users, filter, search, sortBy, sortDir]);
+    const handleSearch = val => { setSearch(val); setPage(1); };
+    const handlePerPage = val => { setPerPage(val); setPage(1); };
 
     const colSpan = 10;
 
     return (
         <div>
-            <StatsBar users={users} t={t} />
+            <StatsBar stats={stats} t={t} />
 
             <div className='mb-4 flex flex-wrap items-center gap-3'>
                 <div className='relative max-w-sm flex-1'>
                     <Search className='pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground' />
                     <Input
                         value={search}
-                        onChange={e => setSearch(e.target.value)}
+                        onChange={e => handleSearch(e.target.value)}
                         placeholder={t('admin.users.search_placeholder')}
                         className='pl-8'
                     />
@@ -501,7 +593,7 @@ export const UsersTable = () => {
                     {FILTER_KEYS.map(key => (
                         <button
                             key={key}
-                            onClick={() => setFilter(key)}
+                            onClick={() => handleFilter(key)}
                             className={cn(
                                 'rounded-md px-3 py-1 text-xs font-medium transition-colors',
                                 {
@@ -516,8 +608,12 @@ export const UsersTable = () => {
                 </div>
 
                 <span className='whitespace-nowrap text-xs text-muted-foreground'>
-                    {filtered.length} {t('admin.users.count_label')}
+                    {total} {t('admin.users.count_label')}
                 </span>
+
+                <div className='ml-auto'>
+                    <PerPageSelector perPage={perPage} onPerPage={handlePerPage} t={t} />
+                </div>
             </div>
 
             <div className='overflow-hidden rounded-xl border border-border'>
@@ -531,7 +627,7 @@ export const UsersTable = () => {
                             <TableHead>{t('admin.users.col_os')}</TableHead>
                             <TableHead>{t('admin.users.col_device')}</TableHead>
                             <SortableHead column='country' label={t('admin.users.col_location')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} />
-                            <SortableHead column='bins' label={t('admin.users.col_bins')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className='text-right' />
+                            <TableHead className='text-right'>{t('admin.users.col_bins')}</TableHead>
                             <SortableHead column='created_at' label={t('admin.users.col_registered')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} />
                             <TableHead className='text-right'>{t('admin.users.col_actions')}</TableHead>
                         </TableRow>
@@ -544,14 +640,14 @@ export const UsersTable = () => {
                                 </TableCell>
                             </TableRow>
                         )}
-                        {!isLoading && filtered.length === 0 && (
+                        {!isLoading && rows.length === 0 && (
                             <TableRow>
                                 <TableCell colSpan={colSpan} className='h-32 text-center text-muted-foreground'>
                                     {t('admin.users.empty')}
                                 </TableCell>
                             </TableRow>
                         )}
-                        {filtered.map(u => (
+                        {rows.map(u => (
                             <UserRow
                                 key={u.uuid}
                                 profile={u}
@@ -564,6 +660,13 @@ export const UsersTable = () => {
                         ))}
                     </TableBody>
                 </Table>
+            </div>
+
+            <div className='flex items-center justify-between pt-4'>
+                <div>
+                    <PageNumbers page={page} totalPages={totalPages} onPage={setPage} />
+                </div>
+                <PerPageSelector perPage={perPage} onPerPage={handlePerPage} t={t} />
             </div>
         </div>
     );
