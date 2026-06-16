@@ -65,8 +65,8 @@
             "color_label": "Color de cursor",
             "color_hint": "Visible para los colaboradores en tiempo real.",
             "color_callout": "El color del tema oscuro se usa sobre fondos oscuros — elige uno luminoso. El color del tema claro se usa sobre fondos blancos — mejor una tonalidad más oscura. Ambos aparecen en el cursor, el resaltado de línea y el avatar.",
-            "color_light": "Tema claro",
-            "color_dark": "Tema oscuro",
+            "color_light": "Claro",
+            "color_dark": "Oscuro",
             "uuid_label": "Tu ID",
             "uuid_hint": "Nunca cambia y te identifica en todos los bins."
         },

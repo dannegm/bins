@@ -65,8 +65,8 @@
             "color_label": "Cursor color",
             "color_hint": "Shown to collaborators in real time.",
             "color_callout": "The dark-theme color is applied over dark backgrounds — pick something bright. The light-theme color is used over white backgrounds — go for a deeper tone. Both show up on your cursor, line highlight, and avatar.",
-            "color_light": "Light theme",
-            "color_dark": "Dark theme",
+            "color_light": "Light",
+            "color_dark": "Dark",
             "uuid_label": "Your ID",
             "uuid_hint": "This never changes and identifies you across bins."
         },
