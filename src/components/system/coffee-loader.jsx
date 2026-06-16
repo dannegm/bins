@@ -140,8 +140,7 @@ export default function CoffeeLoader({ className }) {
         cv.height = 64 * SC;
         const ctx = cv.getContext('2d');
         ctx.scale(SC, SC);
-        const color =
-            getComputedStyle(cv).getPropertyValue('--muted-foreground').trim() || '#949494';
+        const color = '#949494';
         const t0 = performance.now();
         let raf;
         const loop = () => {
