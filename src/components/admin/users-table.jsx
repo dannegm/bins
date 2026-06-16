@@ -204,7 +204,7 @@ export const UsersTable = () => {
     const { user } = useIdentity();
     const [search, setSearch] = useState('');
     const locale = dateFnsLocales[i18n.language] ?? enUS;
-    const formatDate = iso => format(new Date(iso), t('formats.date.short'), { locale });
+    const formatDate = iso => format(new Date(iso), t('formats.date.short_time'), { locale });
     const { data: users = [], isLoading } = useAdminUsers();
 
     const filtered = useMemo(() => {
