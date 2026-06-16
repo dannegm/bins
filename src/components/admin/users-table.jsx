@@ -57,7 +57,10 @@ const useAdminUsersStats = () =>
         queryFn: async () => {
             const [{ count: total }, { count: bots }, { count: totalBins }] = await Promise.all([
                 supabase().from('profiles').select('*', { count: 'exact', head: true }),
-                supabase().from('profiles').select('*', { count: 'exact', head: true }).eq('is_bot', true),
+                supabase()
+                    .from('profiles')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('is_bot', true),
                 supabase().from('bins').select('*', { count: 'exact', head: true }),
             ]);
             return {
@@ -144,9 +147,11 @@ const BrowserCell = ({ ua, isBot, t }) => {
 
     if (isBot) {
         const bot = parsed.bot;
-        const iconEl = bot?.icon
-            ? <i className={cn(bot.icon, 'text-base')} style={{ color: bot.color }} />
-            : <Bot className='size-4' style={{ color: bot?.color ?? '#6B7280' }} />;
+        const iconEl = bot?.icon ? (
+            <i className={cn(bot.icon, 'text-base')} style={{ color: bot.color }} />
+        ) : (
+            <Bot className='size-4' style={{ color: bot?.color ?? '#6B7280' }} />
+        );
 
         return (
             <TooltipProvider>
@@ -182,7 +187,8 @@ const BrowserCell = ({ ua, isBot, t }) => {
 };
 
 const OsCell = ({ ua, isBot, t }) => {
-    if (isBot) return <span className='text-xs text-muted-foreground'>{t('admin.users.os_na')}</span>;
+    if (isBot)
+        return <span className='text-xs text-muted-foreground'>{t('admin.users.os_na')}</span>;
     const parsed = parseUA(ua);
     if (!parsed.os) return <span className='text-xs text-muted-foreground'>—</span>;
     return <span className='text-xs text-muted-foreground'>{parsed.os.name}</span>;
@@ -272,7 +278,11 @@ const DeleteUserAction = ({ profile, t, formatDate }) => {
     const trigger = (
         <PopoverTrigger
             className='flex size-6 cursor-pointer items-center justify-center rounded text-muted-foreground transition-colors hover:text-destructive'
-            title={deletionDate ? t('admin.users.scheduled_deletion', { date: deletionDate }) : t('admin.users.delete')}
+            title={
+                deletionDate
+                    ? t('admin.users.scheduled_deletion', { date: deletionDate })
+                    : t('admin.users.delete')
+            }
         >
             <Trash2 className='size-3.5' />
         </PopoverTrigger>
@@ -289,14 +299,21 @@ const DeleteUserAction = ({ profile, t, formatDate }) => {
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
-            ) : trigger}
+            ) : (
+                trigger
+            )}
             <PopoverContent side='left' align='start' className='w-60'>
                 <PopoverHeader>
                     <PopoverTitle>{t('admin.users.delete_title')}</PopoverTitle>
                     <PopoverDescription>{t('admin.users.delete_description')}</PopoverDescription>
                 </PopoverHeader>
                 <div className='flex gap-2 pt-1'>
-                    <Button variant='outline' size='sm' className='flex-1' onClick={() => setOpen(false)}>
+                    <Button
+                        variant='outline'
+                        size='sm'
+                        className='flex-1'
+                        onClick={() => setOpen(false)}
+                    >
                         {t('bins.card.delete_cancel')}
                     </Button>
                     <Button
@@ -337,7 +354,8 @@ const SortableHead = ({ column, label, sortBy, sortDir, onSort, className }) => 
 const getPageNumbers = (page, totalPages) => {
     if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
     if (page <= 4) return [1, 2, 3, 4, 5, '…', totalPages];
-    if (page >= totalPages - 3) return [1, '…', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    if (page >= totalPages - 3)
+        return [1, '…', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
     return [1, '…', page - 1, page, page + 1, '…', totalPages];
 };
 
@@ -356,7 +374,10 @@ const PageNumbers = ({ page, totalPages, onPage }) => {
             </button>
             {pages.map((p, i) =>
                 p === '…' ? (
-                    <span key={`ellipsis-${i}`} className='flex size-7 items-center justify-center text-xs text-muted-foreground'>
+                    <span
+                        key={`ellipsis-${i}`}
+                        className='flex size-7 items-center justify-center text-xs text-muted-foreground'
+                    >
                         …
                     </span>
                 ) : (
@@ -367,7 +388,8 @@ const PageNumbers = ({ page, totalPages, onPage }) => {
                             'flex size-7 items-center justify-center rounded text-xs font-medium transition-colors',
                             {
                                 'bg-brand text-white': p === page,
-                                'text-muted-foreground hover:bg-surface hover:text-foreground': p !== page,
+                                'text-muted-foreground hover:bg-surface hover:text-foreground':
+                                    p !== page,
                             },
                         )}
                     >
@@ -394,13 +416,10 @@ const PerPageSelector = ({ perPage, onPerPage, t }) => (
                 <button
                     key={n}
                     onClick={() => onPerPage(n)}
-                    className={cn(
-                        'rounded px-2 py-0.5 text-xs font-medium transition-colors',
-                        {
-                            'bg-brand text-white': perPage === n,
-                            'text-muted-foreground hover:text-foreground': perPage !== n,
-                        },
-                    )}
+                    className={cn('rounded px-2 py-0.5 text-xs font-medium transition-colors', {
+                        'bg-brand text-white': perPage === n,
+                        'text-muted-foreground hover:text-foreground': perPage !== n,
+                    })}
                 >
                     {n}
                 </button>
@@ -488,7 +507,12 @@ const UserRow = ({ profile, t, formatDate, isMe, onToggleBot, isTogglingBot }) =
 
             <TableCell className='text-right'>
                 <div className='flex items-center justify-end gap-0.5'>
-                    <RouterLink to='/user/$uuid' params={{ uuid: profile.uuid }} target='_blank' rel='noopener noreferrer'>
+                    <RouterLink
+                        to='/user/$uuid'
+                        params={{ uuid: profile.uuid }}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                    >
                         <button
                             className='flex size-6 cursor-pointer items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground'
                             title={t('admin.users.view_profile')}
@@ -504,14 +528,17 @@ const UserRow = ({ profile, t, formatDate, isMe, onToggleBot, isTogglingBot }) =
                                     disabled={isTogglingBot}
                                     onClick={() => onToggleBot(profile.uuid, !profile.is_bot)}
                                 >
-                                    {profile.is_bot
-                                        ? <ShieldCheck className='size-3.5' />
-                                        : <ShieldAlert className='size-3.5' />
-                                    }
+                                    {profile.is_bot ? (
+                                        <ShieldCheck className='size-3.5' />
+                                    ) : (
+                                        <ShieldAlert className='size-3.5' />
+                                    )}
                                 </button>
                             </TooltipTrigger>
                             <TooltipContent>
-                                {profile.is_bot ? t('admin.users.mark_as_human') : t('admin.users.mark_as_bot')}
+                                {profile.is_bot
+                                    ? t('admin.users.mark_as_human')
+                                    : t('admin.users.mark_as_bot')}
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
@@ -549,28 +576,54 @@ export const UsersTable = () => {
     const formatDate = iso => format(new Date(iso), t('formats.date.short_time'), { locale });
 
     const [search, setSearch] = useState('');
-    const [filter, setFilter] = useQueryState('filter', parseAsStringLiteral(FILTER_KEYS).withDefault('all'));
-    const [sortBy, setSortBy] = useQueryState('sort', parseAsStringLiteral(SORT_KEYS).withDefault('created_at'));
-    const [sortDir, setSortDir] = useQueryState('dir', parseAsStringLiteral(['asc', 'desc']).withDefault('desc'));
+    const [filter, setFilter] = useQueryState(
+        'filter',
+        parseAsStringLiteral(FILTER_KEYS).withDefault('all'),
+    );
+    const [sortBy, setSortBy] = useQueryState(
+        'sort',
+        parseAsStringLiteral(SORT_KEYS).withDefault('created_at'),
+    );
+    const [sortDir, setSortDir] = useQueryState(
+        'dir',
+        parseAsStringLiteral(['asc', 'desc']).withDefault('desc'),
+    );
     const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
     const [perPage, setPerPage] = useQueryState('per_page', parseAsInteger.withDefault(25));
 
     const { data: stats } = useAdminUsersStats();
     const { data: { rows = [], total = 0 } = {}, isLoading } = useAdminUsers({
-        page, perPage, filter, sortBy, sortDir, search,
+        page,
+        perPage,
+        filter,
+        sortBy,
+        sortDir,
+        search,
     });
     const { mutate: toggleBot, isPending: isTogglingBot } = useToggleBot();
 
     const totalPages = Math.ceil(total / perPage);
 
-    const handleFilter = val => { setFilter(val); setPage(1); };
-    const handleSort = col => {
-        if (col === sortBy) setSortDir(prev => prev === 'asc' ? 'desc' : 'asc');
-        else { setSortBy(col); setSortDir('desc'); }
+    const handleFilter = val => {
+        setFilter(val);
         setPage(1);
     };
-    const handleSearch = val => { setSearch(val); setPage(1); };
-    const handlePerPage = val => { setPerPage(val); setPage(1); };
+    const handleSort = col => {
+        if (col === sortBy) setSortDir(prev => (prev === 'asc' ? 'desc' : 'asc'));
+        else {
+            setSortBy(col);
+            setSortDir('desc');
+        }
+        setPage(1);
+    };
+    const handleSearch = val => {
+        setSearch(val);
+        setPage(1);
+    };
+    const handlePerPage = val => {
+        setPerPage(val);
+        setPage(1);
+    };
 
     const colSpan = 10;
 
@@ -621,28 +674,56 @@ export const UsersTable = () => {
                     <TableHeader>
                         <TableRow className='hover:bg-transparent'>
                             <TableHead>{t('admin.users.col_type')}</TableHead>
-                            <SortableHead column='name' label={t('admin.users.col_user')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} />
+                            <SortableHead
+                                column='name'
+                                label={t('admin.users.col_user')}
+                                sortBy={sortBy}
+                                sortDir={sortDir}
+                                onSort={handleSort}
+                            />
                             <TableHead>{t('admin.users.col_id')}</TableHead>
                             <TableHead>{t('admin.users.col_browser')}</TableHead>
                             <TableHead>{t('admin.users.col_os')}</TableHead>
                             <TableHead>{t('admin.users.col_device')}</TableHead>
-                            <SortableHead column='country' label={t('admin.users.col_location')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} />
-                            <TableHead className='text-right'>{t('admin.users.col_bins')}</TableHead>
-                            <SortableHead column='created_at' label={t('admin.users.col_registered')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} />
-                            <TableHead className='text-right'>{t('admin.users.col_actions')}</TableHead>
+                            <SortableHead
+                                column='country'
+                                label={t('admin.users.col_location')}
+                                sortBy={sortBy}
+                                sortDir={sortDir}
+                                onSort={handleSort}
+                            />
+                            <TableHead className='text-right'>
+                                {t('admin.users.col_bins')}
+                            </TableHead>
+                            <SortableHead
+                                column='created_at'
+                                label={t('admin.users.col_registered')}
+                                sortBy={sortBy}
+                                sortDir={sortDir}
+                                onSort={handleSort}
+                            />
+                            <TableHead className='text-right'>
+                                {t('admin.users.col_actions')}
+                            </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {isLoading && (
                             <TableRow>
-                                <TableCell colSpan={colSpan} className='h-32 text-center text-muted-foreground'>
+                                <TableCell
+                                    colSpan={colSpan}
+                                    className='h-32 text-center text-muted-foreground'
+                                >
                                     {t('admin.loading')}
                                 </TableCell>
                             </TableRow>
                         )}
                         {!isLoading && rows.length === 0 && (
                             <TableRow>
-                                <TableCell colSpan={colSpan} className='h-32 text-center text-muted-foreground'>
+                                <TableCell
+                                    colSpan={colSpan}
+                                    className='h-32 text-center text-muted-foreground'
+                                >
                                     {t('admin.users.empty')}
                                 </TableCell>
                             </TableRow>

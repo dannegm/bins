@@ -552,7 +552,7 @@ export const $schema = supabase.schema('bins');
 - `content` es snapshot de texto plano para preview sin cargar Yjs
 - El fingerprint (`ip_hash`, `country`, `city`, `user_agent`, `is_bot`) se registra **solo en el primer visit** (cuando el perfil se crea). No se actualiza en visitas posteriores
 - `ip_hash` es SHA-256 del IP público obtenido vía `ip-api.com` — nunca se guarda el IP crudo
-- `is_bot` se calcula client-side: `true` si `navigator.webdriver === true`, o si el UA contiene patrones conocidos de bots (Googlebot, GPTBot, Claude-User, Headless*, etc.)
+- `is_bot` se calcula client-side: `true` si `navigator.webdriver === true`, o si el UA contiene patrones conocidos de bots (Googlebot, GPTBot, Claude-User, Headless\*, etc.)
 - El cron semanal de bots hace delete en cascada — si un bot creó bins, también se borran
 
 ---

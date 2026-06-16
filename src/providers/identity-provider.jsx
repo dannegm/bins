@@ -20,19 +20,17 @@ const syncProfile = async ({ uuid, name, colorDark, colorLight }) => {
         const ua = navigator.userAgent;
         const is_bot = navigator.webdriver === true || parseUA(ua).bot !== null;
 
-        await supabase()
-            .from('profiles')
-            .upsert({
-                uuid,
-                name,
-                color_light: colorLight,
-                color_dark: colorDark,
-                ip_hash,
-                country,
-                city,
-                user_agent: ua,
-                is_bot,
-            });
+        await supabase().from('profiles').upsert({
+            uuid,
+            name,
+            color_light: colorLight,
+            color_dark: colorDark,
+            ip_hash,
+            country,
+            city,
+            user_agent: ua,
+            is_bot,
+        });
     } catch {
         // non-critical
     }

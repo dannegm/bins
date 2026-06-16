@@ -132,8 +132,13 @@ export const ProfileHeader = ({ profile, bins, isLoading }) => {
                     </span>
                 )}
                 {profile.isBot && !isMe && (
-                    <span className='absolute -bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1 whitespace-nowrap rounded-full border border-destructive/30 bg-destructive/10 px-2 py-0.5 text-[10px] font-medium text-destructive'
-                        title={deletionDate ? t('profile.scheduled_deletion', { date: deletionDate }) : undefined}
+                    <span
+                        className='absolute -bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1 whitespace-nowrap rounded-full border border-destructive/30 bg-destructive/10 px-2 py-0.5 text-[10px] font-medium text-destructive'
+                        title={
+                            deletionDate
+                                ? t('profile.scheduled_deletion', { date: deletionDate })
+                                : undefined
+                        }
                     >
                         <Bot className='size-2.5' />
                         {t('profile.bot_badge')}

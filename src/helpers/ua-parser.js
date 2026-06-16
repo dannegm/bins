@@ -1,18 +1,43 @@
 const BOT_PATTERNS = [
-    { pattern: /googlebot/i,          name: 'Googlebot',      color: '#4285F4', icon: 'devicon-google-plain' },
-    { pattern: /gptbot/i,             name: 'GPTBot',          color: '#10A37F', icon: 'devicon-openai-plain' },
-    { pattern: /claude-user|claudebot/i, name: 'Claude',       color: '#D97757' },
-    { pattern: /bingbot/i,            name: 'Bingbot',         color: '#0078D4', icon: 'devicon-microsoft-plain' },
-    { pattern: /duckduckbot/i,        name: 'DuckDuckBot',     color: '#DE5833' },
-    { pattern: /twitterbot/i,         name: 'Twitterbot',      color: '#1DA1F2', icon: 'devicon-twitter-original' },
-    { pattern: /facebookexternalhit/i, name: 'Facebookbot',    color: '#1877F2', icon: 'devicon-facebook-plain' },
-    { pattern: /linkedinbot/i,        name: 'LinkedInBot',     color: '#0A66C2', icon: 'devicon-linkedin-plain' },
-    { pattern: /ahrefsbot/i,          name: 'AhrefsBot',       color: '#F07629' },
-    { pattern: /semrushbot/i,         name: 'SemrushBot',      color: '#FF6037' },
-    { pattern: /headlesschrome/i,     name: 'Headless Chrome', color: '#9AA0A6', icon: 'devicon-chrome-plain' },
-    { pattern: /heritrix/i,           name: 'Heritrix',        color: '#6B7280' },
-    { pattern: /ia_archiver/i,        name: 'Alexa',           color: '#00CAFF', icon: 'devicon-amazonwebservices-plain' },
-    { pattern: /bot|crawler|spider|scraper/i, name: 'Bot',     color: '#6B7280' },
+    { pattern: /googlebot/i, name: 'Googlebot', color: '#4285F4', icon: 'devicon-google-plain' },
+    { pattern: /gptbot/i, name: 'GPTBot', color: '#10A37F', icon: 'devicon-openai-plain' },
+    { pattern: /claude-user|claudebot/i, name: 'Claude', color: '#D97757' },
+    { pattern: /bingbot/i, name: 'Bingbot', color: '#0078D4', icon: 'devicon-microsoft-plain' },
+    { pattern: /duckduckbot/i, name: 'DuckDuckBot', color: '#DE5833' },
+    {
+        pattern: /twitterbot/i,
+        name: 'Twitterbot',
+        color: '#1DA1F2',
+        icon: 'devicon-twitter-original',
+    },
+    {
+        pattern: /facebookexternalhit/i,
+        name: 'Facebookbot',
+        color: '#1877F2',
+        icon: 'devicon-facebook-plain',
+    },
+    {
+        pattern: /linkedinbot/i,
+        name: 'LinkedInBot',
+        color: '#0A66C2',
+        icon: 'devicon-linkedin-plain',
+    },
+    { pattern: /ahrefsbot/i, name: 'AhrefsBot', color: '#F07629' },
+    { pattern: /semrushbot/i, name: 'SemrushBot', color: '#FF6037' },
+    {
+        pattern: /headlesschrome/i,
+        name: 'Headless Chrome',
+        color: '#9AA0A6',
+        icon: 'devicon-chrome-plain',
+    },
+    { pattern: /heritrix/i, name: 'Heritrix', color: '#6B7280' },
+    {
+        pattern: /ia_archiver/i,
+        name: 'Alexa',
+        color: '#00CAFF',
+        icon: 'devicon-amazonwebservices-plain',
+    },
+    { pattern: /bot|crawler|spider|scraper/i, name: 'Bot', color: '#6B7280' },
 ];
 
 const BROWSER_PATTERNS = [
@@ -60,7 +85,7 @@ export const nextBotDeletion = () => {
     if (day === 1 && d.getUTCHours() < 3) {
         daysUntil = 0;
     } else {
-        daysUntil = ((1 - day + 7) % 7) || 7;
+        daysUntil = (1 - day + 7) % 7 || 7;
     }
 
     d.setUTCDate(d.getUTCDate() + daysUntil);

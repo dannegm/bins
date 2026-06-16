@@ -128,7 +128,10 @@ export const EditorCore = ({
             onDragEnter={handleDragEnter}
             onDragLeave={handleDragLeave}
             onDragOver={e => e.preventDefault()}
-            onDrop={e => { e.preventDefault(); setIsDragging(false); }}
+            onDrop={e => {
+                e.preventDefault();
+                setIsDragging(false);
+            }}
         >
             <div className='relative min-h-0 flex-1'>
                 {yContext ? (
