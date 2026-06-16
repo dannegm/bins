@@ -146,7 +146,7 @@ const PeerList = ({ peers, t }) => {
                                 className='flex w-full items-center gap-2.5 px-3 py-2 transition-colors hover:bg-muted'
                             >
                                 <UserAvatar profileId={peer.uuid} className='size-5 shrink-0' />
-                                <span className='flex-1 truncate text-xs text-foreground'>
+                                <span className='flex-1 truncate text-left text-xs text-foreground'>
                                     {peer.name}
                                 </span>
                                 <span
