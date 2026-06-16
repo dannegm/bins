@@ -30,7 +30,6 @@ const NumberStepper = ({ value, onChange, min = 1, max = 100 }) => (
 export const EditorSection = () => {
     const { t } = useTranslation();
     const [fontSize, setFontSize] = useSettings('fontSize', 14);
-    const [tabSize, setTabSize] = useSettings('tabSize', 2);
     const [wordWrap, setWordWrap] = useSettings('wordWrap', false);
     const [lineNumbers, setLineNumbers] = useSettings('lineNumbers', true);
     const [minimap, setMinimap] = useSettings('minimap', false);
@@ -41,9 +40,6 @@ export const EditorSection = () => {
             <SettingGroup>
                 <SettingRow label={t('settings.editor.font_size_label')}>
                     <NumberStepper value={fontSize} onChange={setFontSize} min={10} max={32} />
-                </SettingRow>
-                <SettingRow label={t('settings.editor.tab_size_label')}>
-                    <NumberStepper value={tabSize} onChange={setTabSize} min={1} max={8} />
                 </SettingRow>
                 <SettingRow label={t('settings.editor.word_wrap_label')}>
                     <Switch checked={wordWrap} onCheckedChange={setWordWrap} />

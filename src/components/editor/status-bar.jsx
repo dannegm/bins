@@ -104,7 +104,7 @@ const PeerList = ({ peers, t }) => {
                 onClick={() => emit('peer:nudge')}
                 className='flex items-center gap-1 rounded-full bg-rose-600 px-2 py-0.5 text-white transition-opacity hover:opacity-80 dark:bg-rose-400'
             >
-                <SmileyDead className='size-3' />
+                <SmileyDead className='size-3.5' />
                 {t('editor.status_bar.nudge')}
             </button>
             <Popover>
