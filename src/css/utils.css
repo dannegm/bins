@@ -37,8 +37,13 @@
 }
 
 @utility squircle-* {
-    border-radius: --value(--radius-*);
-    corner-shape: squircle;
+    --squircle-r: --value(--radius-*);
+    border-radius: calc(var(--squircle-r) / 2);
+
+    @supports (corner-shape: squircle) {
+        corner-shape: squircle;
+        border-radius: var(--squircle-r);
+    }
 }
 
 @utility image-* {

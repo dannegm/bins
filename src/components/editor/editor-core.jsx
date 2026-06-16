@@ -23,6 +23,7 @@ export const EditorCore = ({
     onCursorChange,
     onSelectionChange,
     onCreateFile,
+    onContentSaved,
 }) => {
     const { user } = useIdentity();
     const [saveStatus, setSaveStatus] = useState('idle');
@@ -58,6 +59,7 @@ export const EditorCore = ({
                         onFirstSave?.();
                     }
                     setSaveStatus('saved');
+                    onContentSaved?.(content);
                     setTimeout(() => setSaveStatus('idle'), 2000);
                 } catch {
                     setSaveStatus('unsaved');

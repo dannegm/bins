@@ -367,5 +367,5 @@ export const MonacoEditor = ({
         }, []),
     );
 
-    return <div ref={$container} className='h-full w-full' />;
+    return <div ref={$container} className='h-full w-full select-text' />;
 };

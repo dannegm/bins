@@ -215,13 +215,13 @@ export const BinHeader = ({ bin, isAuthor, isAdmin, onTitleChange, onReadonlyTog
                             onChange={e => setDraft(e.target.value)}
                             onBlur={commit}
                             onKeyDown={onKeyDown}
-                            className='absolute inset-0 w-full border-b border-brand bg-transparent pb-px text-sm font-medium text-foreground outline-none'
+                            className='absolute inset-0 w-full border-b border-brand bg-transparent pb-px text-sm font-medium text-foreground outline-none select-text'
                         />
                     </div>
                 ) : (
                     <span
                         onClick={startEdit}
-                        className={cn('truncate text-sm font-medium text-foreground', {
+                        className={cn('truncate text-sm font-medium text-foreground select-text', {
                             'cursor-text': isAuthor,
                             'cursor-default': !isAuthor,
                         })}

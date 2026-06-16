@@ -395,6 +395,10 @@ export const EditorPage = () => {
         broadcast('file:updated', { file: { id: fileId, name, language: lang.id } });
     };
 
+    const handleContentSaved = (fileId, content) => {
+        setFiles(prev => prev.map(f => (f.id === fileId ? { ...f, content } : f)));
+    };
+
     const handleLanguageChange = async (fileId, language) => {
         await updateFile(fileId, { language });
         setFiles(prev => prev.map(f => (f.id === fileId ? { ...f, language } : f)));
@@ -474,6 +478,7 @@ export const EditorPage = () => {
                         onSelectionChange={handleEditorSelectionChange}
                         onLanguageChange={handleLanguageChange}
                         onCreateFile={handleCreateFile}
+                        onContentSaved={content => handleContentSaved(activeFileId, content)}
                     />
                 )}
             </div>
