@@ -152,7 +152,7 @@ const DEVICE_LABELS = {
     tablet: 'Tablet',
     mobile: 'Mobile',
     bot: 'Server',
-    unknown: '—',
+    unknown: 'Unknown',
 };
 
 const DeviceCell = ({ ua, isBot }) => {
@@ -173,8 +173,20 @@ const DeviceCell = ({ ua, isBot }) => {
     );
 };
 
+const getCountryName = (code, locale) => {
+    try {
+        return new Intl.DisplayNames([locale], { type: 'region' }).of(code);
+    } catch {
+        return code;
+    }
+};
+
 const LocationCell = ({ country, city }) => {
+    const { i18n } = useTranslation();
+
     if (!country && !city) return <span className='text-xs text-muted-foreground'>—</span>;
+
+    const countryName = country ? getCountryName(country, i18n.language) : null;
 
     return (
         <div className='flex items-center gap-2'>
@@ -184,11 +196,11 @@ const LocationCell = ({ country, city }) => {
                         <TooltipTrigger className='cursor-default'>
                             <img
                                 src={FLAG_URL(country)}
-                                alt={country}
+                                alt={countryName ?? country}
                                 className='size-4 shrink-0 overflow-hidden rounded-full object-cover'
                             />
                         </TooltipTrigger>
-                        <TooltipContent>{country}</TooltipContent>
+                        <TooltipContent>{countryName ?? country}</TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
             )}
