@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { MonacoEditor } from '@/components/editor/monaco-editor';
+import { EditorSkeleton } from '@/components/editor/editor-skeleton';
 import { StatusBar } from '@/components/editor/status-bar';
 import { updateFile } from '@/services/bin-files';
 import { initYDoc } from '@/services/yjs';
@@ -110,7 +111,7 @@ export const EditorCore = ({
     return (
         <div className='flex min-h-0 flex-1 flex-col'>
             <div className='min-h-0 flex-1'>
-                {yContext && (
+                {yContext ? (
                     <MonacoEditor
                         yText={yContext.yText}
                         clientId={user?.uuid}
@@ -123,12 +124,15 @@ export const EditorCore = ({
                         onCursorChange={handleCursorChange}
                         onSelectionChange={onSelectionChange}
                     />
+                ) : (
+                    <EditorSkeleton />
                 )}
             </div>
             <StatusBar
                 language={file.language}
                 cursor={cursor}
                 lineCount={lineCount}
+                isLoading={!yContext}
                 saveStatus={saveStatus}
                 peers={binPeers}
                 onLanguageChange={lang => onLanguageChange(file.id, lang)}

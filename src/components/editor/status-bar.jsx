@@ -6,6 +6,7 @@ import { cn } from '@/helpers/utils';
 import { useSettings } from '@/hooks/use-settings';
 import { useTheme } from '@/providers/theme-provider';
 import { UserAvatar } from '@/components/system/user-avatar';
+import { ScrambleText } from '@/components/system/scramble-text';
 import { LANGUAGE_LIST, getLanguage } from '@/constants/languages';
 import { Popover, PopoverTrigger, PopoverContent } from '@/ui/popover';
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '@/ui/command';
@@ -184,7 +185,7 @@ const IndentationPicker = ({ t }) => {
     );
 };
 
-export const StatusBar = ({ language, cursor, lineCount = 1, saveStatus, peers = [], onLanguageChange }) => {
+export const StatusBar = ({ language, cursor, lineCount = 1, isLoading = false, saveStatus, peers = [], onLanguageChange }) => {
     const { t } = useTranslation();
     return (
         <div className='flex h-8 shrink-0 items-center gap-2 border-t border-border bg-surface px-3 text-xs text-muted-foreground'>
@@ -199,7 +200,11 @@ export const StatusBar = ({ language, cursor, lineCount = 1, saveStatus, peers =
 
             <Divider />
 
-            <span>{t('editor.status_bar.lines', { count: lineCount })}</span>
+            <span>
+                {isLoading
+                    ? <><ScrambleText chars='@#$%&'>{String(lineCount).padStart(2, '0')}</ScrambleText> {t('editor.status_bar.lines_label')}</>
+                    : t('editor.status_bar.lines', { count: lineCount })}
+            </span>
 
             <Divider />
 

@@ -220,7 +220,7 @@ const TabStrip = ({
 
             <div
                 ref={$scroll}
-                className='flex min-w-0 flex-1 items-stretch overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
+                className='flex min-w-0 flex-1 items-stretch overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden'
             >
                 {files.map(file => (
                     <FileTab

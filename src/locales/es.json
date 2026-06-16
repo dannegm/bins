@@ -198,6 +198,7 @@
             "ln": "Lín",
             "col": "Col",
             "lines": "{{count}} líneas",
+            "lines_label": "líneas",
             "spaces": "Espacios: {{count}}",
             "tabs": "Tabs: {{count}}",
             "spaces_label": "Espacios",
