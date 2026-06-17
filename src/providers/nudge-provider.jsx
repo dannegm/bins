@@ -35,7 +35,7 @@ export const NudgeProvider = ({ children }) => {
     return (
         <motion.div
             ref={scope}
-            className='flex h-full w-full flex-col ring-2 ring-border rounded-xs overflow-hidden'
+            className='flex h-dvh sm:h-full w-full flex-col ring-2 ring-border rounded-xs overflow-hidden'
         >
             {children}
         </motion.div>

@@ -7,7 +7,7 @@ import { useIdentity } from '@/hooks/use-identity';
 import { useTheme } from '@/providers/theme-provider';
 import { getLanguage } from '@/constants/languages';
 import { MONACO_THEMES } from '@/constants/themes';
-import { useListener } from '@/providers/bus-provider';
+import { useListener, useEvents } from '@/providers/bus-provider';
 
 const toHex = color => {
     try {
@@ -44,6 +44,7 @@ export const MonacoEditor = ({
     onSelectionChange,
     onEditorReady,
 }) => {
+    const { emit } = useEvents();
     const $container = useRef(null);
     const $editor = useRef(null);
     const $isApplyingRemote = useRef(false);
@@ -86,6 +87,7 @@ export const MonacoEditor = ({
             minimap: { enabled: minimap },
             fontFamily: '"JetBrains Mono", monospace',
             fontLigatures: true,
+            fontWeight: '200',
             automaticLayout: true,
             readOnly,
             scrollBeyondLastLine: false,
@@ -109,16 +111,20 @@ export const MonacoEditor = ({
             const pos = e.selection.getPosition();
             onCursorChange?.({ lineNumber: pos.lineNumber, column: pos.column });
             const sel = e.selection;
-            onSelectionChange?.(
-                sel.isEmpty()
-                    ? null
-                    : {
-                          startLineNumber: sel.startLineNumber,
-                          startColumn: sel.startColumn,
-                          endLineNumber: sel.endLineNumber,
-                          endColumn: sel.endColumn,
-                      },
-            );
+            const selection = {
+                startLineNumber: sel.startLineNumber,
+                startColumn: sel.startColumn,
+                endLineNumber: sel.endLineNumber,
+                endColumn: sel.endColumn,
+            };
+            onSelectionChange?.(sel.isEmpty() ? null : selection);
+        });
+
+        editor.onDidFocusEditorWidget(e => {
+            emit('editor:focus', e);
+        });
+        editor.onDidBlurEditorWidget(e => {
+            emit('editor:blur', e);
         });
 
         return () => {

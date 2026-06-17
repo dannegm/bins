@@ -107,7 +107,7 @@ export const ProfileHeader = ({ profile, bins, isLoading }) => {
 
     return (
         <div
-            className='relative flex flex-col items-center gap-6 overflow-hidden border-b border-border px-8 py-12'
+            className='relative flex flex-col shrink-0 items-center gap-6 overflow-hidden border-b border-border px-8 py-12'
             style={{ '--user-color': color }}
         >
             <FlickeringGrid

@@ -312,14 +312,15 @@
             "fork_description": "Se creará una copia de este bin con todos sus archivos. Tú serás el autor del nuevo bin.",
             "fork_cancel": "Cancelar",
             "fork_confirm": "Fork",
-            "admin_override": "Puedes editar este bin porque eres admin"
+            "admin_override": "Puedes editar este bin porque eres admin",
+            "forked_from": "fork de"
         },
         "tab_bar": {
             "undo": "Deshacer",
             "redo": "Rehacer",
             "new_file": "Nuevo archivo",
-            "delete_file": "Eliminar archivo",
-            "confirm_delete": "Clic de nuevo para confirmar",
+            "delete_file": "eliminar",
+            "confirm_delete": "confirmar",
             "share": "Compartir",
             "copied": "¡Copiado!"
         },

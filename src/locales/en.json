@@ -312,14 +312,15 @@
             "fork_description": "A copy of this bin will be created with all its files. You will be the author of the new bin.",
             "fork_cancel": "Cancel",
             "fork_confirm": "Fork",
-            "admin_override": "You can edit this bin because you're an admin"
+            "admin_override": "You can edit this bin because you're an admin",
+            "forked_from": "forked from"
         },
         "tab_bar": {
             "undo": "Undo",
             "redo": "Redo",
             "new_file": "New file",
-            "delete_file": "Delete file",
-            "confirm_delete": "Click again to confirm",
+            "delete_file": "delete",
+            "confirm_delete": "confirm",
             "share": "Share",
             "copied": "Copied!"
         },

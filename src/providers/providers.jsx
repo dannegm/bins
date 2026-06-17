@@ -8,6 +8,7 @@ import { QueryProvider } from './query-provider';
 import { BusProvider } from './bus-provider';
 import { IdentityProvider } from './identity-provider';
 import { ThemeProvider } from './theme-provider';
+import { EditorEventsProvider } from './editor-events-provider';
 import { useExternalCommands } from '@/hooks/use-external-commands';
 import { useGlobalCommands } from '@/hooks/use-global-commands';
 import { useKeybindingCommands } from '@/hooks/use-keybinding-commands';
@@ -28,6 +29,7 @@ export const Providers = createProviders([
     [NuqsAdapter],
     [IdentityProvider],
     [BusProvider],
+    [EditorEventsProvider],
     [NudgeProvider],
     [CommandsBridge],
     [QueryProvider],

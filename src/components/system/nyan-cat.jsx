@@ -7,29 +7,24 @@ const RAINBOW = ['#FF0000', '#FF9900', '#FFFF00', '#33FF00', '#0099FF', '#9933FF
 const SEG = 20;
 const SECTIONS = 12;
 
-export const NyanCatProvider = ({ children }) => (
-    <>
-        <NyanCat />
-        {children}
-    </>
-);
-
 export const NyanCat = () => {
     const [uwu] = useQueryState('uwu', parseAsShorthandBoolean);
     if (!uwu) return null;
 
     return (
         <>
-            <style>{`
-                @keyframes nyan-run {
-                    from { transform: translateX(-20rem); }
-                    to { transform: translateX(calc(100vw + 4rem)); }
-                }
-                @keyframes trail-scroll {
-                    from { transform: translateX(0); }
-                    to { transform: translateX(-${SEG * SECTIONS}px); }
-                }
-            `}</style>
+            <style>
+                {`
+                    @keyframes nyan-run {
+                        from { transform: translateX(-20rem); }
+                        to { transform: translateX(calc(100vw + 4rem)); }
+                    }
+                    @keyframes trail-scroll {
+                        from { transform: translateX(0); }
+                        to { transform: translateX(-${SEG * SECTIONS}px); }
+                    }
+                `}
+            </style>
             <div className='pointer-events-none fixed bottom-10 left-0 z-9999 flex items-center animate-[nyan-run_5s_linear_infinite]'>
                 <div className='flex flex-col'>
                     {RAINBOW.map((color, i) => (
@@ -58,3 +53,10 @@ export const NyanCat = () => {
         </>
     );
 };
+
+export const NyanCatProvider = ({ children }) => (
+    <>
+        <NyanCat />
+        {children}
+    </>
+);

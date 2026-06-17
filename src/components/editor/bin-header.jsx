@@ -14,6 +14,7 @@ import { lighten } from 'polished';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { cn } from '@/helpers/utils';
+import { getBin } from '@/services/bins';
 import { getProfile } from '@/services/profiles';
 import { useTheme } from '@/providers/theme-provider';
 import { UserAvatar } from '@/components/system/user-avatar';
@@ -76,6 +77,31 @@ const AuthorChip = ({ authorId, t, className }) => {
                     style={{ '--author-color': lighten(0.2, color) }}
                 >
                     {profile.name}
+                </span>
+            )}
+        </a>
+    );
+};
+
+const ForkedFromChip = ({ parentId, t }) => {
+    const { data: parentBin } = useQuery({
+        queryKey: ['bin', parentId],
+        queryFn: () => getBin(parentId),
+        enabled: !!parentId,
+    });
+
+    return (
+        <a
+            href={`/editor/${parentId}`}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='flex shrink-0 items-center gap-1.5 rounded-md border border-border bg-surface px-2 py-1 transition-colors hover:border-brand hover:bg-surface-raised'
+        >
+            <GitFork className='size-3 text-foreground/60' />
+            <span className='font-sans text-[12px] text-foreground/60'>{t('editor.bin_header.forked_from')}</span>
+            {parentBin?.title && (
+                <span className='max-w-28 truncate font-mono text-[12px] text-foreground/80'>
+                    {parentBin.title}
                 </span>
             )}
         </a>
@@ -241,6 +267,8 @@ export const BinHeader = ({ bin, isAuthor, isAdmin, onTitleChange, onReadonlyTog
 
             {/* Fork + Share + Author — desktop only */}
             <div className='hidden items-center gap-2 sm:flex'>
+                {bin?.forked_from && <ForkedFromChip parentId={bin.forked_from} t={t} />}
+
                 <Popover open={forkOpen} onOpenChange={setForkOpen}>
                     <PopoverTrigger className='flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground'>
                         <GitFork className='size-3' />
@@ -347,17 +375,22 @@ export const BinHeader = ({ bin, isAuthor, isAdmin, onTitleChange, onReadonlyTog
                             <span className='text-foreground'>{t('editor.tab_bar.share')}</span>
                         </button>
 
+                        {(bin?.forked_from || bin?.author_id) && (
+                            <div className='h-px bg-border/50' />
+                        )}
+                        {bin?.forked_from && (
+                            <div className='px-0.5'>
+                                <ForkedFromChip parentId={bin.forked_from} t={t} />
+                            </div>
+                        )}
                         {bin?.author_id && (
-                            <>
-                                <div className='h-px bg-border/50' />
-                                <div className='px-0.5'>
-                                    <AuthorChip
-                                        authorId={bin?.author_id}
-                                        t={t}
-                                        className='w-full border-0'
-                                    />
-                                </div>
-                            </>
+                            <div className='px-0.5'>
+                                <AuthorChip
+                                    authorId={bin?.author_id}
+                                    t={t}
+                                    className='w-full border-0'
+                                />
+                            </div>
                         )}
                     </PopoverContent>
                 </Popover>

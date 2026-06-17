@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertTriangle, Pencil, RotateCcw, X } from 'lucide-react';
 import { Dialog } from '@base-ui/react/dialog';
@@ -298,9 +298,8 @@ export const KeybindingsSection = () => {
             <SectionHeading title={t('settings.keybindings.title')} />
             <SettingGroup>
                 {KEYBINDING_GROUPS.map(({ group, type, items }) => (
-                    <>
+                    <Fragment key={group}>
                         <GroupLabel
-                            key={`label-${group}`}
                             label={t(`settings.keybindings.group_${group}`)}
                         />
                         {items.map(id => {
@@ -336,7 +335,7 @@ export const KeybindingsSection = () => {
                                 </SettingRow>
                             );
                         })}
-                    </>
+                    </Fragment>
                 ))}
             </SettingGroup>
         </section>

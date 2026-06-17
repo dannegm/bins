@@ -6,6 +6,7 @@ import { useAdmin } from '@/hooks/use-admin';
 import { useIdentity } from '@/hooks/use-identity';
 import { UserAvatar } from '@/components/system/user-avatar';
 import { AppIcon } from './app-icon';
+import { cn } from '@/helpers/utils';
 
 const NavItem = ({ to, icon: Icon, label }) => (
     <Button
@@ -44,7 +45,17 @@ export const Sidebar = () => {
     const { user } = useIdentity();
 
     return (
-        <aside className='fixed bottom-0 left-0 right-0 z-40 flex h-14 flex-row items-center justify-evenly border-t border-sidebar-border bg-sidebar px-2 sm:relative sm:h-screen sm:w-14 sm:flex-col sm:justify-start sm:gap-2 sm:border-r sm:border-t-0 sm:px-0 sm:py-4 short:hidden sm:short:flex'>
+        <aside
+            className={cn(
+                'fixed bottom-0 left-0 right-0 z-40 flex h-10 pt-2 px-2',
+                'flex-row items-center justify-evenly',
+                'border-t border-sidebar-border bg-sidebar',
+
+                'sm:relative sm:h-screen sm:w-14 sm:flex-col sm:px-0 sm:py-4 sm:justify-start sm:gap-2',
+                'sm:border-r sm:border-t-0',
+                'short:hidden sm:short:flex',
+            )}
+        >
             <AppIcon />
 
             <Separator />

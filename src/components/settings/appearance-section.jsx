@@ -141,7 +141,7 @@ export const AppearanceSection = () => {
                     <p className='mb-3 text-sm font-medium text-foreground'>
                         {t('settings.appearance.ui_theme_label')}
                     </p>
-                    <div className='grid grid-cols-4 gap-3'>
+                    <div className='grid grid-cols-2 sm:grid-cols-4 gap-3'>
                         {UI_THEMES.map(theme => (
                             <UiThemeThumbnail
                                 key={theme.id}
@@ -159,7 +159,7 @@ export const AppearanceSection = () => {
                     <p className='mb-3 text-sm font-medium text-foreground'>
                         {t('settings.appearance.monaco_theme_label')}
                     </p>
-                    <div className='grid grid-cols-4 gap-3'>
+                    <div className='grid grid-cols-2 sm:grid-cols-4 gap-3'>
                         {MONACO_THEMES.map(theme => (
                             <MonacoThemeThumbnail
                                 key={theme.id}
@@ -181,7 +181,7 @@ export const AppearanceSection = () => {
                                 setLanguage(e.target.value);
                                 i18n.changeLanguage(e.target.value);
                             }}
-                            className='h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+                            className='h-8 rounded-lg accent-amber-300 border border-input bg-transparent px-2.5 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
                         >
                             {SUPPORTED_LANGUAGES.map(l => (
                                 <option key={l.id} value={l.id}>

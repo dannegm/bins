@@ -1,6 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:ital,wght@0,100..900;1,100..900&family=Geist:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 @import 'devicon/devicon.min.css';
 
 @import 'tailwindcss';
@@ -12,6 +10,7 @@
 
 @custom-variant dark (&:where([data-theme-gama='dark'], [data-theme-gama='dark'] *));
 @custom-variant short (@media (max-height: 600px));
+@custom-variant editor-focused (&:where([data-editor-focused='true'], [data-editor-focused='true'] *));
 
 @theme inline {
     --font-heading: var(--font-sans);

@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Redo2, Plus, Trash2, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Undo2, Redo2, Plus, Trash2, X, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/helpers/utils';
 import { getLanguage } from '@/constants/languages';
 import { useTheme } from '@/providers/theme-provider';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/ui/tooltip';
 
 const LangIcon = ({ language, className }) => {
     const lang = getLanguage(language);
@@ -55,6 +56,11 @@ const FileTab = ({
     };
 
     const isConfirming = deleteConfirmId === file.id;
+    const [tooltipOpen, setTooltipOpen] = useState(false);
+
+    useEffect(() => {
+        setTooltipOpen(isConfirming);
+    }, [isConfirming]);
 
     return (
         <div
@@ -94,29 +100,36 @@ const FileTab = ({
             )}
 
             {!isReadonly && (
-                <button
-                    onClick={e => {
-                        e.stopPropagation();
-                        if (!canDelete) return;
-                        onDeleteConfirm(file.id);
-                    }}
-                    onDoubleClick={e => e.stopPropagation()}
-                    title={
-                        isConfirming
-                            ? t('editor.tab_bar.confirm_delete')
-                            : t('editor.tab_bar.delete_file')
-                    }
-                    className={cn(
-                        'ml-0.5 shrink-0 rounded p-0.5 text-muted-foreground transition-colors',
-                        {
-                            'text-destructive': isConfirming,
-                            'hover:text-foreground': canDelete && !isConfirming,
-                            'opacity-35 cursor-default': !canDelete && !isConfirming,
-                        },
-                    )}
-                >
-                    <Trash2 className='size-3' />
-                </button>
+                <TooltipProvider>
+                    <Tooltip
+                        open={tooltipOpen}
+                        onOpenChange={o => { if (!isConfirming) setTooltipOpen(o); }}
+                    >
+                        <TooltipTrigger
+                            onClick={e => {
+                                e.stopPropagation();
+                                if (!canDelete) return;
+                                onDeleteConfirm(file.id);
+                            }}
+                            onDoubleClick={e => e.stopPropagation()}
+                            className={cn(
+                                'ml-0.5 shrink-0 rounded p-0.5 transition-colors',
+                                {
+                                    'text-destructive': isConfirming,
+                                    'text-muted-foreground hover:text-foreground': canDelete && !isConfirming,
+                                    'text-muted-foreground opacity-35 cursor-default': !canDelete && !isConfirming,
+                                },
+                            )}
+                        >
+                            {isConfirming ? <Trash2 className='size-3' /> : <X className='size-3' />}
+                        </TooltipTrigger>
+                        <TooltipContent side='bottom' align='end'>
+                            {isConfirming
+                                ? t('editor.tab_bar.confirm_delete')
+                                : t('editor.tab_bar.delete_file')}
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             )}
         </div>
     );

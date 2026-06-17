@@ -41,7 +41,7 @@ const LangIcon = ({ lang, color }) => {
     return <span className='size-1.5 rounded-full bg-(--dot)' style={{ '--dot': iconColor }} />;
 };
 
-const Divider = () => <span className='bg-border h-2/4 w-px'></span>;
+const Divider = ({ className }) => <span className={cn('bg-border h-2/4 w-px', className)} />;
 
 const SaveIndicator = ({ status, t }) => {
     const config = {
@@ -54,13 +54,10 @@ const SaveIndicator = ({ status, t }) => {
     if (!config.label) return null;
 
     return (
-        <>
-            <Divider />
-            <span className='flex items-center gap-1.5'>
-                <span className={cn('size-1.5 rounded-full', config.dot)} />
-                <span>{config.label}</span>
-            </span>
-        </>
+        <span className='flex items-center gap-1.5'>
+            <span className={cn('size-1.5 rounded-full', config.dot)} />
+            <span>{config.label}</span>
+        </span>
     );
 };
 
@@ -75,7 +72,7 @@ const LanguagePicker = ({ language, onLanguageChange }) => {
                 style={{ '--lang-bg': lang.color, '--lang-text': contrastColor(lang.color) }}
             >
                 <LangIcon lang={lang} color={contrastColor(lang.color)} />
-                {lang.label}
+                <span className='hidden sm:inline'>{lang.label}</span>
             </PopoverTrigger>
             <PopoverContent side='top' sideOffset={8} align='start' className='w-52 p-0'>
                 <Command>
@@ -107,58 +104,57 @@ const LanguagePicker = ({ language, onLanguageChange }) => {
     );
 };
 
-const PeerList = ({ peers, t }) => {
+const NudgeButton = ({ t }) => {
+    const { emit } = useEvents();
+    return (
+        <button
+            onClick={() => emit('peer:nudge')}
+            className='flex items-center gap-1 rounded-full bg-rose-600 px-2 py-0.5 text-white transition-opacity hover:opacity-80 dark:bg-rose-400'
+        >
+            <SmileyDead className='size-3.5' />
+            <span className='hidden sm:inline'>{t('editor.status_bar.nudge')}</span>
+        </button>
+    );
+};
+
+const PeerList = ({ peers }) => {
     const { isDark } = useTheme();
     const { emit } = useEvents();
 
     return (
-        <div className='flex items-center gap-1'>
-            <button
-                onClick={() => emit('peer:nudge')}
-                className='flex items-center gap-1 rounded-full bg-rose-600 px-2 py-0.5 text-white transition-opacity hover:opacity-80 dark:bg-rose-400'
-            >
-                <SmileyDead className='size-3.5' />
-                {t('editor.status_bar.nudge')}
-            </button>
-            <Popover>
-                <PopoverTrigger className='flex items-center gap-1 rounded-full bg-brand px-2 py-0.5 text-brand-foreground transition-opacity hover:opacity-80'>
-                    <Users className='size-3' />
-                    {peers.length}
-                </PopoverTrigger>
-                <PopoverContent
-                    side='top'
-                    sideOffset={16}
-                    align='end'
-                    className='w-auto min-w-44 p-0'
-                >
-                    {peers.map(peer => {
-                        const color = isDark ? peer.colorDark : peer.colorLight;
-                        return (
-                            <button
-                                key={peer.uuid}
-                                onClick={() =>
-                                    peer.activeFileId &&
-                                    emit('peer:focus', {
-                                        fileId: peer.activeFileId,
-                                        cursor: peer.cursor,
-                                    })
-                                }
-                                className='flex w-full items-center gap-2.5 px-3 py-2 transition-colors hover:bg-muted'
-                            >
-                                <UserAvatar profileId={peer.uuid} className='size-5 shrink-0' />
-                                <span className='flex-1 truncate text-left text-xs text-foreground'>
-                                    {peer.name}
-                                </span>
-                                <span
-                                    className='size-2 shrink-0 rounded-full bg-(--peer-color)'
-                                    style={{ '--peer-color': color }}
-                                />
-                            </button>
-                        );
-                    })}
-                </PopoverContent>
-            </Popover>
-        </div>
+        <Popover>
+            <PopoverTrigger className='flex items-center gap-1 rounded-full bg-brand px-2 py-0.5 text-brand-foreground transition-opacity hover:opacity-80'>
+                <Users className='size-3' />
+                {peers.length}
+            </PopoverTrigger>
+            <PopoverContent side='top' sideOffset={16} align='end' className='w-auto min-w-44 p-0'>
+                {peers.map(peer => {
+                    const color = isDark ? peer.colorDark : peer.colorLight;
+                    return (
+                        <button
+                            key={peer.uuid}
+                            onClick={() =>
+                                peer.activeFileId &&
+                                emit('peer:focus', {
+                                    fileId: peer.activeFileId,
+                                    cursor: peer.cursor,
+                                })
+                            }
+                            className='flex w-full items-center gap-2.5 px-3 py-2 transition-colors hover:bg-muted'
+                        >
+                            <UserAvatar profileId={peer.uuid} className='size-5 shrink-0' />
+                            <span className='flex-1 truncate text-left text-xs text-foreground'>
+                                {peer.name}
+                            </span>
+                            <span
+                                className='size-2 shrink-0 rounded-full bg-(--peer-color)'
+                                style={{ '--peer-color': color }}
+                            />
+                        </button>
+                    );
+                })}
+            </PopoverContent>
+        </Popover>
     );
 };
 
@@ -226,19 +222,20 @@ export const StatusBar = ({
 }) => {
     const { t } = useTranslation();
     return (
-        <div className='flex h-8 shrink-0 items-center gap-2 sm:gap-3 border-t border-border bg-surface px-3 text-xs text-muted-foreground'>
+        <div className='flex h-8 editor-focused:h-0 overflow-hidden shrink-0 items-center gap-2 sm:gap-3 border-t border-border bg-surface px-3 text-xs text-muted-foreground'>
+            {/* Language */}
             <LanguagePicker language={language} onLanguageChange={onLanguageChange} />
 
-            <Divider />
-
-            <span>
+            {/* Cursor position */}
+            <Divider className='hidden sm:inline' />
+            <span className='hidden sm:inline'>
                 {t('editor.status_bar.ln')} {cursor.lineNumber}, {t('editor.status_bar.col')}{' '}
                 {cursor.column}
             </span>
 
-            <Divider />
-
-            <span>
+            {/* Rows count */}
+            <Divider className='hidden sm:inline' />
+            <span className='hidden sm:inline'>
                 {isLoading ? (
                     <>
                         <ScrambleText chars='@#$%&'>
@@ -251,17 +248,18 @@ export const StatusBar = ({
                 )}
             </span>
 
+            {/* Indentation */}
             <Divider />
-
             <IndentationPicker t={t} />
 
+            {/* Save status */}
             <Divider />
-
             <SaveIndicator status={saveStatus} t={t} />
 
             <span className='flex-1' />
 
-            {peers.length > 0 && <PeerList peers={peers} t={t} />}
+            <NudgeButton t={t} />
+            {peers.length > 0 && <PeerList peers={peers} />}
         </div>
     );
 };

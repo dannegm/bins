@@ -5,7 +5,8 @@ export const Footer = () => {
 
     return (
         <footer className='flex items-center gap-2 border-t border-border px-8 py-4 mb-1 text-xs text-muted-foreground'>
-            <span>{t('footer.tagline')}</span>
+            <span className="inline sm:hidden">BINS.</span>
+            <span className="hidden sm:inline">{t('footer.tagline')}</span>
 
             <span className='flex-grow' />
 

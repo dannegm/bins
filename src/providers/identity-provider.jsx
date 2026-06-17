@@ -4,32 +4,34 @@ import { supabase } from '@/services/supabase';
 import { generateUUID, generateName, generateColors } from '@/helpers/identity';
 import { parseUA } from '@/helpers/ua-parser';
 
-const hashIP = async ip => {
-    const data = new TextEncoder().encode(ip);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    return Array.from(new Uint8Array(hashBuffer))
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join('');
-};
+const hashIP = ip =>
+    ip.split('.').map(n => parseInt(n).toString(16).padStart(2, '0')).join('').toUpperCase();
 
-const syncProfile = async ({ uuid, name, colorDark, colorLight }) => {
+const fetchGeoData = async () => {
     try {
         const res = await fetch('https://ipinfo.io/json');
         const { ip, country, city } = await res.json();
-        const ip_hash = await hashIP(ip);
-        const ua = navigator.userAgent;
-        const is_bot = navigator.webdriver === true || parseUA(ua).bot !== null;
+        const ip_hash = hashIP(ip);
+        return { ip_hash, country, city };
+    } catch {
+        return {};
+    }
+};
 
+const syncProfile = async ({ uuid, name, colorDark, colorLight }) => {
+    const ua = navigator.userAgent;
+    const is_bot = navigator.webdriver === true || parseUA(ua).bot !== null;
+    const geo = await fetchGeoData();
+
+    try {
         await supabase().from('profiles').upsert({
             uuid,
             name,
             color_light: colorLight,
             color_dark: colorDark,
-            ip_hash,
-            country,
-            city,
             user_agent: ua,
             is_bot,
+            ...geo,
         });
     } catch {
         // non-critical
@@ -39,8 +41,11 @@ const syncProfile = async ({ uuid, name, colorDark, colorLight }) => {
 const initIdentity = async () => {
     let profile = settings.get('user');
 
+    console.log('Initializing user identity with profile:', profile);
+
     if (!profile?.uuid) {
         const uuid = generateUUID();
+        console.log(`Generated new user profile with UUID: ${uuid}`);
         const name = generateName();
         const { colorDark, colorLight } = generateColors();
         profile = { uuid, name, colorDark, colorLight };
