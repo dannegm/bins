@@ -15,7 +15,7 @@ import {
     EmptyDescription,
     EmptyContent,
 } from '@/ui/empty';
-import { BinCard, BinRow, ViewToggle } from '@/components/bins/bin-card';
+import { BinCard, BinList, ViewToggle } from '@/components/bins/bin-card';
 
 const useMyBins = uuid =>
     useQuery({
@@ -53,7 +53,7 @@ const MyBinsLoading = ({ t, view, onViewChange }) => (
                 ))}
             </div>
         ) : (
-            <div className='flex flex-col overflow-hidden rounded-xl border border-border'>
+            <div className='overflow-hidden rounded-xl border border-border'>
                 {Array.from({ length: 4 }).map((_, i) => (
                     <Skeleton key={i} className='h-11 rounded-none border-b border-border last:border-0' />
                 ))}
@@ -111,11 +111,7 @@ export const MyBins = ({ view, onViewChange }) => {
                     ))}
                 </div>
             ) : (
-                <div className='flex flex-col overflow-hidden rounded-xl border border-border'>
-                    {bins.map(bin => (
-                        <BinRow key={bin.id} bin={bin} />
-                    ))}
-                </div>
+                <BinList bins={bins} />
             )}
         </MyBinsLayout>
     );

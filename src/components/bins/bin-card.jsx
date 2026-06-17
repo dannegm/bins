@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Braces, Eye, File, GitFork, LayoutGrid, List, Lock, LockOpen, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -213,7 +213,7 @@ const RowDeleteButton = ({ bin, t }) => {
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger
-                className='flex size-5 items-center justify-center rounded text-muted-foreground opacity-0 transition-all group-hover/card:opacity-100 hover:text-destructive [&>svg]:size-3.5'
+                className='flex size-5 items-center justify-center rounded text-muted-foreground transition-colors hover:text-destructive [&>svg]:size-3.5'
                 onClick={e => { e.preventDefault(); e.stopPropagation(); }}
             >
                 <Trash2 />
@@ -248,44 +248,66 @@ const RowDeleteButton = ({ bin, t }) => {
 };
 
 
-export const BinRow = ({ bin }) => {
+const BinRow = ({ bin }) => {
     const { t, i18n } = useTranslation();
     const { user } = useIdentity();
     const { isAdmin } = useAdmin();
+    const navigate = useNavigate();
     const locale = dateFnsLocales[i18n.language] ?? enUS;
     const formatDate = iso => format(new Date(iso), t('formats.date.short'), { locale });
     const canDelete = user?.uuid === bin.author_id || isAdmin;
 
+    const handleClick = () => navigate({ to: '/editor/$binId', params: { binId: bin.id } });
+
     return (
-        <Link
-            to='/editor/$binId'
-            params={{ binId: bin.id }}
-            className='group/card flex items-center gap-3 border-b border-border bg-card px-4 py-2.5 last:border-0 transition-colors hover:bg-surface-raised'
+        <tr
+            onClick={handleClick}
+            className='group/card cursor-pointer border-b border-border last:border-0 transition-colors hover:bg-surface-raised'
         >
-            <Braces className='size-3.5 shrink-0 text-muted-foreground' />
-
-            <span className='min-w-0 flex-1 truncate text-sm font-medium text-card-foreground'>
-                {bin.title || t('bins.card.untitled')}
-            </span>
-
-            <div className='flex shrink-0 items-center gap-3 text-xs text-muted-foreground'>
-                <span>{formatDate(bin.updated_at)}</span>
-                <span className='hidden items-center gap-1 sm:flex [&>svg]:size-3'>
-                    <Eye />{bin.views}
+            <td className='pl-3 pr-1 py-2.5'>
+                <Braces className='size-3.5 text-muted-foreground' />
+            </td>
+            <td className='w-full max-w-0 px-2 py-2.5'>
+                <span className='block truncate text-sm font-medium text-card-foreground'>
+                    {bin.title || t('bins.card.untitled')}
                 </span>
-                <span className='hidden items-center gap-1 sm:flex [&>svg]:size-3'>
-                    <File />{bin.bin_files?.length ?? 0}
-                </span>
-                {bin.forked_from && <GitFork className='hidden size-3 sm:block' />}
-                <div className='hidden sm:block'>
-                    <LanguageStack files={bin.bin_files ?? []} />
-                </div>
+            </td>
+            <td className='hidden whitespace-nowrap px-2 py-2.5 text-xs text-muted-foreground sm:table-cell'>
+                {formatDate(bin.updated_at)}
+            </td>
+            <td className='hidden whitespace-nowrap px-2 py-2.5 text-xs text-muted-foreground sm:table-cell'>
+                <span className='flex items-center gap-1 [&>svg]:size-3'><Eye />{bin.views}</span>
+            </td>
+            <td className='whitespace-nowrap px-2 py-2.5 text-xs text-muted-foreground'>
+                <span className='flex items-center gap-1 [&>svg]:size-3'><File />{bin.bin_files?.length ?? 0}</span>
+            </td>
+            <td className='hidden px-2 py-2.5 sm:table-cell'>
+                {bin.forked_from && <GitFork className='size-3 text-muted-foreground' />}
+            </td>
+            <td className='px-2 py-2.5'>
+                <LanguageStack files={bin.bin_files ?? []} />
+            </td>
+            <td className='whitespace-nowrap px-4 py-2.5'>
                 <AccessBadge bin={bin} t={t} canDelete={false} />
+            </td>
+            <td className='pr-4 py-2.5'>
                 {canDelete && <RowDeleteButton bin={bin} t={t} />}
-            </div>
-        </Link>
+            </td>
+        </tr>
     );
 };
+
+export const BinList = ({ bins }) => (
+    <div className='overflow-hidden rounded-xl border border-border'>
+        <table className='w-full border-collapse'>
+            <tbody>
+                {bins.map(bin => (
+                    <BinRow key={bin.id} bin={bin} />
+                ))}
+            </tbody>
+        </table>
+    </div>
+);
 
 export const ViewToggle = ({ view, onChange }) => (
     <div className='flex items-center gap-0.5'>

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { BinCard, BinRow, ViewToggle } from '@/components/bins/bin-card';
+import { BinCard, BinList, ViewToggle } from '@/components/bins/bin-card';
 
 export const ProfileSharedBins = ({ bins, view, onViewChange }) => {
     const { t } = useTranslation();
@@ -21,11 +21,7 @@ export const ProfileSharedBins = ({ bins, view, onViewChange }) => {
                     ))}
                 </div>
             ) : (
-                <div className='flex flex-col overflow-hidden rounded-xl border border-border'>
-                    {bins.map(bin => (
-                        <BinRow key={bin.id} bin={bin} />
-                    ))}
-                </div>
+                <BinList bins={bins} />
             )}
         </div>
     );

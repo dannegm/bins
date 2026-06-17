@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/services/supabase';
 import { useIdentity } from '@/hooks/use-identity';
-import { BinCard, BinRow, ViewToggle } from '@/components/bins/bin-card';
+import { BinCard, BinList, ViewToggle } from '@/components/bins/bin-card';
 
 const useSharedBins = uuid =>
     useQuery({
@@ -42,11 +42,7 @@ export const SharedBins = ({ view, onViewChange }) => {
                     ))}
                 </div>
             ) : (
-                <div className='flex flex-col overflow-hidden rounded-xl border border-border'>
-                    {bins.map(bin => (
-                        <BinRow key={bin.id} bin={bin} />
-                    ))}
-                </div>
+                <BinList bins={bins} />
             )}
         </div>
     );
