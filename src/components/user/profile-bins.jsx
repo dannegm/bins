@@ -3,16 +3,24 @@ import { useTranslation } from 'react-i18next';
 import { cn } from '@/helpers/utils';
 import { Skeleton } from '@/ui/skeleton';
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/ui/empty';
-import { BinCard } from '@/components/bins/bin-card';
+import { BinCard, BinRow, ViewToggle } from '@/components/bins/bin-card';
 
-const ProfileBinsLoading = () => (
+const ProfileBinsLoading = ({ view }) => (
     <div className='flex flex-col gap-4'>
         <Skeleton className='h-4 w-10 rounded-full' />
-        <div className='grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4'>
-            {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className='h-24 rounded-xl' />
-            ))}
-        </div>
+        {view === 'grid' ? (
+            <div className='grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4'>
+                {Array.from({ length: 4 }).map((_, i) => (
+                    <Skeleton key={i} className='h-24 rounded-xl' />
+                ))}
+            </div>
+        ) : (
+            <div className='flex flex-col overflow-hidden rounded-xl border border-border'>
+                {Array.from({ length: 4 }).map((_, i) => (
+                    <Skeleton key={i} className='h-11 rounded-none border-b border-border last:border-0' />
+                ))}
+            </div>
+        )}
     </div>
 );
 
@@ -40,22 +48,31 @@ const ProfileBinsEmpty = ({ t }) => (
     </Empty>
 );
 
-export const ProfileBins = ({ bins, isLoading }) => {
+export const ProfileBins = ({ bins, isLoading, view, onViewChange }) => {
     const { t } = useTranslation();
 
-    if (isLoading) return <ProfileBinsLoading />;
+    if (isLoading) return <ProfileBinsLoading view={view} />;
 
     return (
         <div className='flex flex-col gap-4'>
-            <h2 className='text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
-                {t('profile.bins.title')}
-            </h2>
+            <div className='flex items-center justify-between'>
+                <h2 className='text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
+                    {t('profile.bins.title')}
+                </h2>
+                <ViewToggle view={view} onChange={onViewChange} />
+            </div>
             {bins.length === 0 ? (
                 <ProfileBinsEmpty t={t} />
-            ) : (
+            ) : view === 'grid' ? (
                 <div className='grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4'>
                     {bins.map(bin => (
                         <BinCard key={bin.id} bin={bin} />
+                    ))}
+                </div>
+            ) : (
+                <div className='flex flex-col overflow-hidden rounded-xl border border-border'>
+                    {bins.map(bin => (
+                        <BinRow key={bin.id} bin={bin} />
                     ))}
                 </div>
             )}

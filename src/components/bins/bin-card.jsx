@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Eye, File, GitFork, Lock, LockOpen, Trash2 } from 'lucide-react';
+import { Braces, Eye, File, GitFork, LayoutGrid, List, Lock, LockOpen, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
@@ -52,6 +52,15 @@ const LanguageStack = ({ files }) => {
     );
 };
 
+const roStyle = {
+    '--ro-border-light': '#6366f150',
+    '--ro-bg-light': '#6366f115',
+    '--ro-text-light': '#4338ca',
+    '--ro-border-dark': '#818cf850',
+    '--ro-bg-dark': '#818cf815',
+    '--ro-text-dark': '#a5b4fc',
+};
+
 const AccessBadge = ({ bin, t, canDelete }) => {
     const queryClient = useQueryClient();
     const [open, setOpen] = useState(false);
@@ -74,19 +83,10 @@ const AccessBadge = ({ bin, t, canDelete }) => {
         },
     );
 
-    const roStyle = bin.is_readonly
-        ? {
-              '--ro-border-light': '#6366f150',
-              '--ro-bg-light': '#6366f115',
-              '--ro-text-light': '#4338ca',
-              '--ro-border-dark': '#818cf850',
-              '--ro-bg-dark': '#818cf815',
-              '--ro-text-dark': '#a5b4fc',
-          }
-        : undefined;
+    const badgeStyle = bin.is_readonly ? roStyle : undefined;
 
     const badge = (
-        <span className={badgeClass} style={roStyle}>
+        <span className={badgeClass} style={badgeStyle}>
             {bin.is_readonly ? <Lock /> : <LockOpen />}
             {bin.is_readonly ? t('bins.card.readonly') : t('bins.card.editable')}
         </span>
@@ -196,3 +196,122 @@ export const BinCard = ({ bin }) => {
         </Link>
     );
 };
+
+const RowDeleteButton = ({ bin, t }) => {
+    const queryClient = useQueryClient();
+    const [open, setOpen] = useState(false);
+
+    const { mutate: remove, isPending } = useMutation({
+        mutationFn: () => deleteBin(bin.id),
+        onSuccess: () => {
+            setOpen(false);
+            queryClient.invalidateQueries({ queryKey: ['bins'] });
+            queryClient.invalidateQueries({ queryKey: ['profile-bins'] });
+        },
+    });
+
+    return (
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger
+                className='flex size-5 items-center justify-center rounded text-muted-foreground opacity-0 transition-all group-hover/card:opacity-100 hover:text-destructive [&>svg]:size-3.5'
+                onClick={e => { e.preventDefault(); e.stopPropagation(); }}
+            >
+                <Trash2 />
+            </PopoverTrigger>
+            <PopoverContent
+                side='bottom'
+                align='end'
+                className='w-60'
+                onClick={e => { e.preventDefault(); e.stopPropagation(); }}
+            >
+                <PopoverHeader>
+                    <PopoverTitle>{t('bins.card.delete_title')}</PopoverTitle>
+                    <PopoverDescription>{t('bins.card.delete_description')}</PopoverDescription>
+                </PopoverHeader>
+                <div className='flex gap-2 pt-1'>
+                    <Button variant='outline' size='sm' className='flex-1' onClick={() => setOpen(false)}>
+                        {t('bins.card.delete_cancel')}
+                    </Button>
+                    <Button
+                        variant='destructive'
+                        size='sm'
+                        className='flex-1'
+                        disabled={isPending}
+                        onClick={e => { e.preventDefault(); e.stopPropagation(); remove(); }}
+                    >
+                        {t('bins.card.delete_confirm')}
+                    </Button>
+                </div>
+            </PopoverContent>
+        </Popover>
+    );
+};
+
+
+export const BinRow = ({ bin }) => {
+    const { t, i18n } = useTranslation();
+    const { user } = useIdentity();
+    const { isAdmin } = useAdmin();
+    const locale = dateFnsLocales[i18n.language] ?? enUS;
+    const formatDate = iso => format(new Date(iso), t('formats.date.short'), { locale });
+    const canDelete = user?.uuid === bin.author_id || isAdmin;
+
+    return (
+        <Link
+            to='/editor/$binId'
+            params={{ binId: bin.id }}
+            className='group/card flex items-center gap-3 border-b border-border bg-card px-4 py-2.5 last:border-0 transition-colors hover:bg-surface-raised'
+        >
+            <Braces className='size-3.5 shrink-0 text-muted-foreground' />
+
+            <span className='min-w-0 flex-1 truncate text-sm font-medium text-card-foreground'>
+                {bin.title || t('bins.card.untitled')}
+            </span>
+
+            <div className='flex shrink-0 items-center gap-3 text-xs text-muted-foreground'>
+                <span>{formatDate(bin.updated_at)}</span>
+                <span className='hidden items-center gap-1 sm:flex [&>svg]:size-3'>
+                    <Eye />{bin.views}
+                </span>
+                <span className='hidden items-center gap-1 sm:flex [&>svg]:size-3'>
+                    <File />{bin.bin_files?.length ?? 0}
+                </span>
+                {bin.forked_from && <GitFork className='hidden size-3 sm:block' />}
+                <div className='hidden sm:block'>
+                    <LanguageStack files={bin.bin_files ?? []} />
+                </div>
+                <AccessBadge bin={bin} t={t} canDelete={false} />
+                {canDelete && <RowDeleteButton bin={bin} t={t} />}
+            </div>
+        </Link>
+    );
+};
+
+export const ViewToggle = ({ view, onChange }) => (
+    <div className='flex items-center gap-0.5'>
+        <button
+            onClick={() => onChange('grid')}
+            className={cn(
+                'flex size-6 items-center justify-center rounded transition-colors [&>svg]:size-3.5',
+                {
+                    'text-foreground': view === 'grid',
+                    'text-muted-foreground hover:text-foreground': view !== 'grid',
+                },
+            )}
+        >
+            <LayoutGrid />
+        </button>
+        <button
+            onClick={() => onChange('list')}
+            className={cn(
+                'flex size-6 items-center justify-center rounded transition-colors [&>svg]:size-3.5',
+                {
+                    'text-foreground': view === 'list',
+                    'text-muted-foreground hover:text-foreground': view !== 'list',
+                },
+            )}
+        >
+            <List />
+        </button>
+    </div>
+);

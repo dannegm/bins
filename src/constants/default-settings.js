@@ -20,6 +20,12 @@ export const defaultSettings = {
     runnerPanel: { size: 40 },
 
     tipsEnabled: true,
+    binView: {
+        myBins: 'grid',
+        sharedBins: 'grid',
+        profileBins: 'grid',
+        profileSharedBins: 'grid',
+    },
 
     aiCompletions: {
         enabled: false,

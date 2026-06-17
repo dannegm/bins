@@ -222,7 +222,7 @@ export const StatusBar = ({
 }) => {
     const { t } = useTranslation();
     return (
-        <div className='flex h-8 editor-focused:h-0 overflow-hidden shrink-0 items-center gap-2 sm:gap-3 border-t border-border bg-surface px-3 text-xs text-muted-foreground'>
+        <div className='flex h-8 overflow-hidden shrink-0 items-center gap-2 sm:gap-3 border-t border-border bg-surface px-3 text-xs text-muted-foreground'>
             {/* Language */}
             <LanguagePicker language={language} onLanguageChange={onLanguageChange} />
 

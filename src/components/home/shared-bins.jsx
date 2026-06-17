@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/services/supabase';
 import { useIdentity } from '@/hooks/use-identity';
-import { BinCard } from '@/components/bins/bin-card';
+import { BinCard, BinRow, ViewToggle } from '@/components/bins/bin-card';
 
 const useSharedBins = uuid =>
     useQuery({
@@ -20,7 +20,7 @@ const useSharedBins = uuid =>
         enabled: !!uuid,
     });
 
-export const SharedBins = () => {
+export const SharedBins = ({ view, onViewChange }) => {
     const { t } = useTranslation();
     const { user } = useIdentity();
     const { data: bins = [] } = useSharedBins(user?.uuid);
@@ -29,14 +29,25 @@ export const SharedBins = () => {
 
     return (
         <div className='flex flex-col gap-4'>
-            <h2 className='text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
-                {t('home.shared_bins.title')}
-            </h2>
-            <div className='grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4'>
-                {bins.map(bin => (
-                    <BinCard key={bin.id} bin={bin} />
-                ))}
+            <div className='flex items-center justify-between'>
+                <h2 className='text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
+                    {t('home.shared_bins.title')}
+                </h2>
+                <ViewToggle view={view} onChange={onViewChange} />
             </div>
+            {view === 'grid' ? (
+                <div className='grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4'>
+                    {bins.map(bin => (
+                        <BinCard key={bin.id} bin={bin} />
+                    ))}
+                </div>
+            ) : (
+                <div className='flex flex-col overflow-hidden rounded-xl border border-border'>
+                    {bins.map(bin => (
+                        <BinRow key={bin.id} bin={bin} />
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

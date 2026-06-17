@@ -15,7 +15,7 @@ import {
     EmptyDescription,
     EmptyContent,
 } from '@/ui/empty';
-import { BinCard } from '@/components/bins/bin-card';
+import { BinCard, BinRow, ViewToggle } from '@/components/bins/bin-card';
 
 const useMyBins = uuid =>
     useQuery({
@@ -32,27 +32,38 @@ const useMyBins = uuid =>
         enabled: !!uuid,
     });
 
-const MyBinsLayout = ({ t, children }) => (
+const MyBinsLayout = ({ t, view, onViewChange, children }) => (
     <div className='flex flex-col gap-4'>
-        <h2 className='text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
-            {t('home.my_bins.title')}
-        </h2>
+        <div className='flex items-center justify-between'>
+            <h2 className='text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
+                {t('home.my_bins.title')}
+            </h2>
+            <ViewToggle view={view} onChange={onViewChange} />
+        </div>
         {children}
     </div>
 );
 
-const MyBinsLoading = ({ t }) => (
-    <MyBinsLayout t={t}>
-        <div className='grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4'>
-            {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className='h-24 rounded-xl' />
-            ))}
-        </div>
+const MyBinsLoading = ({ t, view, onViewChange }) => (
+    <MyBinsLayout t={t} view={view} onViewChange={onViewChange}>
+        {view === 'grid' ? (
+            <div className='grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4'>
+                {Array.from({ length: 4 }).map((_, i) => (
+                    <Skeleton key={i} className='h-24 rounded-xl' />
+                ))}
+            </div>
+        ) : (
+            <div className='flex flex-col overflow-hidden rounded-xl border border-border'>
+                {Array.from({ length: 4 }).map((_, i) => (
+                    <Skeleton key={i} className='h-11 rounded-none border-b border-border last:border-0' />
+                ))}
+            </div>
+        )}
     </MyBinsLayout>
 );
 
-const MyBinsEmpty = ({ t }) => (
-    <MyBinsLayout t={t}>
+const MyBinsEmpty = ({ t, view, onViewChange }) => (
+    <MyBinsLayout t={t} view={view} onViewChange={onViewChange}>
         <Empty className='border py-16'>
             <EmptyHeader>
                 <EmptyMedia>
@@ -83,21 +94,29 @@ const MyBinsEmpty = ({ t }) => (
     </MyBinsLayout>
 );
 
-export const MyBins = () => {
+export const MyBins = ({ view, onViewChange }) => {
     const { t } = useTranslation();
     const { user } = useIdentity();
     const { data: bins = [], isLoading } = useMyBins(user?.uuid);
 
-    if (isLoading) return <MyBinsLoading t={t} />;
-    if (bins.length === 0) return <MyBinsEmpty t={t} />;
+    if (isLoading) return <MyBinsLoading t={t} view={view} onViewChange={onViewChange} />;
+    if (bins.length === 0) return <MyBinsEmpty t={t} view={view} onViewChange={onViewChange} />;
 
     return (
-        <MyBinsLayout t={t}>
-            <div className='grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4'>
-                {bins.map(bin => (
-                    <BinCard key={bin.id} bin={bin} />
-                ))}
-            </div>
+        <MyBinsLayout t={t} view={view} onViewChange={onViewChange}>
+            {view === 'grid' ? (
+                <div className='grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4'>
+                    {bins.map(bin => (
+                        <BinCard key={bin.id} bin={bin} />
+                    ))}
+                </div>
+            ) : (
+                <div className='flex flex-col overflow-hidden rounded-xl border border-border'>
+                    {bins.map(bin => (
+                        <BinRow key={bin.id} bin={bin} />
+                    ))}
+                </div>
+            )}
         </MyBinsLayout>
     );
 };

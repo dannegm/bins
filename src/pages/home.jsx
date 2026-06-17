@@ -4,17 +4,23 @@ import { TipsCarousel } from '@/components/system/tips-carousel';
 import { HomeHeader } from '@/components/home/home-header';
 import { MyBins } from '@/components/home/my-bins';
 import { SharedBins } from '@/components/home/shared-bins';
+import { useSettings } from '@/hooks/use-settings';
 
-export const HomePage = () => (
-    <Layout>
-        <div className='flex h-full flex-col'>
-            <div className='flex flex-1 flex-col gap-8 overflow-y-auto p-8'>
-                <HomeHeader />
-                <TipsCarousel />
-                <MyBins />
-                <SharedBins />
+export const HomePage = () => {
+    const [myBinsView, setMyBinsView] = useSettings('binView.myBins');
+    const [sharedBinsView, setSharedBinsView] = useSettings('binView.sharedBins');
+
+    return (
+        <Layout>
+            <div className='flex h-full flex-col'>
+                <div className='flex flex-1 flex-col gap-8 overflow-y-auto p-8'>
+                    <HomeHeader />
+                    <TipsCarousel />
+                    <MyBins view={myBinsView} onViewChange={setMyBinsView} />
+                    <SharedBins view={sharedBinsView} onViewChange={setSharedBinsView} />
+                </div>
+                <Footer />
             </div>
-            <Footer />
-        </div>
-    </Layout>
-);
+        </Layout>
+    );
+};
