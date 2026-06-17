@@ -441,6 +441,7 @@ export const EditorPage = () => {
             <div className='flex h-full flex-col overflow-hidden'>
                 <BinHeader
                     bin={bin}
+                    activeFile={activeFile}
                     isAuthor={isAuthor || isAdmin}
                     isAdmin={isAdmin && !isAuthor}
                     onTitleChange={handleTitleChange}

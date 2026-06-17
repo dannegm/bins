@@ -8,6 +8,8 @@ import {
     GitFork,
     MoreHorizontal,
     ShieldCheck,
+    Download,
+    FileDown,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { lighten } from 'polished';
@@ -108,15 +110,33 @@ const ForkedFromChip = ({ parentId, t }) => {
     );
 };
 
-export const BinHeader = ({ bin, isAuthor, isAdmin, onTitleChange, onReadonlyToggle, onShare }) => {
+export const BinHeader = ({ bin, activeFile, isAuthor, isAdmin, onTitleChange, onReadonlyToggle, onShare }) => {
     const { t } = useTranslation();
     const [isEditing, setIsEditing] = useState(false);
     const [draft, setDraft] = useState('');
     const [shareState, setShareState] = useState('idle');
     const [forkOpen, setForkOpen] = useState(false);
+    const [downloadOpen, setDownloadOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [mobileForkConfirm, setMobileForkConfirm] = useState(false);
     const $input = useRef(null);
+
+    const handleDownloadFile = () => {
+        if (!activeFile) return;
+        setDownloadOpen(false);
+        const blob = new Blob([activeFile.content ?? ''], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = activeFile.name;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    const handleMobileDownloadFile = () => {
+        setMobileMenuOpen(false);
+        handleDownloadFile();
+    };
 
     const startEdit = () => {
         if (!isAuthor) return;
@@ -299,6 +319,29 @@ export const BinHeader = ({ bin, isAuthor, isAdmin, onTitleChange, onReadonlyTog
                     </PopoverContent>
                 </Popover>
 
+                <Popover open={downloadOpen} onOpenChange={setDownloadOpen}>
+                    <PopoverTrigger className='flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground'>
+                        <Download className='size-3' />
+                        <span>{t('editor.bin_header.download')}</span>
+                    </PopoverTrigger>
+                    <PopoverContent side='bottom' align='end' className='w-48 px-1.5 py-1.5'>
+                        <button
+                            onClick={handleDownloadFile}
+                            className='flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left text-xs transition-colors hover:bg-muted'
+                        >
+                            <FileDown className='size-3.5 shrink-0 text-muted-foreground' />
+                            <span className='text-foreground'>{t('editor.bin_header.download_file')}</span>
+                        </button>
+                        <button
+                            disabled
+                            className='flex w-full cursor-not-allowed items-center gap-2.5 rounded-md px-2 py-2 text-left text-xs opacity-40'
+                        >
+                            <Download className='size-3.5 shrink-0 text-muted-foreground' />
+                            <span className='text-foreground'>{t('editor.bin_header.download_zip')}</span>
+                        </button>
+                    </PopoverContent>
+                </Popover>
+
                 <button
                     onClick={handleShare}
                     className='flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground'
@@ -373,6 +416,21 @@ export const BinHeader = ({ bin, isAuthor, isAdmin, onTitleChange, onReadonlyTog
                         >
                             <Share2 className='size-3.5 shrink-0 text-muted-foreground' />
                             <span className='text-foreground'>{t('editor.tab_bar.share')}</span>
+                        </button>
+
+                        <button
+                            onClick={handleMobileDownloadFile}
+                            className='flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left text-xs transition-colors hover:bg-muted'
+                        >
+                            <FileDown className='size-3.5 shrink-0 text-muted-foreground' />
+                            <span className='text-foreground'>{t('editor.bin_header.download_file')}</span>
+                        </button>
+                        <button
+                            disabled
+                            className='flex w-full cursor-not-allowed items-center gap-2.5 rounded-md px-2 py-2 text-left text-xs opacity-40'
+                        >
+                            <Download className='size-3.5 shrink-0 text-muted-foreground' />
+                            <span className='text-foreground'>{t('editor.bin_header.download_zip')}</span>
                         </button>
 
                         {(bin?.forked_from || bin?.author_id) && (

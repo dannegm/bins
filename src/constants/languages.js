@@ -229,6 +229,39 @@ export const LANGUAGE_LIST = Object.values(LANGUAGES);
 
 export const getLanguage = id => LANGUAGES[id] ?? LANGUAGES.plaintext;
 
+const MIME_TYPES = {
+    markdown: 'text/markdown',
+    javascript: 'text/javascript',
+    typescript: 'application/typescript',
+    jsx: 'text/jsx',
+    tsx: 'text/tsx',
+    html: 'text/html',
+    css: 'text/css',
+    scss: 'text/x-scss',
+    json: 'application/json',
+    yaml: 'application/yaml',
+    toml: 'application/toml',
+    python: 'text/x-python',
+    rust: 'text/x-rustsrc',
+    go: 'text/x-go',
+    java: 'text/x-java-source',
+    php: 'application/x-php',
+    ruby: 'text/x-ruby',
+    swift: 'text/x-swift',
+    kotlin: 'text/x-kotlin',
+    bash: 'application/x-sh',
+    sql: 'application/sql',
+    graphql: 'application/graphql',
+    dockerfile: 'text/x-dockerfile',
+    xml: 'application/xml',
+    c: 'text/x-csrc',
+    cpp: 'text/x-c++src',
+    csharp: 'text/x-csharp',
+    plaintext: 'text/plain',
+};
+
+export const getMimeType = id => MIME_TYPES[id] ?? 'text/plain';
+
 export const getLanguageByFilename = filename => {
     if (!filename) return LANGUAGES.plaintext;
     const lower = filename.toLowerCase();

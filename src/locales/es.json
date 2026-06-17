@@ -313,7 +313,10 @@
             "fork_cancel": "Cancelar",
             "fork_confirm": "Fork",
             "admin_override": "Puedes editar este bin porque eres admin",
-            "forked_from": "fork de"
+            "forked_from": "fork de",
+            "download": "Descargar",
+            "download_file": "Descargar archivo actual",
+            "download_zip": "Descargar como ZIP"
         },
         "tab_bar": {
             "undo": "Deshacer",

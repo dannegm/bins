@@ -313,7 +313,10 @@
             "fork_cancel": "Cancel",
             "fork_confirm": "Fork",
             "admin_override": "You can edit this bin because you're an admin",
-            "forked_from": "forked from"
+            "forked_from": "forked from",
+            "download": "Download",
+            "download_file": "Download current file",
+            "download_zip": "Download as ZIP"
         },
         "tab_bar": {
             "undo": "Undo",
