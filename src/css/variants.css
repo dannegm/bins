@@ -11,9 +11,12 @@
 @custom-variant mobile (&:where([data-device='mobile'], [data-device='mobile'] *));
 @custom-variant tablet (&:where([data-device='tablet'], [data-device='tablet'] *));
 @custom-variant desktop (&:where([data-device='desktop'], [data-device='desktop'] *));
+@custom-variant bot (&:where([data-device='bot'], [data-device='bot'] *));
 
 @custom-variant windows (&:where([data-os='windows'], [data-os='windows'] *));
 @custom-variant macos (&:where([data-os='macos'], [data-os='macos'] *));
 @custom-variant linux (&:where([data-os='linux'], [data-os='linux'] *));
 @custom-variant android (&:where([data-os='android'], [data-os='android'] *));
 @custom-variant ios (&:where([data-os='ios'], [data-os='ios'] *));
+@custom-variant ipados (&:where([data-os='ipados'], [data-os='ipados'] *));
+@custom-variant chromeos (&:where([data-os='chromeos'], [data-os='chromeos'] *));

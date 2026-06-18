@@ -54,7 +54,7 @@ export const Sidebar = () => {
                 'sm:h-screen sm:w-14 sm:flex-col sm:px-0 sm:py-4 sm:justify-start sm:gap-2',
                 'sm:border-r sm:border-t-0',
                 'short:hidden sm:short:flex',
-                'mobile:ios:safari:h-10 mobile:ios:safari:pb-0 mobile:ios:safari:pt-2'
+                'ios:safari:h-10 ios:safari:pb-0 ios:safari:pt-2'
             )}
         >
             <AppIcon />
