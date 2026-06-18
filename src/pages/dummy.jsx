@@ -40,7 +40,6 @@ const DummyCarousel = () => (
             <Bone className='size-10 shrink-0 rounded-lg bg-foreground/10' />
             <div className='flex flex-1 flex-col gap-2'>
                 <Bone className='h-3.5 w-32 bg-foreground/10' />
-                <Bone className='h-3 w-full bg-foreground/10' />
                 <Bone className='h-3 w-4/5 bg-foreground/10' />
             </div>
         </div>
@@ -169,7 +168,7 @@ export const DummyPage = () => (
                     <DummyHeader />
                     <DummyCarousel />
                     <DummySection count={4} />
-                    <DummySection count={2} />
+                    {/* <DummySection count={2} /> */}
                     <BrowserInfo />
                 </div>
 
