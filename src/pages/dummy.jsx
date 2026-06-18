@@ -89,7 +89,7 @@ const DummyFooter = () => (
 );
 
 const HeadlessNotice = () => (
-    <div className='mx-8 mb-8 flex items-center gap-4 rounded-xl border border-brand/30 bg-brand/5 px-6 py-3'>
+    <div className='mx-8 mb-8 flex items-center gap-4 rounded-xl border border-brand/30 bg-brand/5 px-6 py-2'>
         <div className='flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand/10 text-brand'>
             <Bot className='size-5' />
         </div>
