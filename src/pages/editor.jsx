@@ -283,13 +283,10 @@ export const EditorPage = () => {
         const ch = supabase()
             .channel(`bin:${binId}:structure`, { config: { broadcast: { self: false } } })
             .on('broadcast', { event: 'bin:updated' }, ({ payload }) => {
-                setBin(prev => {
-                    if (payload.visibility === VISIBILITY.PRIVATE) {
-                        const isAuthor = prev?.author_id === user?.uuid;
-                        if (!isAuthor && !isAdmin) navigate({ to: '/' });
-                    }
-                    return prev ? { ...prev, ...payload } : prev;
-                });
+                setBin(prev => ({ ...prev, ...payload }));
+            })
+            .on('broadcast', { event: 'bin:kick' }, () => {
+                navigate({ to: '/' });
             })
             .on('broadcast', { event: 'file:created' }, ({ payload }) => {
                 setFiles(prev => {
@@ -439,6 +436,7 @@ export const EditorPage = () => {
         await updateBin(binId, { visibility });
         if (visibility === VISIBILITY.PRIVATE) {
             clearCollaborators(binId).catch(() => {});
+            broadcast('bin:kick', {});
         }
         setBin(prev => ({ ...prev, visibility }));
         broadcast('bin:updated', { visibility });

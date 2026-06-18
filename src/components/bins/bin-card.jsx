@@ -199,7 +199,7 @@ export const BinCard = ({ bin }) => {
                 'group/card flex flex-col rounded-xl border border-border bg-card p-4',
                 'transition-all hover:border-border/60 hover:bg-surface-raised',
                 {
-                    'outline outline-dashed outline-2 outline-offset-2 outline-border': isUnlisted,
+                    'opacity-50 outline outline-dashed outline-2 outline-offset-2 outline-border hover:opacity-100': isUnlisted,
                 },
             )}
         >
