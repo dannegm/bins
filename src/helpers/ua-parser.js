@@ -63,10 +63,10 @@ export const parseUA = ua => {
     if (!ua) return { browser: null, os: null, device: 'unknown', bot: null };
 
     const bot = BOT_PATTERNS.find(b => b.pattern.test(ua));
-    if (bot) return { browser: null, os: null, device: 'bot', bot };
-
     const browser = BROWSER_PATTERNS.find(b => b.pattern.test(ua)) ?? null;
     const os = OS_PATTERNS.find(o => o.pattern.test(ua)) ?? null;
+
+    if (bot) return { browser, os, device: 'bot', bot };
 
     let device = 'desktop';
     if (/tablet|ipad/i.test(ua)) device = 'tablet';
