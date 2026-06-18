@@ -158,6 +158,12 @@ const PeerList = ({ peers }) => {
     );
 };
 
+const formatSize = bytes => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
+
 const TAB_SIZES = [2, 4, 8];
 
 const IndentationPicker = ({ t }) => {
@@ -213,6 +219,7 @@ const IndentationPicker = ({ t }) => {
 
 export const StatusBar = ({
     language,
+    content = '',
     cursor,
     lineCount = 1,
     isLoading = false,
@@ -220,6 +227,7 @@ export const StatusBar = ({
     peers = [],
     onLanguageChange,
 }) => {
+    const fileSize = formatSize(new TextEncoder().encode(content).length);
     const { t } = useTranslation();
     return (
         <div className='flex h-8 overflow-hidden shrink-0 items-center gap-2 sm:gap-3 border-t border-border bg-surface px-3 text-xs text-muted-foreground'>
@@ -247,6 +255,10 @@ export const StatusBar = ({
                     t('editor.status_bar.lines', { count: lineCount })
                 )}
             </span>
+
+            {/* File size */}
+            <Divider className='hidden sm:inline' />
+            <span className='hidden sm:inline'>{fileSize}</span>
 
             {/* Indentation */}
             <Divider />

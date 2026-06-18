@@ -160,6 +160,7 @@ export const EditorCore = ({
             </div>
             <StatusBar
                 language={file.language}
+                content={file.content ?? ''}
                 cursor={cursor}
                 lineCount={lineCount}
                 isLoading={!yContext}
