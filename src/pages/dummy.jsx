@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Bot, Monitor } from 'lucide-react';
 import { cn } from '@/helpers/utils';
 import { AppIcon } from '@/components/layout/app-icon';
+import { parseUA } from '@/helpers/ua-parser';
 
 const Bone = ({ className }) => <div className={cn('rounded-md bg-muted', className)} />;
 
@@ -115,10 +116,11 @@ const BrowserInfo = ({ className }) => {
 
     useEffect(() => {
         const mq = window.matchMedia('(prefers-color-scheme: dark)');
+        const { browser, os, device, bot } = parseUA(navigator.userAgent);
         setInfo({
-            browser: document.documentElement.getAttribute('data-browser'),
-            os: document.documentElement.getAttribute('data-os'),
-            device: document.documentElement.getAttribute('data-device'),
+            browser: bot?.name ?? browser?.name ?? null,
+            os: os?.name ?? null,
+            device,
             screenW: window.screen.width,
             screenH: window.screen.height,
             viewportW: window.innerWidth,
