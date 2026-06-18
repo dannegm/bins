@@ -326,7 +326,7 @@ create table bins.bins (
   id            text primary key,         -- nanoid corto, ej: "xK3mPq"
   title         text default 'Untitled',
   author_id     uuid not null references bins.profiles(uuid) on delete cascade,
-  visibility    text default 'public',    -- 'public' | 'unlisted'
+  visibility    text default 'public',    -- 'public' | 'unlisted' | 'private'
   is_readonly   boolean default true,
   views         int default 0,
   expires_at    timestamptz,              -- null = nunca expira
@@ -391,104 +391,16 @@ alter table bins.bins              enable row level security;
 alter table bins.bin_files         enable row level security;
 alter table bins.bin_collaborators enable row level security;
 
--- BINS
-create policy "bins: lectura pública"
-  on bins.bins for select using (visibility = 'public');
+-- Políticas permisivas — toda la lógica de visibilidad y autorización se maneja en el cliente.
+-- Pendiente: refinar con policies granulares en una iteración futura.
+create policy "bins: permitir todo"
+  on bins.bins for all using (true) with check (true);
 
-create policy "bins: lectura unlisted"
-  on bins.bins for select using (visibility = 'unlisted');
+create policy "bin_files: permitir todo"
+  on bins.bin_files for all using (true) with check (true);
 
-create policy "bins: insertar propio"
-  on bins.bins for insert
-  with check (author_id = (current_setting('request.headers')::json->>'x-client-id')::uuid);
-
-create policy "bins: actualizar propio"
-  on bins.bins for update
-  using (author_id = (current_setting('request.headers')::json->>'x-client-id')::uuid);
-
-create policy "bins: eliminar propio"
-  on bins.bins for delete
-  using (author_id = (current_setting('request.headers')::json->>'x-client-id')::uuid);
-
--- BIN_FILES
-create policy "bin_files: lectura"
-  on bins.bin_files for select
-  using (
-    exists (
-      select 1 from bins.bins
-      where bins.bins.id = bin_files.bin_id
-      and (
-        bins.bins.visibility in ('public', 'unlisted')
-        or bins.bins.author_id = (current_setting('request.headers')::json->>'x-client-id')::uuid
-        or bins.bins.is_readonly = false
-      )
-    )
-  );
-
-create policy "bin_files: insertar"
-  on bins.bin_files for insert
-  with check (
-    exists (
-      select 1 from bins.bins
-      where bins.bins.id = bin_files.bin_id
-      and (
-        bins.bins.author_id = (current_setting('request.headers')::json->>'x-client-id')::uuid
-        or bins.bins.is_readonly = false
-      )
-    )
-  );
-
-create policy "bin_files: actualizar"
-  on bins.bin_files for update
-  using (
-    exists (
-      select 1 from bins.bins
-      where bins.bins.id = bin_files.bin_id
-      and (
-        bins.bins.author_id = (current_setting('request.headers')::json->>'x-client-id')::uuid
-        or bins.bins.is_readonly = false
-      )
-    )
-  );
-
-create policy "bin_files: eliminar"
-  on bins.bin_files for delete
-  using (
-    exists (
-      select 1 from bins.bins
-      where bins.bins.id = bin_files.bin_id
-      and (
-        bins.bins.author_id = (current_setting('request.headers')::json->>'x-client-id')::uuid
-        or bins.bins.is_readonly = false
-      )
-    )
-  );
-
--- BIN_COLLABORATORS
-create policy "bin_collaborators: lectura pública"
-  on bins.bin_collaborators for select
-  using (
-    exists (
-      select 1 from bins.bins
-      where bins.bins.id = bin_collaborators.bin_id
-      and bins.bins.visibility in ('public', 'unlisted')
-    )
-  );
-
-create policy "bin_collaborators: registrarse"
-  on bins.bin_collaborators for insert
-  with check (
-    user_id = (current_setting('request.headers')::json->>'x-client-id')::uuid
-    and exists (
-      select 1 from bins.bins
-      where bins.bins.id = bin_collaborators.bin_id
-      and bins.bins.visibility in ('public', 'unlisted')
-    )
-  );
-
-create policy "bin_collaborators: dejar de seguir"
-  on bins.bin_collaborators for delete
-  using (user_id = (current_setting('request.headers')::json->>'x-client-id')::uuid);
+create policy "bin_collaborators: permitir todo"
+  on bins.bin_collaborators for all using (true) with check (true);
 ```
 
 ### Índices

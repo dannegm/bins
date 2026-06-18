@@ -37,7 +37,10 @@
             "title": "Your bins",
             "empty_title": "No bins yet",
             "empty_description": "Create your first bin and start coding",
-            "empty_cta": "Create your first bin"
+            "empty_cta": "Create your first bin",
+            "filter_all": "All",
+            "filter_public": "Public",
+            "filter_private": "Private"
         }
     },
     "bins": {
@@ -49,7 +52,10 @@
             "delete_title": "Delete bin?",
             "delete_description": "This will permanently delete the bin and all its files. This cannot be undone.",
             "delete_cancel": "Cancel",
-            "delete_confirm": "Delete"
+            "delete_confirm": "Delete",
+            "visibility_public": "Public",
+            "visibility_unlisted": "Unlisted",
+            "visibility_private": "Private"
         }
     },
     "settings": {
@@ -233,6 +239,7 @@
             "col_files": "Files",
             "col_views": "Views",
             "col_status": "Status",
+            "col_visibility": "Visibility",
             "col_updated": "Updated",
             "col_actions": "Actions"
         },
@@ -312,11 +319,20 @@
             "fork_description": "A copy of this bin will be created with all its files. You will be the author of the new bin.",
             "fork_cancel": "Cancel",
             "fork_confirm": "Fork",
+            "fork_disabled": "Forking is only available for public bins",
             "admin_override": "You can edit this bin because you're an admin",
             "forked_from": "forked from",
             "download": "Download",
             "download_file": "Download current file",
-            "download_zip": "Download as ZIP"
+            "download_zip": "Download as ZIP",
+            "visibility_label": "Visibility",
+            "visibility_public": "Public",
+            "visibility_public_desc": "Anyone can find and view this bin",
+            "visibility_unlisted": "Unlisted",
+            "visibility_unlisted_desc": "Only people with the link can view",
+            "visibility_private": "Private",
+            "visibility_private_desc": "Only you can access this bin",
+            "share_disabled": "Sharing is disabled for private bins"
         },
         "tab_bar": {
             "undo": "Undo",

@@ -10,12 +10,16 @@ import {
     ShieldCheck,
     Download,
     FileDown,
+    Globe,
+    Link,
+    EyeOff,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { lighten } from 'polished';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { cn } from '@/helpers/utils';
+import { VISIBILITY } from '@/constants/visibility';
 import { getBin } from '@/services/bins';
 import { getProfile } from '@/services/profiles';
 import { useTheme } from '@/providers/theme-provider';
@@ -28,6 +32,12 @@ import {
     PopoverTitle,
     PopoverDescription,
 } from '@/ui/popover';
+
+const VISIBILITY_OPTIONS = [
+    { value: VISIBILITY.PUBLIC, icon: Globe },
+    { value: VISIBILITY.UNLISTED, icon: Link },
+    { value: VISIBILITY.PRIVATE, icon: EyeOff },
+];
 
 const ShareToast = ({ isReadonly, t }) => (
     <div className='flex min-w-64 items-center gap-3 rounded-lg border border-border bg-surface px-4 py-3 shadow-lg shadow-black/25'>
@@ -110,7 +120,63 @@ const ForkedFromChip = ({ parentId, t }) => {
     );
 };
 
-export const BinHeader = ({ bin, activeFile, isAuthor, isAdmin, onTitleChange, onReadonlyToggle, onShare }) => {
+const VisibilitySelector = ({ bin, isOwner, t, onVisibilityChange, compact = false }) => {
+    const [open, setOpen] = useState(false);
+    const visibility = bin?.visibility ?? VISIBILITY.PUBLIC;
+    const current = VISIBILITY_OPTIONS.find(o => o.value === visibility) ?? VISIBILITY_OPTIONS[0];
+    const Icon = current.icon;
+
+    const label = t(`editor.bin_header.visibility_${visibility}`);
+
+    const triggerClass = compact
+        ? 'flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground [&>svg]:size-3'
+        : 'flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left text-xs text-muted-foreground transition-colors hover:bg-muted [&>svg]:size-3.5';
+
+    if (!isOwner) {
+        return (
+            <div className={triggerClass}>
+                <Icon />
+                <span>{label}</span>
+            </div>
+        );
+    }
+
+    return (
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger className={triggerClass}>
+                <Icon />
+                <span>{label}</span>
+            </PopoverTrigger>
+            <PopoverContent side='bottom' align='end' className='w-56 px-1.5 py-1.5'>
+                {VISIBILITY_OPTIONS.map(opt => {
+                    const OptIcon = opt.icon;
+                    return (
+                        <button
+                            key={opt.value}
+                            onClick={() => { onVisibilityChange(opt.value); setOpen(false); }}
+                            className={cn(
+                                'flex w-full items-start gap-2.5 rounded-md px-2 py-2 text-left text-xs transition-colors hover:bg-muted',
+                                { 'bg-muted': opt.value === visibility },
+                            )}
+                        >
+                            <OptIcon className='mt-0.5 size-3.5 shrink-0 text-muted-foreground' />
+                            <div className='flex flex-col gap-0.5'>
+                                <span className='font-medium text-foreground'>
+                                    {t(`editor.bin_header.visibility_${opt.value}`)}
+                                </span>
+                                <span className='text-muted-foreground'>
+                                    {t(`editor.bin_header.visibility_${opt.value}_desc`)}
+                                </span>
+                            </div>
+                        </button>
+                    );
+                })}
+            </PopoverContent>
+        </Popover>
+    );
+};
+
+export const BinHeader = ({ bin, activeFile, isAuthor, isAdmin, isOwner, onTitleChange, onReadonlyToggle, onVisibilityChange, onShare }) => {
     const { t } = useTranslation();
     const [isEditing, setIsEditing] = useState(false);
     const [draft, setDraft] = useState('');
@@ -120,6 +186,10 @@ export const BinHeader = ({ bin, activeFile, isAuthor, isAdmin, onTitleChange, o
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [mobileForkConfirm, setMobileForkConfirm] = useState(false);
     const $input = useRef(null);
+
+    const visibility = bin?.visibility ?? VISIBILITY.PUBLIC;
+    const canFork = visibility === VISIBILITY.PUBLIC;
+    const canShare = visibility !== VISIBILITY.PRIVATE;
 
     const handleDownloadFile = () => {
         if (!activeFile) return;
@@ -285,39 +355,53 @@ export const BinHeader = ({ bin, activeFile, isAuthor, isAdmin, onTitleChange, o
                 )}
             </div>
 
-            {/* Fork + Share + Author — desktop only */}
+            {/* Fork + Download + Share + Author — desktop only */}
             <div className='hidden items-center gap-2 sm:flex'>
                 {bin?.forked_from && <ForkedFromChip parentId={bin.forked_from} t={t} />}
 
-                <Popover open={forkOpen} onOpenChange={setForkOpen}>
-                    <PopoverTrigger className='flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground'>
-                        <GitFork className='size-3' />
-                        <span>{t('editor.bin_header.fork')}</span>
-                    </PopoverTrigger>
-                    <PopoverContent side='bottom' align='end' className='w-64'>
-                        <PopoverTitle className='text-sm font-medium text-foreground'>
-                            {t('editor.bin_header.fork_title')}
-                        </PopoverTitle>
-                        <PopoverDescription className='text-pretty text-xs text-muted-foreground'>
-                            {t('editor.bin_header.fork_description')}
-                        </PopoverDescription>
-                        <div className='flex justify-end gap-2 pt-1'>
-                            <button
-                                onClick={() => setForkOpen(false)}
-                                className='rounded-md px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground'
-                            >
-                                {t('editor.bin_header.fork_cancel')}
-                            </button>
-                            <button
-                                onClick={handleForkConfirm}
-                                className='flex items-center gap-1.5 rounded-md bg-brand px-3 py-1.5 text-xs font-medium text-brand-foreground transition-opacity hover:opacity-90'
-                            >
+                {canFork ? (
+                    <Popover open={forkOpen} onOpenChange={setForkOpen}>
+                        <PopoverTrigger className='flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground'>
+                            <GitFork className='size-3' />
+                            <span>{t('editor.bin_header.fork')}</span>
+                        </PopoverTrigger>
+                        <PopoverContent side='bottom' align='end' className='w-64'>
+                            <PopoverTitle className='text-sm font-medium text-foreground'>
+                                {t('editor.bin_header.fork_title')}
+                            </PopoverTitle>
+                            <PopoverDescription className='text-pretty text-xs text-muted-foreground'>
+                                {t('editor.bin_header.fork_description')}
+                            </PopoverDescription>
+                            <div className='flex justify-end gap-2 pt-1'>
+                                <button
+                                    onClick={() => setForkOpen(false)}
+                                    className='rounded-md px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground'
+                                >
+                                    {t('editor.bin_header.fork_cancel')}
+                                </button>
+                                <button
+                                    onClick={handleForkConfirm}
+                                    className='flex items-center gap-1.5 rounded-md bg-brand px-3 py-1.5 text-xs font-medium text-brand-foreground transition-opacity hover:opacity-90'
+                                >
+                                    <GitFork className='size-3' />
+                                    {t('editor.bin_header.fork_confirm')}
+                                </button>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+                ) : (
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger className='flex cursor-not-allowed items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground/40'>
                                 <GitFork className='size-3' />
-                                {t('editor.bin_header.fork_confirm')}
-                            </button>
-                        </div>
-                    </PopoverContent>
-                </Popover>
+                                <span>{t('editor.bin_header.fork')}</span>
+                            </TooltipTrigger>
+                            <TooltipContent side='bottom' align='end'>
+                                {t('editor.bin_header.fork_disabled')}
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                )}
 
                 <Popover open={downloadOpen} onOpenChange={setDownloadOpen}>
                     <PopoverTrigger className='flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground'>
@@ -342,22 +426,44 @@ export const BinHeader = ({ bin, activeFile, isAuthor, isAdmin, onTitleChange, o
                     </PopoverContent>
                 </Popover>
 
-                <button
-                    onClick={handleShare}
-                    className='flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground'
-                >
-                    {shareState === 'copied' ? (
-                        <>
-                            <Check className='size-3 text-success' />
-                            <span className='text-success'>{t('editor.tab_bar.copied')}</span>
-                        </>
-                    ) : (
-                        <>
-                            <Share2 className='size-3' />
-                            <span>{t('editor.tab_bar.share')}</span>
-                        </>
-                    )}
-                </button>
+                <VisibilitySelector
+                    bin={bin}
+                    isOwner={isOwner}
+                    t={t}
+                    onVisibilityChange={onVisibilityChange}
+                    compact
+                />
+
+                {canShare ? (
+                    <button
+                        onClick={handleShare}
+                        className='flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground'
+                    >
+                        {shareState === 'copied' ? (
+                            <>
+                                <Check className='size-3 text-success' />
+                                <span className='text-success'>{t('editor.tab_bar.copied')}</span>
+                            </>
+                        ) : (
+                            <>
+                                <Share2 className='size-3' />
+                                <span>{t('editor.tab_bar.share')}</span>
+                            </>
+                        )}
+                    </button>
+                ) : (
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger className='flex cursor-not-allowed items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground/40'>
+                                <Share2 className='size-3' />
+                                <span>{t('editor.tab_bar.share')}</span>
+                            </TooltipTrigger>
+                            <TooltipContent side='bottom' align='end'>
+                                {t('editor.bin_header.share_disabled')}
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                )}
 
                 <span className='h-4 w-px shrink-0 bg-border' />
 
@@ -377,46 +483,50 @@ export const BinHeader = ({ bin, activeFile, isAuthor, isAdmin, onTitleChange, o
                         <MoreHorizontal className='size-4' />
                     </PopoverTrigger>
                     <PopoverContent side='bottom' align='end' className='w-fit px-1.5 py-3'>
-                        {mobileForkConfirm ? (
-                            <div className='flex flex-col gap-2 rounded-md bg-muted px-2 py-2'>
-                                <p className='text-pretty text-xs text-muted-foreground'>
-                                    {t('editor.bin_header.fork_description')}
-                                </p>
-                                <div className='flex justify-end gap-1.5'>
-                                    <button
-                                        onClick={() => setMobileForkConfirm(false)}
-                                        className='rounded px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground'
-                                    >
-                                        {t('editor.bin_header.fork_cancel')}
-                                    </button>
-                                    <button
-                                        onClick={handleMobileForkConfirm}
-                                        className='flex items-center gap-1 rounded bg-brand px-2 py-1 text-xs font-medium text-brand-foreground'
-                                    >
-                                        <GitFork className='size-3' />
-                                        {t('editor.bin_header.fork_confirm')}
-                                    </button>
+                        {canFork && (
+                            mobileForkConfirm ? (
+                                <div className='flex flex-col gap-2 rounded-md bg-muted px-2 py-2'>
+                                    <p className='text-pretty text-xs text-muted-foreground'>
+                                        {t('editor.bin_header.fork_description')}
+                                    </p>
+                                    <div className='flex justify-end gap-1.5'>
+                                        <button
+                                            onClick={() => setMobileForkConfirm(false)}
+                                            className='rounded px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground'
+                                        >
+                                            {t('editor.bin_header.fork_cancel')}
+                                        </button>
+                                        <button
+                                            onClick={handleMobileForkConfirm}
+                                            className='flex items-center gap-1 rounded bg-brand px-2 py-1 text-xs font-medium text-brand-foreground'
+                                        >
+                                            <GitFork className='size-3' />
+                                            {t('editor.bin_header.fork_confirm')}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        ) : (
-                            <button
-                                onClick={() => setMobileForkConfirm(true)}
-                                className='flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left text-xs transition-colors hover:bg-muted'
-                            >
-                                <GitFork className='size-3.5 shrink-0 text-muted-foreground' />
-                                <span className='text-foreground'>
-                                    {t('editor.bin_header.fork')}
-                                </span>
-                            </button>
+                            ) : (
+                                <button
+                                    onClick={() => setMobileForkConfirm(true)}
+                                    className='flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left text-xs transition-colors hover:bg-muted'
+                                >
+                                    <GitFork className='size-3.5 shrink-0 text-muted-foreground' />
+                                    <span className='text-foreground'>
+                                        {t('editor.bin_header.fork')}
+                                    </span>
+                                </button>
+                            )
                         )}
 
-                        <button
-                            onClick={handleMobileShare}
-                            className='flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left text-xs transition-colors hover:bg-muted'
-                        >
-                            <Share2 className='size-3.5 shrink-0 text-muted-foreground' />
-                            <span className='text-foreground'>{t('editor.tab_bar.share')}</span>
-                        </button>
+                        {canShare && (
+                            <button
+                                onClick={handleMobileShare}
+                                className='flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left text-xs transition-colors hover:bg-muted'
+                            >
+                                <Share2 className='size-3.5 shrink-0 text-muted-foreground' />
+                                <span className='text-foreground'>{t('editor.tab_bar.share')}</span>
+                            </button>
+                        )}
 
                         <button
                             onClick={handleMobileDownloadFile}
@@ -432,6 +542,17 @@ export const BinHeader = ({ bin, activeFile, isAuthor, isAdmin, onTitleChange, o
                             <Download className='size-3.5 shrink-0 text-muted-foreground' />
                             <span className='text-foreground'>{t('editor.bin_header.download_zip')}</span>
                         </button>
+
+                        <div className='h-px bg-border/50' />
+
+                        <div className='px-0.5'>
+                            <VisibilitySelector
+                                bin={bin}
+                                isOwner={isOwner}
+                                t={t}
+                                onVisibilityChange={onVisibilityChange}
+                            />
+                        </div>
 
                         {(bin?.forked_from || bin?.author_id) && (
                             <div className='h-px bg-border/50' />

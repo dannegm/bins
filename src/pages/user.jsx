@@ -6,6 +6,7 @@ import { ProfileHeader } from '@/components/user/profile-header';
 import { ProfileBins } from '@/components/user/profile-bins';
 import { ProfileSharedBins } from '@/components/user/profile-shared-bins';
 import { getProfile } from '@/services/profiles';
+import { VISIBILITY } from '@/constants/visibility';
 import { useIdentity } from '@/hooks/use-identity';
 import { useSettings } from '@/hooks/use-settings';
 import { supabase } from '@/services/supabase';
@@ -57,13 +58,16 @@ export const UserPage = () => {
     const [profileBinsView, setProfileBinsView] = useSettings('binView.profileBins');
     const [profileSharedBinsView, setProfileSharedBinsView] = useSettings('binView.profileSharedBins');
 
+    const isOwnProfile = user?.uuid === uuid;
+    const displayBins = isOwnProfile ? bins : bins.filter(b => b.visibility === VISIBILITY.PUBLIC);
+
     return (
         <Layout>
             <div className='flex h-full flex-col'>
                 <div className='flex flex-1 flex-col overflow-y-auto'>
-                    <ProfileHeader profile={profile} bins={bins} isLoading={profileLoading} />
+                    <ProfileHeader profile={profile} bins={displayBins} isLoading={profileLoading} />
                     <div className='flex flex-col gap-8 p-8'>
-                        <ProfileBins bins={bins} isLoading={binsLoading} view={profileBinsView} onViewChange={setProfileBinsView} />
+                        <ProfileBins bins={displayBins} isLoading={binsLoading} view={profileBinsView} onViewChange={setProfileBinsView} />
                         <ProfileSharedBins bins={sharedBins} view={profileSharedBinsView} onViewChange={setProfileSharedBinsView} />
                     </div>
                 </div>

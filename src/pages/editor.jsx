@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Route } from '@/routes/editor.$binId';
+import { VISIBILITY } from '@/constants/visibility';
 import { Layout } from '@/components/layout/layout';
 import { BinHeader } from '@/components/editor/bin-header';
 import { TabBar } from '@/components/editor/tab-bar';
@@ -44,6 +46,7 @@ export const EditorPage = () => {
     const { user } = useIdentity();
     const { isAdmin } = useAdmin();
     const { emit } = useEvents();
+    const navigate = useNavigate();
 
     const [bin, setBin] = useState(null);
     const [files, setFiles] = useState([]);
@@ -238,12 +241,20 @@ export const EditorPage = () => {
             try {
                 const binData = await ensureBin(binId);
                 if (!mounted) return;
+
+                const clientId = user?.uuid;
+                const isAuthorNow = binData.author_id === clientId;
+
+                if (binData.visibility === VISIBILITY.PRIVATE && !isAuthorNow && !isAdmin) {
+                    navigate({ to: '/' });
+                    return;
+                }
+
                 setBin(binData);
 
                 incrementViews(binId).catch(() => {});
 
-                const clientId = user?.uuid;
-                if (clientId && binData.author_id !== clientId) {
+                if (clientId && !isAuthorNow && binData.visibility === VISIBILITY.PUBLIC) {
                     registerCollaborator(binId, clientId).catch(() => {});
                 }
 
@@ -418,6 +429,12 @@ export const EditorPage = () => {
         broadcast('bin:updated', { is_readonly });
     };
 
+    const handleVisibilityChange = async visibility => {
+        await updateBin(binId, { visibility });
+        setBin(prev => ({ ...prev, visibility }));
+        broadcast('bin:updated', { visibility });
+    };
+
     const handleShare = async () => {
         await permanentizeBin(binId);
         $hasBeenSaved.current = true;
@@ -444,8 +461,10 @@ export const EditorPage = () => {
                     activeFile={activeFile}
                     isAuthor={isAuthor || isAdmin}
                     isAdmin={isAdmin && !isAuthor}
+                    isOwner={isAuthor || isAdmin}
                     onTitleChange={handleTitleChange}
                     onReadonlyToggle={handleReadonlyToggle}
+                    onVisibilityChange={handleVisibilityChange}
                     onShare={handleShare}
                 />
                 <TabBar

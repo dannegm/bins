@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Braces, Eye, File, GitFork, LayoutGrid, List, Lock, LockOpen, Trash2 } from 'lucide-react';
+import { Braces, Eye, EyeOff, File, GitFork, Globe, LayoutGrid, List, Link as LinkIcon, Lock, LockOpen, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/helpers/utils';
+import { VISIBILITY } from '@/constants/visibility';
 import { getLanguage } from '@/constants/languages';
 import { LangDot } from '@/components/bins/lang-dot';
 import { useIdentity } from '@/hooks/use-identity';
@@ -61,6 +62,49 @@ const roStyle = {
     '--ro-text-dark': '#a5b4fc',
 };
 
+const VISIBILITY_ICON_MAP = {
+    [VISIBILITY.PUBLIC]: Globe,
+    [VISIBILITY.UNLISTED]: LinkIcon,
+    [VISIBILITY.PRIVATE]: EyeOff,
+};
+
+const VisibilityDot = ({ visibility }) => {
+    const v = visibility ?? VISIBILITY.PUBLIC;
+    const Icon = VISIBILITY_ICON_MAP[v] ?? Globe;
+
+    return (
+        <span className={cn(
+            'flex size-5 shrink-0 items-center justify-center rounded-full [&>svg]:size-2.5',
+            {
+                'bg-success/10 text-success': v === VISIBILITY.PUBLIC,
+                'bg-warning/10 text-warning': v === VISIBILITY.UNLISTED,
+                'bg-surface text-muted-foreground': v === VISIBILITY.PRIVATE,
+            },
+        )}>
+            <Icon />
+        </span>
+    );
+};
+
+export const VisibilityBadge = ({ visibility, t }) => {
+    const v = visibility ?? VISIBILITY.PUBLIC;
+    const Icon = VISIBILITY_ICON_MAP[v] ?? Globe;
+
+    return (
+        <span className={cn(
+            'flex shrink-0 items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] font-medium [&>svg]:size-2.5',
+            {
+                'border-success/40 bg-success/10 text-success': v === VISIBILITY.PUBLIC,
+                'border-warning/40 bg-warning/10 text-warning': v === VISIBILITY.UNLISTED,
+                'border-border bg-surface text-muted-foreground': v === VISIBILITY.PRIVATE,
+            },
+        )}>
+            <Icon />
+            {t(`bins.card.visibility_${v}`)}
+        </span>
+    );
+};
+
 const AccessBadge = ({ bin, t, canDelete }) => {
     const queryClient = useQueryClient();
     const [open, setOpen] = useState(false);
@@ -92,13 +136,21 @@ const AccessBadge = ({ bin, t, canDelete }) => {
         </span>
     );
 
-    if (!canDelete) return badge;
+    if (!canDelete) {
+        return (
+            <div className='flex items-center gap-1.5'>
+                {badge}
+                <VisibilityBadge visibility={bin.visibility} t={t} />
+            </div>
+        );
+    }
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
-            <div className='flex items-center overflow-hidden'>
+            <div className='flex items-center gap-1.5 overflow-hidden'>
                 {badge}
-                <div className='w-0 overflow-hidden transition-all duration-200 group-hover/card:ml-1.5 group-hover/card:w-4'>
+                <VisibilityDot visibility={bin.visibility} />
+                <div className='w-0 overflow-hidden transition-all duration-200 group-hover/card:w-4'>
                     <PopoverTrigger
                         className='flex size-4 cursor-pointer items-center justify-center text-muted-foreground transition-colors hover:text-destructive'
                         onClick={e => {
@@ -246,7 +298,6 @@ const RowDeleteButton = ({ bin, t }) => {
         </Popover>
     );
 };
-
 
 const BinRow = ({ bin }) => {
     const { t, i18n } = useTranslation();

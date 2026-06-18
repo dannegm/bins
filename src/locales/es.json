@@ -37,7 +37,10 @@
             "title": "Tus bins",
             "empty_title": "Aún no tienes bins",
             "empty_description": "Crea tu primer bin y empieza a programar",
-            "empty_cta": "Crear tu primer bin"
+            "empty_cta": "Crear tu primer bin",
+            "filter_all": "Todos",
+            "filter_public": "Públicos",
+            "filter_private": "Privados"
         }
     },
     "bins": {
@@ -49,7 +52,10 @@
             "delete_title": "¿Eliminar bin?",
             "delete_description": "Esto eliminará permanentemente el bin y todos sus archivos. No se puede deshacer.",
             "delete_cancel": "Cancelar",
-            "delete_confirm": "Eliminar"
+            "delete_confirm": "Eliminar",
+            "visibility_public": "Público",
+            "visibility_unlisted": "Sin listar",
+            "visibility_private": "Privado"
         }
     },
     "settings": {
@@ -233,6 +239,7 @@
             "col_files": "Archivos",
             "col_views": "Vistas",
             "col_status": "Estado",
+            "col_visibility": "Visibilidad",
             "col_updated": "Actualizado",
             "col_actions": "Acciones"
         },
@@ -312,11 +319,20 @@
             "fork_description": "Se creará una copia de este bin con todos sus archivos. Tú serás el autor del nuevo bin.",
             "fork_cancel": "Cancelar",
             "fork_confirm": "Fork",
+            "fork_disabled": "El fork solo está disponible para bins públicos",
             "admin_override": "Puedes editar este bin porque eres admin",
             "forked_from": "fork de",
             "download": "Descargar",
             "download_file": "Descargar archivo actual",
-            "download_zip": "Descargar como ZIP"
+            "download_zip": "Descargar como ZIP",
+            "visibility_label": "Visibilidad",
+            "visibility_public": "Público",
+            "visibility_public_desc": "Cualquiera puede encontrar y ver este bin",
+            "visibility_unlisted": "Sin listar",
+            "visibility_unlisted_desc": "Solo personas con el enlace pueden verlo",
+            "visibility_private": "Privado",
+            "visibility_private_desc": "Solo tú puedes acceder a este bin",
+            "share_disabled": "Compartir está desactivado para bins privados"
         },
         "tab_bar": {
             "undo": "Deshacer",

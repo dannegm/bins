@@ -7,7 +7,10 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import {
     Eye,
+    EyeOff,
     File,
+    Globe,
+    Link as LinkIcon,
     Lock,
     LockOpen,
     Search,
@@ -21,6 +24,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/services/supabase';
 import { deleteBin } from '@/services/bins';
+import { VISIBILITY } from '@/constants/visibility';
 import { getLanguage } from '@/constants/languages';
 import { getAvatarUrl } from '@/helpers/avatar';
 import { useTheme } from '@/providers/theme-provider';
@@ -127,6 +131,28 @@ const AuthorCell = ({ profiles, t }) => {
                 {profiles.name || t('admin.bins.anonymous')}
             </span>
         </RouterLink>
+    );
+};
+
+const VISIBILITY_ICON_MAP = {
+    [VISIBILITY.PUBLIC]: Globe,
+    [VISIBILITY.UNLISTED]: LinkIcon,
+    [VISIBILITY.PRIVATE]: EyeOff,
+};
+
+const VisibilityBadge = ({ visibility, t }) => {
+    const v = visibility ?? VISIBILITY.PUBLIC;
+    const Icon = VISIBILITY_ICON_MAP[v] ?? Globe;
+
+    return (
+        <Badge className={cn({
+            'border-success/40 bg-success/10 text-success': v === VISIBILITY.PUBLIC,
+            'border-warning/40 bg-warning/10 text-warning': v === VISIBILITY.UNLISTED,
+            'border-border bg-surface text-muted-foreground': v === VISIBILITY.PRIVATE,
+        })}>
+            <Icon className='size-2.5' />
+            {t(`bins.card.visibility_${v}`)}
+        </Badge>
     );
 };
 
@@ -246,6 +272,10 @@ const BinRow = ({ bin, t, formatDate }) => {
                     )}
                     {bin.is_readonly ? t('bins.card.readonly') : t('bins.card.editable')}
                 </Badge>
+            </TableCell>
+
+            <TableCell>
+                <VisibilityBadge visibility={bin.visibility} t={t} />
             </TableCell>
 
             <TableCell>
@@ -419,6 +449,7 @@ export const BinsTable = () => {
                             <SortableHead column='files' label={t('admin.bins.col_files')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} align='end' />
                             <SortableHead column='views' label={t('admin.bins.col_views')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} align='end' />
                             <SortableHead column='status' label={t('admin.bins.col_status')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} />
+                            <TableHead className='text-xs text-muted-foreground'>{t('admin.bins.col_visibility')}</TableHead>
                             <SortableHead column='updated_at' label={t('admin.bins.col_updated')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} />
                             <TableHead className='text-right'>
                                 {t('admin.bins.col_actions')}
@@ -429,7 +460,7 @@ export const BinsTable = () => {
                         {isLoading && (
                             <TableRow>
                                 <TableCell
-                                    colSpan={8}
+                                    colSpan={9}
                                     className='h-32 text-center text-muted-foreground'
                                 >
                                     {t('admin.loading')}
@@ -439,7 +470,7 @@ export const BinsTable = () => {
                         {!isLoading && filtered.length === 0 && (
                             <TableRow>
                                 <TableCell
-                                    colSpan={8}
+                                    colSpan={9}
                                     className='h-32 text-center text-muted-foreground'
                                 >
                                     {t('admin.bins.empty')}
