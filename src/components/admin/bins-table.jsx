@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Link as RouterLink } from '@tanstack/react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -12,23 +12,25 @@ import {
     LockOpen,
     Search,
     ExternalLink,
-    Pencil,
     Trash2,
     Share2,
     RefreshCw,
+    ArrowUpDown,
+    ArrowUp,
+    ArrowDown,
 } from 'lucide-react';
 import { supabase } from '@/services/supabase';
-import { deleteBin, updateBin } from '@/services/bins';
+import { deleteBin } from '@/services/bins';
 import { getLanguage } from '@/constants/languages';
 import { getAvatarUrl } from '@/helpers/avatar';
 import { useTheme } from '@/providers/theme-provider';
 import { LangDot } from '@/components/bins/lang-dot';
+import { cn } from '@/helpers/utils';
 import { Button } from '@/ui/button';
 import { Input } from '@/ui/input';
-import { Switch } from '@/ui/switch';
 import { Badge } from '@/ui/badge';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/ui/dialog';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/ui/tooltip';
 import {
     Popover,
     PopoverContent,
@@ -71,16 +73,31 @@ const LangStack = ({ files }) => {
     const extra = unique.length - 3;
 
     return (
-        <div className='flex items-center -space-x-1.5'>
-            {visible.map(lang => (
-                <LangDot key={lang.id} lang={lang} />
-            ))}
-            {extra > 0 && (
-                <span className='flex size-5 shrink-0 items-center justify-center rounded-full border border-background bg-surface text-[9px] font-medium text-muted-foreground'>
-                    +{extra}
-                </span>
-            )}
-        </div>
+        <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <div className='flex w-fit items-center -space-x-1.5 cursor-default'>
+                        {visible.map(lang => (
+                            <LangDot key={lang.id} lang={lang} />
+                        ))}
+                        {extra > 0 && (
+                            <span className='flex size-5 shrink-0 items-center justify-center rounded-full border border-background bg-surface text-[9px] font-medium text-muted-foreground'>
+                                +{extra}
+                            </span>
+                        )}
+                    </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <ul className='flex flex-col gap-0.5'>
+                        {unique.map(lang => (
+                            <li key={lang.id} className='text-xs'>
+                                {lang.label}
+                            </li>
+                        ))}
+                    </ul>
+                </TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
     );
 };
 
@@ -162,67 +179,7 @@ const DeleteAction = ({ bin, t }) => {
     );
 };
 
-const EditBinDialog = ({ bin, open, onOpenChange, t }) => {
-    const [title, setTitle] = useState('');
-    const [isReadonly, setIsReadonly] = useState(false);
-    const queryClient = useQueryClient();
-
-    useEffect(() => {
-        setTitle(bin?.title ?? '');
-        setIsReadonly(bin?.is_readonly ?? false);
-    }, [bin?.id, open]);
-
-    const { mutate, isPending } = useMutation({
-        mutationFn: () => updateBin(bin.id, { title, is_readonly: isReadonly }),
-        onSuccess: () => {
-            onOpenChange(false);
-            queryClient.invalidateQueries({ queryKey: ['admin-bins'] });
-        },
-    });
-
-    return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>{t('admin.bins.edit_title')}</DialogTitle>
-                </DialogHeader>
-                <div className='flex flex-col gap-4'>
-                    <div className='flex flex-col gap-1.5'>
-                        <label className='text-xs font-medium text-muted-foreground'>
-                            {t('admin.bins.edit_title_label')}
-                        </label>
-                        <Input
-                            value={title}
-                            onChange={e => setTitle(e.target.value)}
-                            placeholder={t('bins.card.untitled')}
-                            onKeyDown={e => {
-                                if (e.key === 'Enter') mutate();
-                            }}
-                        />
-                    </div>
-                    <div className='flex items-center justify-between'>
-                        <label className='text-xs font-medium text-muted-foreground'>
-                            {t('admin.bins.edit_readonly_label')}
-                        </label>
-                        <Switch checked={isReadonly} onCheckedChange={setIsReadonly} />
-                    </div>
-                </div>
-                <DialogFooter>
-                    <Button variant='outline' onClick={() => onOpenChange(false)}>
-                        {t('admin.cancel')}
-                    </Button>
-                    <Button disabled={isPending} onClick={() => mutate()}>
-                        {t('admin.save')}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    );
-};
-
 const BinRow = ({ bin, t, formatDate }) => {
-    const [editOpen, setEditOpen] = useState(false);
-
     const copyLink = () => {
         navigator.clipboard.writeText(`${window.location.origin}/editor/${bin.id}`);
         toast.success(t('admin.bins.copy_link_success'));
@@ -316,18 +273,34 @@ const BinRow = ({ bin, t, formatDate }) => {
                     >
                         <Share2 className='size-3.5' />
                     </button>
-                    <button
-                        className='flex size-6 cursor-pointer items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground'
-                        title={t('admin.bins.edit')}
-                        onClick={() => setEditOpen(true)}
-                    >
-                        <Pencil className='size-3.5' />
-                    </button>
                     <DeleteAction bin={bin} t={t} />
                 </div>
-                <EditBinDialog bin={bin} open={editOpen} onOpenChange={setEditOpen} t={t} />
             </TableCell>
         </TableRow>
+    );
+};
+
+const SortableHead = ({ column, label, sortBy, sortDir, onSort, className, align = 'start' }) => {
+    const isActive = sortBy === column;
+    const Icon = isActive ? (sortDir === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown;
+
+    return (
+        <TableHead className={className}>
+            <button
+                onClick={() => onSort(column)}
+                className={cn(
+                    'flex items-center gap-1 cursor-pointer transition-colors hover:text-foreground',
+                    {
+                        'text-foreground': isActive,
+                        'text-muted-foreground': !isActive,
+                        'w-full justify-end': align === 'end',
+                    },
+                )}
+            >
+                {label}
+                <Icon className='size-3' />
+            </button>
+        </TableHead>
     );
 };
 
@@ -355,23 +328,59 @@ const StatsBar = ({ bins, t }) => {
     );
 };
 
+const getSortValue = (bin, key) => {
+    if (key === 'title') return (bin.title ?? '').toLowerCase();
+    if (key === 'author') return (bin.profiles?.name ?? '').toLowerCase();
+    if (key === 'languages') {
+        const seen = new Set();
+        return (bin.bin_files ?? []).filter(f => {
+            const id = getLanguage(f.language).id;
+            if (seen.has(id)) return false;
+            seen.add(id);
+            return true;
+        }).length;
+    }
+    if (key === 'files') return bin.bin_files?.length ?? 0;
+    if (key === 'views') return bin.views ?? 0;
+    if (key === 'status') return bin.is_readonly ? 1 : 0;
+    if (key === 'updated_at') return bin.updated_at ?? '';
+    return '';
+};
+
 export const BinsTable = () => {
     const { t, i18n } = useTranslation();
     const [search, setSearch] = useState('');
+    const [sortBy, setSortBy] = useState('updated_at');
+    const [sortDir, setSortDir] = useState('desc');
     const { data: bins = [], isLoading, isFetching, refetch } = useAdminBins();
     const locale = dateFnsLocales[i18n.language] ?? enUS;
     const formatDate = iso => format(new Date(iso), t('formats.date.short_time'), { locale });
 
+    const handleSort = col => {
+        if (col === sortBy) setSortDir(prev => (prev === 'asc' ? 'desc' : 'asc'));
+        else { setSortBy(col); setSortDir('desc'); }
+    };
+
     const filtered = useMemo(() => {
         const q = search.toLowerCase().trim();
-        if (!q) return bins;
-        return bins.filter(
-            b =>
-                b.title?.toLowerCase().includes(q) ||
-                b.id.toLowerCase().includes(q) ||
-                b.profiles?.name?.toLowerCase().includes(q),
-        );
-    }, [bins, search]);
+        let result = q
+            ? bins.filter(
+                  b =>
+                      b.title?.toLowerCase().includes(q) ||
+                      b.id.toLowerCase().includes(q) ||
+                      b.profiles?.name?.toLowerCase().includes(q),
+              )
+            : [...bins];
+
+        result.sort((a, b) => {
+            const av = getSortValue(a, sortBy);
+            const bv = getSortValue(b, sortBy);
+            const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+            return sortDir === 'asc' ? cmp : -cmp;
+        });
+
+        return result;
+    }, [bins, search, sortBy, sortDir]);
 
     return (
         <div>
@@ -404,17 +413,13 @@ export const BinsTable = () => {
                 <Table>
                     <TableHeader>
                         <TableRow className='hover:bg-transparent'>
-                            <TableHead>{t('admin.bins.col_bin')}</TableHead>
-                            <TableHead>{t('admin.bins.col_author')}</TableHead>
-                            <TableHead>{t('admin.bins.col_languages')}</TableHead>
-                            <TableHead className='text-right'>
-                                {t('admin.bins.col_files')}
-                            </TableHead>
-                            <TableHead className='text-right'>
-                                {t('admin.bins.col_views')}
-                            </TableHead>
-                            <TableHead>{t('admin.bins.col_status')}</TableHead>
-                            <TableHead>{t('admin.bins.col_updated')}</TableHead>
+                            <SortableHead column='title' label={t('admin.bins.col_bin')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} />
+                            <SortableHead column='author' label={t('admin.bins.col_author')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} />
+                            <SortableHead column='languages' label={t('admin.bins.col_languages')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} />
+                            <SortableHead column='files' label={t('admin.bins.col_files')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} align='end' />
+                            <SortableHead column='views' label={t('admin.bins.col_views')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} align='end' />
+                            <SortableHead column='status' label={t('admin.bins.col_status')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} />
+                            <SortableHead column='updated_at' label={t('admin.bins.col_updated')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} />
                             <TableHead className='text-right'>
                                 {t('admin.bins.col_actions')}
                             </TableHead>

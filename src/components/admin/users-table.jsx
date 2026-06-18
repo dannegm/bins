@@ -48,7 +48,7 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/ui/t
 
 const FLAG_URL = cc => `https://flagicons.lipis.dev/flags/1x1/${cc.toLowerCase()}.svg`;
 
-const SORT_KEYS = ['created_at', 'name', 'country'];
+const SORT_KEYS = ['created_at', 'name', 'country', 'is_bot', 'uuid', 'browser', 'os', 'device', 'bins_count'];
 const FILTER_KEYS = ['all', 'human', 'bot'];
 const PER_PAGE_OPTIONS = [10, 25, 50];
 
@@ -93,6 +93,12 @@ const useAdminUsers = ({ page, perPage, filter, sortBy, sortDir, search }) =>
             const ascending = sortDir === 'asc';
             if (sortBy === 'name') query = query.order('name', { ascending });
             else if (sortBy === 'country') query = query.order('country', { ascending });
+            else if (sortBy === 'is_bot') query = query.order('is_bot', { ascending });
+            else if (sortBy === 'uuid') query = query.order('uuid', { ascending });
+            else if (sortBy === 'browser' || sortBy === 'os' || sortBy === 'device')
+                query = query.order('user_agent', { ascending });
+            else if (sortBy === 'bins_count')
+                query = query.order('count', { ascending, referencedTable: 'bins' });
             else query = query.order('created_at', { ascending });
 
             const from = (page - 1) * perPage;
@@ -155,35 +161,37 @@ const BrowserCell = ({ ua, isBot, t }) => {
         );
 
         return (
-            <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger className='flex items-center gap-1.5 cursor-default'>
-                        {iconEl}
-                        <span className='text-xs text-muted-foreground'>
-                            {bot?.name ?? t('admin.users.unknown_bot')}
-                        </span>
-                    </TooltipTrigger>
-                    <TooltipContent>{ua ?? '—'}</TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
+            <div className='flex items-center gap-1.5'>
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger className='cursor-default'>{iconEl}</TooltipTrigger>
+                        <TooltipContent>{ua ?? '—'}</TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+                <span className='text-xs text-muted-foreground'>
+                    {bot?.name ?? t('admin.users.unknown_bot')}
+                </span>
+            </div>
         );
     }
 
     if (!parsed.browser) return <span className='text-xs text-muted-foreground'>—</span>;
 
     return (
-        <TooltipProvider>
-            <Tooltip>
-                <TooltipTrigger className='flex items-center gap-1.5 cursor-default'>
-                    <i
-                        className={cn(parsed.browser.icon, 'text-base')}
-                        style={{ color: parsed.browser.color }}
-                    />
-                    <span className='text-xs text-muted-foreground'>{parsed.browser.name}</span>
-                </TooltipTrigger>
-                <TooltipContent>{ua ?? '—'}</TooltipContent>
-            </Tooltip>
-        </TooltipProvider>
+        <div className='flex items-center gap-1.5'>
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger className='cursor-default'>
+                        <i
+                            className={cn(parsed.browser.icon, 'text-base')}
+                            style={{ color: parsed.browser.color }}
+                        />
+                    </TooltipTrigger>
+                    <TooltipContent>{ua ?? '—'}</TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+            <span className='text-xs text-muted-foreground'>{parsed.browser.name}</span>
+        </div>
     );
 };
 
@@ -332,7 +340,7 @@ const DeleteUserAction = ({ profile, t, formatDate }) => {
     );
 };
 
-const SortableHead = ({ column, label, sortBy, sortDir, onSort, className }) => {
+const SortableHead = ({ column, label, sortBy, sortDir, onSort, className, align = 'start' }) => {
     const isActive = sortBy === column;
     const Icon = isActive ? (sortDir === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown;
 
@@ -342,7 +350,11 @@ const SortableHead = ({ column, label, sortBy, sortDir, onSort, className }) => 
                 onClick={() => onSort(column)}
                 className={cn(
                     'flex items-center gap-1 cursor-pointer transition-colors hover:text-foreground',
-                    { 'text-foreground': isActive, 'text-muted-foreground': !isActive },
+                    {
+                        'text-foreground': isActive,
+                        'text-muted-foreground': !isActive,
+                        'w-full justify-end': align === 'end',
+                    },
                 )}
             >
                 {label}
@@ -449,7 +461,11 @@ const UserRow = ({ profile, t, formatDate, isMe, onToggleBot, isTogglingBot }) =
             </TableCell>
 
             <TableCell>
-                <div className='flex items-center gap-3'>
+                <RouterLink
+                    to='/user/$uuid'
+                    params={{ uuid: profile.uuid }}
+                    className='flex items-center gap-3 hover:opacity-80 transition-opacity'
+                >
                     <div
                         className='size-5 shrink-0 overflow-hidden rounded-full bg-(--user-color)'
                         style={{ '--user-color': color }}
@@ -464,7 +480,7 @@ const UserRow = ({ profile, t, formatDate, isMe, onToggleBot, isTogglingBot }) =
                             {t('profile.you')}
                         </span>
                     )}
-                </div>
+                </RouterLink>
             </TableCell>
 
             <TableCell>
@@ -694,7 +710,13 @@ export const UsersTable = () => {
                 <Table>
                     <TableHeader>
                         <TableRow className='hover:bg-transparent'>
-                            <TableHead>{t('admin.users.col_type')}</TableHead>
+                            <SortableHead
+                                column='is_bot'
+                                label={t('admin.users.col_type')}
+                                sortBy={sortBy}
+                                sortDir={sortDir}
+                                onSort={handleSort}
+                            />
                             <SortableHead
                                 column='name'
                                 label={t('admin.users.col_user')}
@@ -702,10 +724,34 @@ export const UsersTable = () => {
                                 sortDir={sortDir}
                                 onSort={handleSort}
                             />
-                            <TableHead>{t('admin.users.col_id')}</TableHead>
-                            <TableHead>{t('admin.users.col_browser')}</TableHead>
-                            <TableHead>{t('admin.users.col_os')}</TableHead>
-                            <TableHead>{t('admin.users.col_device')}</TableHead>
+                            <SortableHead
+                                column='uuid'
+                                label={t('admin.users.col_id')}
+                                sortBy={sortBy}
+                                sortDir={sortDir}
+                                onSort={handleSort}
+                            />
+                            <SortableHead
+                                column='browser'
+                                label={t('admin.users.col_browser')}
+                                sortBy={sortBy}
+                                sortDir={sortDir}
+                                onSort={handleSort}
+                            />
+                            <SortableHead
+                                column='os'
+                                label={t('admin.users.col_os')}
+                                sortBy={sortBy}
+                                sortDir={sortDir}
+                                onSort={handleSort}
+                            />
+                            <SortableHead
+                                column='device'
+                                label={t('admin.users.col_device')}
+                                sortBy={sortBy}
+                                sortDir={sortDir}
+                                onSort={handleSort}
+                            />
                             <SortableHead
                                 column='country'
                                 label={t('admin.users.col_location')}
@@ -713,9 +759,14 @@ export const UsersTable = () => {
                                 sortDir={sortDir}
                                 onSort={handleSort}
                             />
-                            <TableHead className='text-right'>
-                                {t('admin.users.col_bins')}
-                            </TableHead>
+                            <SortableHead
+                                column='bins_count'
+                                label={t('admin.users.col_bins')}
+                                sortBy={sortBy}
+                                sortDir={sortDir}
+                                onSort={handleSort}
+                                align='end'
+                            />
                             <SortableHead
                                 column='created_at'
                                 label={t('admin.users.col_registered')}

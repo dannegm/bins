@@ -47,11 +47,11 @@ export const Sidebar = () => {
     return (
         <aside
             className={cn(
-                'fixed bottom-0 left-0 right-0 z-40 flex h-10 pt-2 px-2',
+                'fixed bottom-0 left-0 right-0 z-40 flex h-12 px-2',
                 'flex-row items-center justify-evenly',
                 'border-t border-sidebar-border bg-sidebar',
 
-                'sm:relative sm:h-screen sm:w-14 sm:flex-col sm:px-0 sm:py-4 sm:justify-start sm:gap-2',
+                'sm:h-screen sm:w-14 sm:flex-col sm:px-0 sm:py-4 sm:justify-start sm:gap-2',
                 'sm:border-r sm:border-t-0',
                 'short:hidden sm:short:flex',
             )}
