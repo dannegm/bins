@@ -1,0 +1,19 @@
+@custom-variant dark (&:where([data-theme-gama='dark'], [data-theme-gama='dark'] *));
+@custom-variant short (@media (max-height: 600px));
+@custom-variant editor-focused (&:where([data-editor-focused='true'], [data-editor-focused='true'] *));
+
+@custom-variant chrome (&:where([data-browser='chrome'], [data-browser='chrome'] *));
+@custom-variant firefox (&:where([data-browser='firefox'], [data-browser='firefox'] *));
+@custom-variant safari (&:where([data-browser='safari'], [data-browser='safari'] *));
+@custom-variant edge (&:where([data-browser='edge'], [data-browser='edge'] *));
+@custom-variant opera (&:where([data-browser='opera'], [data-browser='opera'] *));
+
+@custom-variant mobile (&:where([data-device='mobile'], [data-device='mobile'] *));
+@custom-variant tablet (&:where([data-device='tablet'], [data-device='tablet'] *));
+@custom-variant desktop (&:where([data-device='desktop'], [data-device='desktop'] *));
+
+@custom-variant windows (&:where([data-os='windows'], [data-os='windows'] *));
+@custom-variant macos (&:where([data-os='macos'], [data-os='macos'] *));
+@custom-variant linux (&:where([data-os='linux'], [data-os='linux'] *));
+@custom-variant android (&:where([data-os='android'], [data-os='android'] *));
+@custom-variant ios (&:where([data-os='ios'], [data-os='ios'] *));

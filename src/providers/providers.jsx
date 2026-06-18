@@ -16,6 +16,7 @@ import { CommandPaletteProvider } from '@/providers/command-palette-provider';
 import { ToastProvider } from '@/providers/toast-provider';
 import { NudgeProvider } from '@/providers/nudge-provider';
 import { NyanCatProvider } from '@/components/system/nyan-cat';
+import { DeviceProvider } from '@/providers/device-provider';
 
 const CommandsBridge = ({ children }) => {
     useExternalCommands();
@@ -26,6 +27,7 @@ const CommandsBridge = ({ children }) => {
 
 export const Providers = createProviders([
     [HeadlessGuard],
+    [DeviceProvider],
     [NuqsAdapter],
     [IdentityProvider],
     [BusProvider],

@@ -8,9 +8,7 @@
 @import './themes/index.css';
 @import './utils.css';
 
-@custom-variant dark (&:where([data-theme-gama='dark'], [data-theme-gama='dark'] *));
-@custom-variant short (@media (max-height: 600px));
-@custom-variant editor-focused (&:where([data-editor-focused='true'], [data-editor-focused='true'] *));
+@import './variants.css';
 
 @theme inline {
     --font-heading: var(--font-sans);
