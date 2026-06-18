@@ -56,9 +56,14 @@ export const ProfileBins = ({ bins, isLoading, view, onViewChange }) => {
     return (
         <div className='flex flex-col gap-4'>
             <div className='flex items-center justify-between'>
-                <h2 className='text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
-                    {t('profile.bins.title')}
-                </h2>
+                <div className='flex items-center gap-2'>
+                    <h2 className='text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
+                        {t('profile.bins.title')}
+                    </h2>
+                    <span className='rounded-full bg-surface px-1.5 py-0.5 text-[10px] font-medium tabular-nums text-muted-foreground'>
+                        {bins.length}
+                    </span>
+                </div>
                 <ViewToggle view={view} onChange={onViewChange} />
             </div>
             {bins.length === 0 ? (

@@ -62,12 +62,19 @@ const VisibilityFilter = ({ filter, onChange, t }) => {
     );
 };
 
-const MyBinsLayout = ({ t, view, onViewChange, filter, onFilterChange, children }) => (
+const MyBinsLayout = ({ t, view, onViewChange, filter, onFilterChange, count, children }) => (
     <div className='flex flex-col gap-4'>
         <div className='flex items-center justify-between'>
-            <h2 className='text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
-                {t('home.my_bins.title')}
-            </h2>
+            <div className='flex items-center gap-2'>
+                <h2 className='text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
+                    {t('home.my_bins.title')}
+                </h2>
+                {count !== undefined && (
+                    <span className='rounded-full bg-surface px-1.5 py-0.5 text-[10px] font-medium tabular-nums text-muted-foreground'>
+                        {count}
+                    </span>
+                )}
+            </div>
             <div className='flex items-center gap-2'>
                 <VisibilityFilter filter={filter} onChange={onFilterChange} t={t} />
                 <ViewToggle view={view} onChange={onViewChange} />
@@ -145,7 +152,7 @@ export const MyBins = ({ view, onViewChange }) => {
     const filtered = applyFilter(bins, filter);
 
     return (
-        <MyBinsLayout t={t} view={view} onViewChange={onViewChange} filter={filter} onFilterChange={setFilter}>
+        <MyBinsLayout t={t} view={view} onViewChange={onViewChange} filter={filter} onFilterChange={setFilter} count={filtered.length}>
             {view === 'grid' ? (
                 <div className='grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4'>
                     {filtered.map(bin => (

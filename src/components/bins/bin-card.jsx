@@ -127,7 +127,7 @@ const AccessBadge = ({ bin, t, canDelete }) => {
         <Popover open={open} onOpenChange={setOpen}>
             <div className='flex items-center gap-1.5 overflow-hidden'>
                 {badge}
-                <div className='w-0 overflow-hidden transition-all duration-200 group-hover/card:w-4'>
+                <div className='-mr-1.5 w-0 overflow-hidden transition-all duration-200 group-hover/card:mr-0 group-hover/card:w-4'>
                     <PopoverTrigger
                         className='flex size-4 cursor-pointer items-center justify-center text-muted-foreground transition-colors hover:text-destructive'
                         onClick={e => {
@@ -203,10 +203,10 @@ export const BinCard = ({ bin }) => {
                 },
             )}
         >
-            <div className={cn('flex flex-col gap-3', {
+            <div className={cn('flex w-full flex-col gap-3', {
                 'blur-sm transition-[filter] duration-200 group-hover/card:blur-none': isPrivate,
             })}>
-            <div className='flex items-start justify-between gap-2'>
+            <div className='flex items-center justify-between gap-2'>
                 <span className='truncate text-sm font-medium text-card-foreground'>
                     {bin.title || t('bins.card.untitled')}
                 </span>
@@ -294,13 +294,23 @@ const BinRow = ({ bin }) => {
     const locale = dateFnsLocales[i18n.language] ?? enUS;
     const formatDate = iso => format(new Date(iso), t('formats.date.short'), { locale });
     const canDelete = user?.uuid === bin.author_id || isAdmin;
+    const visibility = bin.visibility ?? VISIBILITY.PUBLIC;
+    const isPrivate = visibility === VISIBILITY.PRIVATE;
+    const isUnlisted = visibility === VISIBILITY.UNLISTED;
 
     const handleClick = () => navigate({ to: '/editor/$binId', params: { binId: bin.id } });
 
     return (
         <tr
             onClick={handleClick}
-            className='group/card cursor-pointer border-b border-border last:border-0 transition-colors hover:bg-surface-raised'
+            className={cn(
+                'group/card cursor-pointer border-b border-border last:border-0 hover:bg-surface-raised',
+                'transition-[background-color,filter,opacity] duration-200',
+                {
+                    'blur-sm hover:blur-none': isPrivate,
+                    'bg-muted/30 opacity-60 hover:opacity-100': isUnlisted,
+                },
+            )}
         >
             <td className='pl-3 pr-1 py-2.5'>
                 <Braces className='size-3.5 text-muted-foreground' />
@@ -325,8 +335,11 @@ const BinRow = ({ bin }) => {
             <td className='px-2 py-2.5'>
                 <LanguageStack files={bin.bin_files ?? []} />
             </td>
-            <td className='whitespace-nowrap px-4 py-2.5'>
+            <td className='whitespace-nowrap px-2 py-2.5'>
                 <AccessBadge bin={bin} t={t} canDelete={false} />
+            </td>
+            <td className='whitespace-nowrap px-2 py-2.5'>
+                <VisibilityBadge visibility={bin.visibility} t={t} />
             </td>
             <td className='pr-4 py-2.5'>
                 {canDelete && <RowDeleteButton bin={bin} t={t} />}
