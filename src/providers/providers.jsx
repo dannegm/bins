@@ -26,8 +26,8 @@ const CommandsBridge = ({ children }) => {
 };
 
 export const Providers = createProviders([
-    [HeadlessGuard],
     [DeviceProvider],
+    [HeadlessGuard],
     [NuqsAdapter],
     [IdentityProvider],
     [BusProvider],
