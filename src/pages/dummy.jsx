@@ -1,4 +1,5 @@
-import { Bot } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Bot, Monitor } from 'lucide-react';
 import { cn } from '@/helpers/utils';
 import { AppIcon } from '@/components/layout/app-icon';
 
@@ -103,6 +104,62 @@ const HeadlessNotice = () => (
     </div>
 );
 
+const InfoRow = ({ label, value }) => (
+    <div className='flex items-baseline gap-2'>
+        <span className='w-36 shrink-0 text-sm text-muted-foreground'>{label}</span>
+        <span className='font-mono text-sm text-foreground'>{value ?? '—'}</span>
+    </div>
+);
+
+const BrowserInfo = ({ className }) => {
+    const [info, setInfo] = useState(null);
+
+    useEffect(() => {
+        const mq = window.matchMedia('(prefers-color-scheme: dark)');
+        setInfo({
+            browser: document.documentElement.getAttribute('data-browser'),
+            os: document.documentElement.getAttribute('data-os'),
+            device: document.documentElement.getAttribute('data-device'),
+            screenW: window.screen.width,
+            screenH: window.screen.height,
+            viewportW: window.innerWidth,
+            viewportH: window.innerHeight,
+            dpr: window.devicePixelRatio,
+            colorScheme: mq.matches ? 'dark' : 'light',
+            lang: navigator.language,
+            langs: navigator.languages?.join(', '),
+            online: navigator.onLine ? 'yes' : 'no',
+            ua: navigator.userAgent,
+        });
+    }, []);
+
+    if (!info) return null;
+
+    return (
+        <div className={className}>
+            <div className='flex flex-col gap-4 rounded-xl border border-border bg-card p-6'>
+                <div className='flex items-center gap-2 text-sm font-semibold text-foreground'>
+                    <Monitor className='size-4 text-brand' />
+                    Environment
+                </div>
+                <div className='grid grid-cols-1 gap-y-2 sm:grid-cols-2'>
+                    <InfoRow label='Browser' value={info.browser} />
+                    <InfoRow label='OS' value={info.os} />
+                    <InfoRow label='Device' value={info.device} />
+                    <InfoRow label='Color scheme' value={info.colorScheme} />
+                    <InfoRow label='Language' value={info.lang} />
+                    <InfoRow label='Languages' value={info.langs} />
+                    <InfoRow label='Screen' value={`${info.screenW} × ${info.screenH}`} />
+                    <InfoRow label='Viewport' value={`${info.viewportW} × ${info.viewportH}`} />
+                    <InfoRow label='Device pixel ratio' value={info.dpr} />
+                    <InfoRow label='Online' value={info.online} />
+                </div>
+                <InfoRow label='User agent' value={info.ua} />
+            </div>
+        </div>
+    );
+};
+
 export const DummyPage = () => (
     <div className='flex h-screen bg-background'>
         <DummySidebar />
@@ -113,8 +170,11 @@ export const DummyPage = () => (
                     <DummyCarousel />
                     <DummySection count={4} />
                     <DummySection count={2} />
+                    <BrowserInfo />
                 </div>
+
                 <HeadlessNotice />
+
                 <DummyFooter />
             </div>
         </main>

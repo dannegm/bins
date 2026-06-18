@@ -1,4 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { DummyPage } from '@/pages/dummy.jsx';
+import { PlaygroundPage } from '@/pages/playground';
 
-export const Route = createFileRoute('/playground')({ component: DummyPage });
+export const Route = createFileRoute('/playground')({ component: PlaygroundPage });
