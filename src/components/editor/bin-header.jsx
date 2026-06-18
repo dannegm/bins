@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { zipSync, strToU8 } from 'fflate';
 import {
     Lock,
     LockOpen,
@@ -176,7 +177,7 @@ const VisibilitySelector = ({ bin, isOwner, t, onVisibilityChange, compact = fal
     );
 };
 
-export const BinHeader = ({ bin, activeFile, isAuthor, isAdmin, isOwner, onTitleChange, onReadonlyToggle, onVisibilityChange, onShare }) => {
+export const BinHeader = ({ bin, activeFile, files = [], isAuthor, isAdmin, isOwner, onTitleChange, onReadonlyToggle, onVisibilityChange, onShare }) => {
     const { t } = useTranslation();
     const [isEditing, setIsEditing] = useState(false);
     const [draft, setDraft] = useState('');
@@ -206,6 +207,27 @@ export const BinHeader = ({ bin, activeFile, isAuthor, isAdmin, isOwner, onTitle
     const handleMobileDownloadFile = () => {
         setMobileMenuOpen(false);
         handleDownloadFile();
+    };
+
+    const handleDownloadZip = () => {
+        setDownloadOpen(false);
+        const entries = {};
+        for (const file of files) {
+            entries[file.name] = strToU8(file.content ?? '');
+        }
+        const zipped = zipSync(entries);
+        const blob = new Blob([zipped], { type: 'application/zip' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${(bin?.title ?? 'untitled').trim()}.zip`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    const handleMobileDownloadZip = () => {
+        setMobileMenuOpen(false);
+        handleDownloadZip();
     };
 
     const startEdit = () => {
@@ -417,8 +439,8 @@ export const BinHeader = ({ bin, activeFile, isAuthor, isAdmin, isOwner, onTitle
                             <span className='text-foreground'>{t('editor.bin_header.download_file')}</span>
                         </button>
                         <button
-                            disabled
-                            className='flex w-full cursor-not-allowed items-center gap-2.5 rounded-md px-2 py-2 text-left text-xs opacity-40'
+                            onClick={handleDownloadZip}
+                            className='flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left text-xs transition-colors hover:bg-muted'
                         >
                             <Download className='size-3.5 shrink-0 text-muted-foreground' />
                             <span className='text-foreground'>{t('editor.bin_header.download_zip')}</span>
@@ -536,8 +558,8 @@ export const BinHeader = ({ bin, activeFile, isAuthor, isAdmin, isOwner, onTitle
                             <span className='text-foreground'>{t('editor.bin_header.download_file')}</span>
                         </button>
                         <button
-                            disabled
-                            className='flex w-full cursor-not-allowed items-center gap-2.5 rounded-md px-2 py-2 text-left text-xs opacity-40'
+                            onClick={handleMobileDownloadZip}
+                            className='flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left text-xs transition-colors hover:bg-muted'
                         >
                             <Download className='size-3.5 shrink-0 text-muted-foreground' />
                             <span className='text-foreground'>{t('editor.bin_header.download_zip')}</span>

@@ -466,6 +466,7 @@ export const EditorPage = () => {
                 <BinHeader
                     bin={bin}
                     activeFile={activeFile}
+                    files={files}
                     isAuthor={isAuthor || isAdmin}
                     isAdmin={isAdmin && !isAuthor}
                     isOwner={isAuthor || isAdmin}
