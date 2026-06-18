@@ -68,23 +68,6 @@ const VISIBILITY_ICON_MAP = {
     [VISIBILITY.PRIVATE]: EyeOff,
 };
 
-const VisibilityDot = ({ visibility }) => {
-    const v = visibility ?? VISIBILITY.PUBLIC;
-    const Icon = VISIBILITY_ICON_MAP[v] ?? Globe;
-
-    return (
-        <span className={cn(
-            'flex size-5 shrink-0 items-center justify-center rounded-full [&>svg]:size-2.5',
-            {
-                'bg-success/10 text-success': v === VISIBILITY.PUBLIC,
-                'bg-warning/10 text-warning': v === VISIBILITY.UNLISTED,
-                'bg-surface text-muted-foreground': v === VISIBILITY.PRIVATE,
-            },
-        )}>
-            <Icon />
-        </span>
-    );
-};
 
 export const VisibilityBadge = ({ visibility, t }) => {
     const v = visibility ?? VISIBILITY.PUBLIC;
@@ -137,19 +120,13 @@ const AccessBadge = ({ bin, t, canDelete }) => {
     );
 
     if (!canDelete) {
-        return (
-            <div className='flex items-center gap-1.5'>
-                {badge}
-                <VisibilityBadge visibility={bin.visibility} t={t} />
-            </div>
-        );
+        return badge;
     }
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <div className='flex items-center gap-1.5 overflow-hidden'>
                 {badge}
-                <VisibilityDot visibility={bin.visibility} />
                 <div className='w-0 overflow-hidden transition-all duration-200 group-hover/card:w-4'>
                     <PopoverTrigger
                         className='flex size-4 cursor-pointer items-center justify-center text-muted-foreground transition-colors hover:text-destructive'
@@ -210,16 +187,25 @@ export const BinCard = ({ bin }) => {
     const locale = dateFnsLocales[i18n.language] ?? enUS;
     const formatDate = iso => format(new Date(iso), t('formats.date.short'), { locale });
     const canDelete = user?.uuid === bin.author_id || isAdmin;
+    const visibility = bin.visibility ?? VISIBILITY.PUBLIC;
+    const isUnlisted = visibility === VISIBILITY.UNLISTED;
+    const isPrivate = visibility === VISIBILITY.PRIVATE;
 
     return (
         <Link
             to='/editor/$binId'
             params={{ binId: bin.id }}
             className={cn(
-                'group/card flex flex-col gap-3 rounded-xl border border-border bg-card p-4',
+                'group/card flex flex-col rounded-xl border border-border bg-card p-4',
                 'transition-all hover:border-border/60 hover:bg-surface-raised',
+                {
+                    'outline outline-dashed outline-2 outline-offset-2 outline-border': isUnlisted,
+                },
             )}
         >
+            <div className={cn('flex flex-col gap-3', {
+                'blur-sm transition-[filter] duration-200 group-hover/card:blur-none': isPrivate,
+            })}>
             <div className='flex items-start justify-between gap-2'>
                 <span className='truncate text-sm font-medium text-card-foreground'>
                     {bin.title || t('bins.card.untitled')}
@@ -244,6 +230,7 @@ export const BinCard = ({ bin }) => {
                     </span>
                 )}
                 <span className='ml-auto'>{formatDate(bin.updated_at)}</span>
+            </div>
             </div>
         </Link>
     );
