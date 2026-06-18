@@ -10,7 +10,7 @@ import { TabBar } from '@/components/editor/tab-bar';
 import { EditorCore } from '@/components/editor/editor-core';
 import { UserAvatar } from '@/components/system/user-avatar';
 import { ensureBin, permanentizeBin, updateBin, incrementViews } from '@/services/bins';
-import { registerCollaborator } from '@/services/bin-collaborators';
+import { registerCollaborator, clearCollaborators } from '@/services/bin-collaborators';
 import { getFiles, createFile, updateFile, deleteFile } from '@/services/bin-files';
 import { supabase } from '@/services/supabase';
 import { useIdentity } from '@/hooks/use-identity';
@@ -64,9 +64,15 @@ export const EditorPage = () => {
     const $selectionRef = useRef(null);
     const $activeFileRef = useRef(null);
     const $knownPeers = useRef(null);
+    const $canAccessRef = useRef(true);
     const [undoState, setUndoState] = useState({ canUndo: false, canRedo: false });
 
     const activeFile = files.find(f => f.id === activeFileId) ?? null;
+
+    useEffect(() => {
+        if (!bin) return;
+        $canAccessRef.current = user?.uuid === bin.author_id || isAdmin;
+    }, [bin?.author_id, user?.uuid, isAdmin]);
 
     useEffect(() => {
         const current = new Map(Object.entries(peers));
@@ -284,6 +290,9 @@ export const EditorPage = () => {
             .channel(`bin:${binId}:structure`, { config: { broadcast: { self: false } } })
             .on('broadcast', { event: 'bin:updated' }, ({ payload }) => {
                 setBin(prev => ({ ...prev, ...payload }));
+                if (payload.visibility === VISIBILITY.PRIVATE && !$canAccessRef.current) {
+                    navigate({ to: '/' });
+                }
             })
             .on('broadcast', { event: 'file:created' }, ({ payload }) => {
                 setFiles(prev => {
@@ -431,6 +440,9 @@ export const EditorPage = () => {
 
     const handleVisibilityChange = async visibility => {
         await updateBin(binId, { visibility });
+        if (visibility === VISIBILITY.PRIVATE) {
+            clearCollaborators(binId).catch(() => {});
+        }
         setBin(prev => ({ ...prev, visibility }));
         broadcast('bin:updated', { visibility });
     };
