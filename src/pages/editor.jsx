@@ -64,15 +64,9 @@ export const EditorPage = () => {
     const $selectionRef = useRef(null);
     const $activeFileRef = useRef(null);
     const $knownPeers = useRef(null);
-    const $canAccessRef = useRef(true);
     const [undoState, setUndoState] = useState({ canUndo: false, canRedo: false });
 
     const activeFile = files.find(f => f.id === activeFileId) ?? null;
-
-    useEffect(() => {
-        if (!bin) return;
-        $canAccessRef.current = user?.uuid === bin.author_id || isAdmin;
-    }, [bin?.author_id, user?.uuid, isAdmin]);
 
     useEffect(() => {
         const current = new Map(Object.entries(peers));
@@ -289,10 +283,13 @@ export const EditorPage = () => {
         const ch = supabase()
             .channel(`bin:${binId}:structure`, { config: { broadcast: { self: false } } })
             .on('broadcast', { event: 'bin:updated' }, ({ payload }) => {
-                setBin(prev => ({ ...prev, ...payload }));
-                if (payload.visibility === VISIBILITY.PRIVATE && !$canAccessRef.current) {
-                    navigate({ to: '/' });
-                }
+                setBin(prev => {
+                    if (payload.visibility === VISIBILITY.PRIVATE) {
+                        const isAuthor = prev?.author_id === user?.uuid;
+                        if (!isAuthor && !isAdmin) navigate({ to: '/' });
+                    }
+                    return prev ? { ...prev, ...payload } : prev;
+                });
             })
             .on('broadcast', { event: 'file:created' }, ({ payload }) => {
                 setFiles(prev => {
