@@ -1480,7 +1480,7 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA bins GRANT ALL ON SEQUENCES
 - [x] Ejecutar SQL de RLS
 - [x] Habilitar `pg_cron` desde Dashboard → Database → Extensions
 - [x] Registrar cron job de limpieza de bins expirados
-- [ ] Agregar columnas de fingerprint a `bins.profiles` (migration 004)
+- [x] Agregar columnas de fingerprint a `bins.profiles` — `ip_hash`, `country`, `city`, `user_agent`, `is_bot` (el código las usa via upsert en `identity-provider.jsx`)
 - [ ] Crear índice `idx_profiles_is_bot`
 - [ ] Registrar cron job de borrado de bots
 - [x] Habilitar Realtime para las tablas necesarias
@@ -1493,8 +1493,8 @@ create extension if not exists pg_cron with schema cron;
 
 **Realtime**
 
-- [ ] Habilitar Realtime en Supabase
-- [ ] Configurar canales de broadcast para sync de Yjs y awareness
+- [x] Habilitar Realtime en Supabase — canales `bin:{id}:awareness`, `bin:{id}:structure` en uso
+- [x] Configurar canales de broadcast para sync de Yjs y awareness
 
 ### Vercel
 
@@ -1547,52 +1547,60 @@ curl -X POST 'https://endpoints.hckr.mx/proxys/custom' \
 ### Fase 1 — MVP
 
 - [x] Scaffold (Vite + React + Tailwind v4 + shadcn/Base UI + TanStack Router)
-- [x] Sistema de temas (`css/themes/`, `ThemeProvider`, `data-theme`) — incluye Dark, Light, Dracula, Rosé Pine Dawn
+- [x] Sistema de temas (`css/themes/`, `ThemeProvider`, `data-theme`) — Dark, Light, Dracula, Rosé Pine Dawn + 2 custom (Tlapalli Quartz, Tlapalli Fire Opal)
 - [x] Setup Supabase (schema, `services/supabase.js`)
 - [x] Identidad anónima (`services/settings.js`, `providers/identity-provider.jsx`)
 - [x] Crear bin → `/new` → redirigir a `/editor/:id`
 - [x] Monaco básico con tema Dracula
 - [x] Persistencia de contenido en DB
-- [x] Multiarchivo con tabs
+- [x] Multiarchivo con tabs — drag & drop reorder, rename doble click, trash al hover con confirmación, dot en tabs con cambios no vistos
 - [x] Yjs + binding Monaco (sin red)
-- [x] Sync via Supabase Realtime (awareness + cursores)
+- [x] Sync via Supabase Realtime (awareness + cursores remotos con decoraciones Monaco)
 - [x] Persistencia de `ydoc_state`
-- [x] Home con hero, tus bins, compartidos contigo
-- [x] Página de Settings con miniaturas (Identidad, Apariencia, Editor, Keybindings, Prettier, AI, Import/Export)
+- [x] Home con hero, tus bins, compartidos contigo — búsqueda, paginación, filtros, toast peer join/leave
+- [x] Página de Settings completa (Identidad, Apariencia, Editor, Keybindings, Prettier, AI, Import/Export, Danger Zone) — headers sticky
 - [x] Share (copy link + toast), Fork — incluyendo página `/fork/:binId` con animación
-- [x] Command palette + keybindings globales
-- [x] AI Completions (Claude, OpenAI, Gemini, OpenRouter, Ollama, Custom)
+- [x] Command palette + keybindings globales — navegación numérica rápida, páginas anidadas, admin auth con `$%&:<password>`
+- [x] AI Completions (Claude, OpenAI, Gemini, OpenRouter, Ollama, Custom JSON/JS)
+- [x] Nudge MSN easter egg — sonido + shake + vibración (`providers/nudge-provider.jsx`, botón en status bar)
+- [x] Global dropzone — arrastrar archivo desde fuera → crear bin → navegar al editor (`providers/global-dropzone-provider.jsx`)
+- [x] Toasts personalizados headless con tokens del tema (`components/system/toast.jsx`)
+- [x] Perfil público de usuario (`/user/:uuid`) ✅ implementado antes de lo planeado
+- [x] Right to be forgotten — elimina perfil + bins + redirige a `/forgotten`
+- [x] Descarga individual y ZIP — implementado en `bin-header.jsx` con `fflate`
 
 ### Fase 2 — Runners
 
+> Todo el sistema de runners está pendiente. Los keybindings y comandos de la command palette ya están registrados pero apuntan a handlers vacíos (`editor:toggle-runner`).
+
+- [ ] `src/services/runners.js` — registro pluggable de runners por lenguaje
+- [ ] `src/components/editor/runner-panel.jsx` — panel derecho (ResizablePanel desktop / Drawer mobile), estado en URL `?runner`
 - [ ] Markdown runner
 - [ ] HTML runner + import resolver (`helpers/import-resolver.js`)
-- [ ] JS/TS/JSX/TSX REPL (sucrase)
+- [ ] JS/TS/JSX/TSX REPL (sucrase) + resolución de imports entre archivos
 - [ ] Regex playground (regexp-tree + railroad diagrams)
-- [ ] HTTP runner + proxy
-- [ ] `src/services/runners.js` — registro pluggable de runners por lenguaje
-- [ ] `src/components/editor/runner-panel.jsx` — panel derecho (ResizablePanel desktop / Drawer mobile)
+- [ ] HTTP runner + proxy (`VITE_HTTP_PROXY_URL`)
 
 ### Fase 3 — Polish
 
 - [x] Embed (`/embed/:id`)
 - [x] Expiración de bins (cron job + `expires_at`)
-- [x] Modo admin (`/admin/bins`, `/admin/users`) — con permisos de edición override
+- [x] Modo admin (`/admin/bins`, `/admin/users`) — permisos de edición override, headers sticky
+- [ ] Session export / import JWT — botón en Settings existe pero deshabilitado; `/login` es stub; falta implementar con `jose` + `VITE_SESSION_SECRET`
+- [ ] Admin auth funcional — command palette tiene la UI, falta conectar la lógica (actualmente hace `console.log`)
 - [ ] Lenguajes custom (Arduino, Minecraft, CSV, .env, logs)
-- [ ] Descarga individual y ZIP (`helpers/download.js`, `JSZip`)
 - [ ] Paquetes npm (esm.sh) — `components/system/packages-modal.jsx`
 - [ ] Search widget flotante con drag+snap (`components/system/search-widget.jsx`)
 - [ ] Error boundary BSOD (`components/system/error-boundary.jsx`)
-- [ ] Mobile nav completo + Safari viewport fix
-- [ ] Favicon dinámico (`hooks/use-favicon.js`)
-- [ ] `document.title` dinámico (`hooks/use-document-title.js`)
+- [ ] Favicon dinámico (`hooks/use-favicon.js`) — dot cyan/amarillo/rojo según estado
+- [ ] `document.title` dinámico (`hooks/use-document-title.js`) — prefijos ✏️/💡 fuera de foco
 - [ ] Modo presentación (fullscreen)
+- [ ] Tips en el editor — icono 💡 en status bar → tip aleatorio flotante (los tips existen en `constants/tips.js`, falta el widget en el editor)
 
 ### Fase 4 — Futuras
 
 - [ ] Comentarios inline por línea
 - [ ] Diff view entre archivos o bins
 - [ ] Detección automática de lenguaje
-- [ ] CSS preview, SVG preview
-- [ ] Más temas UI
-- [ ] Perfil público de usuario (`/user/:uuid`) ✅ implementado antes de lo planeado
+- [ ] CSS preview, SVG preview (posiblemente cubierto por runners HTML/Markdown)
+- [ ] Más temas UI (ya hay 6; base sólida para agregar)
