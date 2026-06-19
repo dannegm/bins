@@ -593,7 +593,7 @@ const UserRow = ({ profile, t, formatDate, isMe, isMyIp, onToggleBot, isToggling
 const StatsBar = ({ stats, t }) => {
     const item = (value, label, Icon) => (
         <div className='flex items-center gap-4 rounded-xl border border-border bg-card p-4'>
-            <Icon className='size-12 shrink-0 text-muted-foreground' />
+            <Icon className='size-12 shrink-0 text-muted-foreground' strokeWidth={1} />
             <div className='flex flex-col gap-0.5'>
                 <span className='text-2xl font-semibold tabular-nums text-foreground'>
                     {(value ?? 0).toLocaleString()}
