@@ -308,32 +308,31 @@ const DeleteUserAction = ({ profile, t, formatDate }) => {
         },
     });
 
-    const trigger = (
-        <PopoverTrigger
-            className='flex size-6 cursor-pointer items-center justify-center rounded text-muted-foreground transition-colors hover:text-destructive'
-            title={
-                deletionDate
-                    ? t('admin.users.scheduled_deletion', { date: deletionDate })
-                    : t('admin.users.delete')
-            }
-        >
-            <Trash2 className='size-3.5' />
-        </PopoverTrigger>
-    );
+    const triggerProps = {
+        className:
+            'flex size-6 cursor-pointer items-center justify-center rounded text-muted-foreground transition-colors hover:text-destructive',
+        title: deletionDate
+            ? t('admin.users.scheduled_deletion', { date: deletionDate })
+            : t('admin.users.delete'),
+    };
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
             {deletionDate ? (
                 <TooltipProvider>
                     <Tooltip>
-                        <TooltipTrigger asChild>{trigger}</TooltipTrigger>
+                        <TooltipTrigger render={<PopoverTrigger {...triggerProps} />}>
+                            <Trash2 className='size-3.5' />
+                        </TooltipTrigger>
                         <TooltipContent>
                             {t('admin.users.scheduled_deletion', { date: deletionDate })}
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
             ) : (
-                trigger
+                <PopoverTrigger {...triggerProps}>
+                    <Trash2 className='size-3.5' />
+                </PopoverTrigger>
             )}
             <PopoverContent side='left' align='start' className='w-60'>
                 <PopoverHeader>
@@ -563,18 +562,16 @@ const UserRow = ({ profile, t, formatDate, isMe, isMyIp, onToggleBot, isToggling
                     </RouterLink>
                     <TooltipProvider>
                         <Tooltip>
-                            <TooltipTrigger asChild>
-                                <button
-                                    className='flex size-6 cursor-pointer items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground'
-                                    disabled={isTogglingBot}
-                                    onClick={() => onToggleBot(profile.uuid, !profile.is_bot)}
-                                >
-                                    {profile.is_bot ? (
-                                        <ShieldCheck className='size-3.5' />
-                                    ) : (
-                                        <ShieldAlert className='size-3.5' />
-                                    )}
-                                </button>
+                            <TooltipTrigger
+                                className='flex size-6 cursor-pointer items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground'
+                                disabled={isTogglingBot}
+                                onClick={() => onToggleBot(profile.uuid, !profile.is_bot)}
+                            >
+                                {profile.is_bot ? (
+                                    <ShieldCheck className='size-3.5' />
+                                ) : (
+                                    <ShieldAlert className='size-3.5' />
+                                )}
                             </TooltipTrigger>
                             <TooltipContent>
                                 {profile.is_bot

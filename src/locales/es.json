@@ -13,7 +13,8 @@
         "hint_select": "seleccionar",
         "hint_close": "cerrar",
         "hint_back": "volver",
-        "hint_pick": "elegir"
+        "hint_pick": "elegir",
+        "admin_authenticate": "Autenticarse como admin"
     },
     "sidebar": {
         "home": "Inicio",

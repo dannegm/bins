@@ -41,11 +41,8 @@ const syncProfile = async ({ uuid, name, colorDark, colorLight }) => {
 const initIdentity = async () => {
     let profile = settings.get('user');
 
-    console.log('Initializing user identity with profile:', profile);
-
     if (!profile?.uuid) {
         const uuid = generateUUID();
-        console.log(`Generated new user profile with UUID: ${uuid}`);
         const name = generateName();
         const { colorDark, colorLight } = generateColors();
         profile = { uuid, name, colorDark, colorLight };
