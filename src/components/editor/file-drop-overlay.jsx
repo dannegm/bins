@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FileEdit, ArrowDownToLine, FilePlus } from 'lucide-react';
 import { motion } from 'motion/react';
-import { toast } from 'sonner';
+import { toast } from '@/components/system/toast';
 import { cn } from '@/helpers/utils';
 import { getLanguageByFilename } from '@/constants/languages';
 

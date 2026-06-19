@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
+import { toast } from '@/components/system/toast';
 import { useQueryState, parseAsStringLiteral, parseAsInteger } from 'nuqs';
 import {
     Braces,

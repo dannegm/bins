@@ -4,7 +4,7 @@ import { useNavigate, useRouterState } from '@tanstack/react-router';
 import { nanoid } from 'nanoid';
 import { FilePlus } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { toast } from 'sonner';
+import { toast } from '@/components/system/toast';
 import { supabase } from '@/services/supabase';
 import { createFile } from '@/services/bin-files';
 import { settings } from '@/services/settings';
