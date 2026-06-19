@@ -18,6 +18,7 @@ import { ToastProvider } from '@/providers/toast-provider';
 import { NudgeProvider } from '@/providers/nudge-provider';
 import { NyanCatProvider } from '@/components/system/nyan-cat';
 import { DeviceProvider } from '@/providers/device-provider';
+import { GlobalDropzoneProvider } from '@/providers/global-dropzone-provider';
 
 const CommandsBridge = ({ children }) => {
     useExternalCommands();
@@ -39,6 +40,7 @@ export const Providers = createProviders([
     [CommandsBridge],
     [QueryProvider],
     [ToastProvider],
+    [GlobalDropzoneProvider],
     [CommandPaletteProvider],
     [NyanCatProvider],
 ]);

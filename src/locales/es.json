@@ -295,6 +295,11 @@
         "count_chip": "{{shown}} de {{total}} total",
         "refresh": "Actualizar datos"
     },
+    "global_dropzone": {
+        "hint": "Suelta para crear un bin",
+        "hint_sub": "Se creará un bin nuevo con este archivo",
+        "error_create": "No se pudo crear el bin"
+    },
     "forgotten": {
         "title": "Has sido olvidado",
         "description": "Pediste ser eliminado de esta app. Tus datos han sido borrados permanentemente.",

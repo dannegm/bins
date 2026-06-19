@@ -295,6 +295,11 @@
         "count_chip": "{{shown}} of {{total}} total",
         "refresh": "Refresh data"
     },
+    "global_dropzone": {
+        "hint": "Drop to create a new bin",
+        "hint_sub": "A new bin will be created with this file",
+        "error_create": "Failed to create bin"
+    },
     "forgotten": {
         "title": "You've been forgotten",
         "description": "You requested to be removed from this app. Your data has been permanently deleted.",
