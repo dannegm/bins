@@ -73,6 +73,21 @@ const useAdminUsersStats = () =>
         },
     });
 
+const useMyIpHash = uuid =>
+    useQuery({
+        queryKey: ['my-ip-hash', uuid],
+        queryFn: async () => {
+            const { data, error } = await supabase()
+                .from('profiles')
+                .select('ip_hash')
+                .eq('uuid', uuid)
+                .single();
+            if (error) throw error;
+            return data?.ip_hash ?? null;
+        },
+        enabled: !!uuid,
+    });
+
 const useAdminUsers = ({ page, perPage, filter, sortBy, sortDir, search }) =>
     useQuery({
         queryKey: ['admin-users', page, perPage, filter, sortBy, sortDir, search],
@@ -80,7 +95,7 @@ const useAdminUsers = ({ page, perPage, filter, sortBy, sortDir, search }) =>
             let query = supabase()
                 .from('profiles')
                 .select(
-                    'uuid, name, color_light, color_dark, country, city, user_agent, is_bot, created_at, bins(count)',
+                    'uuid, name, color_light, color_dark, country, city, user_agent, ip_hash, is_bot, created_at, bins(count)',
                     { count: 'exact' },
                 );
 
@@ -219,21 +234,28 @@ const DEVICE_LABELS = {
     unknown: 'Unknown',
 };
 
-const DeviceCell = ({ ua, isBot }) => {
+const DeviceCell = ({ ua, isBot, isMyIp, t }) => {
     const parsed = parseUA(ua);
     const device = isBot ? 'bot' : (parsed.device ?? 'unknown');
     const Icon = DEVICE_ICONS[device] ?? HelpCircle;
     const label = DEVICE_LABELS[device] ?? 'Unknown';
 
     return (
-        <TooltipProvider>
-            <Tooltip>
-                <TooltipTrigger className='cursor-default'>
-                    <Icon className='size-4 text-muted-foreground' />
-                </TooltipTrigger>
-                <TooltipContent>{label}</TooltipContent>
-            </Tooltip>
-        </TooltipProvider>
+        <div className='flex items-center gap-1.5'>
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger className='cursor-default'>
+                        <Icon className='size-4 text-muted-foreground' />
+                    </TooltipTrigger>
+                    <TooltipContent>{label}</TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+            {isMyIp && (
+                <span className='rounded-full bg-brand/10 px-1.5 py-0.5 text-[10px] font-medium text-brand'>
+                    {t('profile.you')}
+                </span>
+            )}
+        </div>
     );
 };
 
@@ -441,7 +463,7 @@ const PerPageSelector = ({ perPage, onPerPage, t }) => (
     </div>
 );
 
-const UserRow = ({ profile, t, formatDate, isMe, onToggleBot, isTogglingBot }) => {
+const UserRow = ({ profile, t, formatDate, isMe, isMyIp, onToggleBot, isTogglingBot }) => {
     const { isDark } = useTheme();
     const color = isDark ? profile.color_dark : profile.color_light;
     const seed = profile.name + profile.uuid;
@@ -505,7 +527,7 @@ const UserRow = ({ profile, t, formatDate, isMe, onToggleBot, isTogglingBot }) =
             </TableCell>
 
             <TableCell>
-                <DeviceCell ua={profile.user_agent} isBot={profile.is_bot} />
+                <DeviceCell ua={profile.user_agent} isBot={profile.is_bot} isMyIp={isMyIp} t={t} />
             </TableCell>
 
             <TableCell>
@@ -609,6 +631,8 @@ export const UsersTable = () => {
     const [perPage, setPerPage] = useQueryState('per_page', parseAsInteger.withDefault(25));
 
     const queryClient = useQueryClient();
+
+    const { data: myIpHash } = useMyIpHash(user?.uuid);
 
     const { data: stats, isFetching: isFetchingStats } = useAdminUsersStats();
     const {
@@ -807,6 +831,7 @@ export const UsersTable = () => {
                                 t={t}
                                 formatDate={formatDate}
                                 isMe={u.uuid === user?.uuid}
+                                isMyIp={!!(myIpHash && u.ip_hash && myIpHash === u.ip_hash)}
                                 onToggleBot={(uuid, is_bot) => toggleBot({ uuid, is_bot })}
                                 isTogglingBot={isTogglingBot}
                             />
