@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useRouterState } from '@tanstack/react-router';
 import { nanoid } from 'nanoid';
 import { FilePlus } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
-import { cn } from '@/helpers/utils';
 import { supabase } from '@/services/supabase';
 import { createFile } from '@/services/bin-files';
 import { settings } from '@/services/settings';
@@ -24,61 +24,29 @@ const readAsText = file =>
         reader.readAsText(file);
     });
 
-const DropOverlay = ({ onDrop, t }) => {
-    const [isHovered, setIsHovered] = useState(false);
-
-    return (
-        <div
-            className={cn(
-                'fixed inset-0 z-[100] flex flex-col backdrop-blur-sm transition-colors',
-                {
-                    'bg-brand/10': isHovered,
-                    'bg-surface/60': !isHovered,
-                },
-            )}
-            onDragEnter={() => setIsHovered(true)}
-            onDragLeave={e => {
-                if (!e.currentTarget.contains(e.relatedTarget)) setIsHovered(false);
-            }}
-            onDragOver={e => e.preventDefault()}
-            onDrop={onDrop}
-        >
-            <div className='flex min-h-0 flex-1 items-center justify-center'>
-                <div className='flex flex-col items-center gap-4 bg-radial from-surface/70 from-40% to-transparent to-70% p-24'>
-                    <div
-                        className={cn(
-                            'flex size-14 items-center justify-center rounded-xl border transition-colors',
-                            {
-                                'border-brand bg-brand/15 text-brand': isHovered,
-                                'border-border/30 bg-surface text-muted-foreground': !isHovered,
-                            },
-                        )}
-                    >
-                        <FilePlus size={24} />
-                    </div>
-                    <div className='flex flex-col items-center gap-1 text-center'>
-                        <span
-                            className={cn('text-md font-semibold transition-colors', {
-                                'text-brand': isHovered,
-                                'text-foreground': !isHovered,
-                            })}
-                        >
-                            {t('global_dropzone.hint')}
-                        </span>
-                        <span
-                            className={cn('text-sm transition-colors', {
-                                'text-brand': isHovered,
-                                'text-foreground': !isHovered,
-                            })}
-                        >
-                            {t('global_dropzone.hint_sub')}
-                        </span>
-                    </div>
-                </div>
+const DropOverlay = ({ onDrop, t }) => (
+    <motion.div
+        className='fixed inset-0 z-100 flex flex-center bg-surface/50 backdrop-blur-sm'
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.15 }}
+        onDragOver={e => e.preventDefault()}
+        onDrop={onDrop}
+    >
+        <div className='absolute inset-4 rounded-xl border-2 border-dashed border-brand/30 pointer-events-none opacity-20 animate-[pulse_1s_infinite]' />
+        <div className='absolute inset-64 rounded-xl border-2 border-dashed border-brand pointer-events-none opacity-20 animate-[pulse_1s_infinite]' />
+        <div className='flex flex-col items-center gap-4'>
+            <div className='flex size-14 items-center justify-center rounded-xl border border-border/30 bg-surface text-muted-foreground'>
+                <FilePlus size={24} />
+            </div>
+            <div className='flex flex-col items-center gap-1 text-center text-foreground'>
+                <span className='text-md font-semibold'>{t('global_dropzone.hint')}</span>
+                <span className='text-sm'>{t('global_dropzone.hint_sub')}</span>
             </div>
         </div>
-    );
-};
+    </motion.div>
+);
 
 export const GlobalDropzoneProvider = ({ children }) => {
     const { t } = useTranslation();
@@ -179,7 +147,9 @@ export const GlobalDropzoneProvider = ({ children }) => {
     return (
         <>
             {children}
-            {isDragging && !isEditorRoute && <DropOverlay onDrop={handleOverlayDrop} t={t} />}
+            <AnimatePresence>
+                {isDragging && !isEditorRoute && <DropOverlay onDrop={handleOverlayDrop} t={t} />}
+            </AnimatePresence>
         </>
     );
 };

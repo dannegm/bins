@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { AnimatePresence } from 'motion/react';
 import { MonacoEditor } from '@/components/editor/monaco-editor';
 import { EditorSkeleton } from '@/components/editor/editor-skeleton';
 import { StatusBar } from '@/components/editor/status-bar';
@@ -150,13 +151,15 @@ export const EditorCore = ({
                 ) : (
                     <EditorSkeleton />
                 )}
-                {isDragging && yContext && !readOnly && (
-                    <FileDropOverlay
-                        yContext={yContext}
-                        onCreateFile={onCreateFile}
-                        onDismiss={() => setIsDragging(false)}
-                    />
-                )}
+                <AnimatePresence>
+                    {isDragging && yContext && !readOnly && (
+                        <FileDropOverlay
+                            yContext={yContext}
+                            onCreateFile={onCreateFile}
+                            onDismiss={() => setIsDragging(false)}
+                        />
+                    )}
+                </AnimatePresence>
             </div>
             <StatusBar
                 language={file.language}
