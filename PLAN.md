@@ -317,6 +317,7 @@ create table bins.profiles (
   city         text,                              -- ej: "Mexico City"
   user_agent   text,                              -- UA completo (browser, OS, device se infieren en runtime)
   is_bot       boolean not null default false,    -- true si webdriver o patrón de bot detectado en UA
+  is_admin     boolean not null default false,    -- true si el usuario tiene permisos de admin (solo editable desde DB)
   created_at   timestamptz not null default now(),
   updated_at   timestamptz default now()
 );
@@ -406,7 +407,8 @@ create policy "bin_collaborators: permitir todo"
 ### Índices
 
 ```sql
-create index if not exists idx_profiles_is_bot on bins.profiles (is_bot);
+create index if not exists idx_profiles_is_bot   on bins.profiles (is_bot);
+create index if not exists idx_profiles_is_admin on bins.profiles (is_admin);
 ```
 
 ### Cron jobs de limpieza
@@ -1481,7 +1483,8 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA bins GRANT ALL ON SEQUENCES
 - [x] Habilitar `pg_cron` desde Dashboard → Database → Extensions
 - [x] Registrar cron job de limpieza de bins expirados
 - [x] Agregar columnas de fingerprint a `bins.profiles` — `ip_hash`, `country`, `city`, `user_agent`, `is_bot` (el código las usa via upsert en `identity-provider.jsx`)
-- [ ] Crear índice `idx_profiles_is_bot`
+- [x] Crear índice `idx_profiles_is_bot` — incluido en `db.sql`
+- [x] Agregar columna `is_admin` a `bins.profiles` — migration 005
 - [ ] Registrar cron job de borrado de bots
 - [x] Habilitar Realtime para las tablas necesarias
 

@@ -26,6 +26,7 @@ create table bins.profiles (
   city         text,                              -- ej: "Mexico City"
   user_agent   text,                              -- UA completo (browser, OS, device se infieren en runtime)
   is_bot       boolean not null default false,    -- true si webdriver o patrón de bot detectado en UA
+  is_admin     boolean not null default false,    -- true si el usuario tiene permisos de admin (solo editable desde DB)
   created_at   timestamptz not null default now(),
   updated_at   timestamptz default now()
 );
@@ -116,7 +117,8 @@ create policy "bin_collaborators: permitir todo"
 -- Índices
 -- -----------------------------------------------------------------------------
 
-create index if not exists idx_profiles_is_bot on bins.profiles (is_bot);
+create index if not exists idx_profiles_is_bot   on bins.profiles (is_bot);
+create index if not exists idx_profiles_is_admin on bins.profiles (is_admin);
 
 
 -- -----------------------------------------------------------------------------

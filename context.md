@@ -40,6 +40,7 @@ bins.profiles (
   city         text,                             -- e.g. "Mexico City"
   user_agent   text,                             -- full UA string
   is_bot       boolean NOT NULL DEFAULT false,   -- true if webdriver or bot UA pattern
+  is_admin     boolean NOT NULL DEFAULT false,   -- true if admin; only settable directly in DB
   created_at   timestamptz NOT NULL DEFAULT now(),
   updated_at   timestamptz DEFAULT now()
 )
