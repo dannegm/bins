@@ -11,6 +11,16 @@ export const registerCollaborator = async (binId, userId) => {
     if (error) throw error;
 };
 
+export const removeCollaborator = async (binId, userId) => {
+    const { error } = await supabase()
+        .from('bin_collaborators')
+        .delete()
+        .eq('bin_id', binId)
+        .eq('user_id', userId);
+
+    if (error) throw error;
+};
+
 export const clearCollaborators = async binId => {
     const { error } = await supabase()
         .from('bin_collaborators')

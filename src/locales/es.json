@@ -53,6 +53,10 @@
             "delete_description": "Esto eliminará permanentemente el bin y todos sus archivos. No se puede deshacer.",
             "delete_cancel": "Cancelar",
             "delete_confirm": "Eliminar",
+            "unlink_title": "¿Salir del bin?",
+            "unlink_description": "Serás eliminado de la lista de colaboradores. Puedes volver a acceder si alguien te comparte el enlace de nuevo.",
+            "unlink_cancel": "Cancelar",
+            "unlink_confirm": "Salir",
             "visibility_public": "Público",
             "visibility_unlisted": "Sin listar",
             "visibility_private": "Privado"

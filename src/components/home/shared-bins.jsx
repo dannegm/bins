@@ -43,11 +43,11 @@ export const SharedBins = ({ view, onViewChange }) => {
             {view === 'grid' ? (
                 <div className='grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4'>
                     {bins.map(bin => (
-                        <BinCard key={bin.id} bin={bin} />
+                        <BinCard key={bin.id} bin={bin} canUnlink />
                     ))}
                 </div>
             ) : (
-                <BinList bins={bins} />
+                <BinList bins={bins} canUnlink />
             )}
         </div>
     );

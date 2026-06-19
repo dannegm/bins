@@ -13,6 +13,7 @@ import {
     Link as LinkIcon,
     Lock,
     LockOpen,
+    LogOut,
     Trash2,
 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -25,6 +26,7 @@ import { LangDot } from '@/components/bins/lang-dot';
 import { useIdentity } from '@/hooks/use-identity';
 import { useAdmin } from '@/hooks/use-admin';
 import { deleteBin } from '@/services/bins';
+import { removeCollaborator } from '@/services/bin-collaborators';
 import { Button } from '@/ui/button';
 import {
     Popover,
@@ -102,7 +104,14 @@ export const VisibilityBadge = ({ visibility, t }) => {
     );
 };
 
-const AccessBadge = ({ bin, t, canDelete }) => {
+const invalidateAllBinQueries = queryClient => {
+    queryClient.invalidateQueries({ queryKey: ['bins'] });
+    queryClient.invalidateQueries({ queryKey: ['shared-bins'] });
+    queryClient.invalidateQueries({ queryKey: ['profile-bins'] });
+    queryClient.invalidateQueries({ queryKey: ['profile-shared-with-me'] });
+};
+
+const AccessBadge = ({ bin, t, canDelete, canUnlink, userId }) => {
     const queryClient = useQueryClient();
     const [open, setOpen] = useState(false);
 
@@ -110,8 +119,15 @@ const AccessBadge = ({ bin, t, canDelete }) => {
         mutationFn: () => deleteBin(bin.id),
         onSuccess: () => {
             setOpen(false);
-            queryClient.invalidateQueries({ queryKey: ['bins'] });
-            queryClient.invalidateQueries({ queryKey: ['profile-bins'] });
+            invalidateAllBinQueries(queryClient);
+        },
+    });
+
+    const { mutate: unlink, isPending: isUnlinking } = useMutation({
+        mutationFn: () => removeCollaborator(bin.id, userId),
+        onSuccess: () => {
+            setOpen(false);
+            invalidateAllBinQueries(queryClient);
         },
     });
 
@@ -133,9 +149,17 @@ const AccessBadge = ({ bin, t, canDelete }) => {
         </span>
     );
 
-    if (!canDelete) {
+    if (!canDelete && !canUnlink) {
         return badge;
     }
+
+    const icon = canDelete ? <Trash2 className='size-3.5' /> : <LogOut className='size-3.5' />;
+    const triggerTitle = canDelete ? t('bins.card.delete_title') : t('bins.card.unlink_title');
+    const triggerDesc = canDelete ? t('bins.card.delete_description') : t('bins.card.unlink_description');
+    const triggerCancel = canDelete ? t('bins.card.delete_cancel') : t('bins.card.unlink_cancel');
+    const triggerConfirm = canDelete ? t('bins.card.delete_confirm') : t('bins.card.unlink_confirm');
+    const onConfirm = canDelete ? remove : unlink;
+    const isPendingAction = canDelete ? isPending : isUnlinking;
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -149,7 +173,7 @@ const AccessBadge = ({ bin, t, canDelete }) => {
                             e.stopPropagation();
                         }}
                     >
-                        <Trash2 className='size-3.5' />
+                        {icon}
                     </PopoverTrigger>
                 </div>
             </div>
@@ -163,8 +187,8 @@ const AccessBadge = ({ bin, t, canDelete }) => {
                 }}
             >
                 <PopoverHeader>
-                    <PopoverTitle>{t('bins.card.delete_title')}</PopoverTitle>
-                    <PopoverDescription>{t('bins.card.delete_description')}</PopoverDescription>
+                    <PopoverTitle>{triggerTitle}</PopoverTitle>
+                    <PopoverDescription>{triggerDesc}</PopoverDescription>
                 </PopoverHeader>
                 <div className='flex gap-2 pt-1'>
                     <Button
@@ -173,20 +197,20 @@ const AccessBadge = ({ bin, t, canDelete }) => {
                         className='flex-1'
                         onClick={() => setOpen(false)}
                     >
-                        {t('bins.card.delete_cancel')}
+                        {triggerCancel}
                     </Button>
                     <Button
                         variant='destructive'
                         size='sm'
                         className='flex-1'
-                        disabled={isPending}
+                        disabled={isPendingAction}
                         onClick={e => {
                             e.preventDefault();
                             e.stopPropagation();
-                            remove();
+                            onConfirm();
                         }}
                     >
-                        {t('bins.card.delete_confirm')}
+                        {triggerConfirm}
                     </Button>
                 </div>
             </PopoverContent>
@@ -194,7 +218,7 @@ const AccessBadge = ({ bin, t, canDelete }) => {
     );
 };
 
-export const BinCard = ({ bin }) => {
+export const BinCard = ({ bin, canUnlink = false }) => {
     const { t, i18n } = useTranslation();
     const { user } = useIdentity();
     const { isAdmin } = useAdmin();
@@ -228,7 +252,7 @@ export const BinCard = ({ bin }) => {
                     <span className='truncate text-sm font-medium text-card-foreground'>
                         {bin.title || t('bins.card.untitled')}
                     </span>
-                    <AccessBadge bin={bin} t={t} canDelete={canDelete} />
+                    <AccessBadge bin={bin} t={t} canDelete={canDelete} canUnlink={!canDelete && canUnlink} userId={user?.uuid} />
                 </div>
 
                 <div className='flex items-center gap-3 text-xs text-muted-foreground'>
@@ -262,8 +286,7 @@ const RowDeleteButton = ({ bin, t }) => {
         mutationFn: () => deleteBin(bin.id),
         onSuccess: () => {
             setOpen(false);
-            queryClient.invalidateQueries({ queryKey: ['bins'] });
-            queryClient.invalidateQueries({ queryKey: ['profile-bins'] });
+            invalidateAllBinQueries(queryClient);
         },
     });
 
@@ -319,7 +342,56 @@ const RowDeleteButton = ({ bin, t }) => {
     );
 };
 
-const BinRow = ({ bin }) => {
+const RowUnlinkButton = ({ bin, userId, t }) => {
+    const queryClient = useQueryClient();
+    const [open, setOpen] = useState(false);
+
+    const { mutate: unlink, isPending } = useMutation({
+        mutationFn: () => removeCollaborator(bin.id, userId),
+        onSuccess: () => {
+            setOpen(false);
+            invalidateAllBinQueries(queryClient);
+        },
+    });
+
+    return (
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger
+                className='flex size-5 items-center justify-center rounded text-muted-foreground transition-colors hover:text-destructive [&>svg]:size-3.5'
+                onClick={e => { e.preventDefault(); e.stopPropagation(); }}
+            >
+                <LogOut />
+            </PopoverTrigger>
+            <PopoverContent
+                side='bottom'
+                align='end'
+                className='w-60'
+                onClick={e => { e.preventDefault(); e.stopPropagation(); }}
+            >
+                <PopoverHeader>
+                    <PopoverTitle>{t('bins.card.unlink_title')}</PopoverTitle>
+                    <PopoverDescription>{t('bins.card.unlink_description')}</PopoverDescription>
+                </PopoverHeader>
+                <div className='flex gap-2 pt-1'>
+                    <Button variant='outline' size='sm' className='flex-1' onClick={() => setOpen(false)}>
+                        {t('bins.card.unlink_cancel')}
+                    </Button>
+                    <Button
+                        variant='destructive'
+                        size='sm'
+                        className='flex-1'
+                        disabled={isPending}
+                        onClick={e => { e.preventDefault(); e.stopPropagation(); unlink(); }}
+                    >
+                        {t('bins.card.unlink_confirm')}
+                    </Button>
+                </div>
+            </PopoverContent>
+        </Popover>
+    );
+};
+
+const BinRow = ({ bin, canUnlink = false }) => {
     const { t, i18n } = useTranslation();
     const { user } = useIdentity();
     const { isAdmin } = useAdmin();
@@ -380,17 +452,20 @@ const BinRow = ({ bin }) => {
             <td className='whitespace-nowrap px-2 py-2.5'>
                 <VisibilityBadge visibility={bin.visibility} t={t} />
             </td>
-            <td className='pr-4 py-2.5'>{canDelete && <RowDeleteButton bin={bin} t={t} />}</td>
+            <td className='pr-4 py-2.5'>
+                {canDelete && <RowDeleteButton bin={bin} t={t} />}
+                {!canDelete && canUnlink && <RowUnlinkButton bin={bin} userId={user?.uuid} t={t} />}
+            </td>
         </tr>
     );
 };
 
-export const BinList = ({ bins }) => (
+export const BinList = ({ bins, canUnlink = false }) => (
     <div className='overflow-hidden rounded-xl border border-border'>
         <table className='w-full border-collapse'>
             <tbody>
                 {bins.map(bin => (
-                    <BinRow key={bin.id} bin={bin} />
+                    <BinRow key={bin.id} bin={bin} canUnlink={canUnlink} />
                 ))}
             </tbody>
         </table>

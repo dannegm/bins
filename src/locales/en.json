@@ -53,6 +53,10 @@
             "delete_description": "This will permanently delete the bin and all its files. This cannot be undone.",
             "delete_cancel": "Cancel",
             "delete_confirm": "Delete",
+            "unlink_title": "Leave bin?",
+            "unlink_description": "You'll be removed from the collaborators list. You can still access it if the link is shared with you again.",
+            "unlink_cancel": "Cancel",
+            "unlink_confirm": "Leave",
             "visibility_public": "Public",
             "visibility_unlisted": "Unlisted",
             "visibility_private": "Private"
