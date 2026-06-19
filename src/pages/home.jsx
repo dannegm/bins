@@ -1,3 +1,4 @@
+import { useQueryState, parseAsString } from 'nuqs';
 import { Layout } from '@/components/layout/layout';
 import { Footer } from '@/components/layout/footer';
 import { TipsCarousel } from '@/components/system/tips-carousel';
@@ -9,15 +10,16 @@ import { useSettings } from '@/hooks/use-settings';
 export const HomePage = () => {
     const [myBinsView, setMyBinsView] = useSettings('binView.myBins');
     const [sharedBinsView, setSharedBinsView] = useSettings('binView.sharedBins');
+    const [search, setSearch] = useQueryState('search', parseAsString.withDefault(''));
 
     return (
         <Layout>
             <div className='flex h-full flex-col'>
                 <div className='flex flex-1 flex-col gap-8 overflow-y-auto p-8'>
-                    <HomeHeader />
+                    <HomeHeader search={search} onSearchChange={setSearch} />
                     <TipsCarousel />
-                    <MyBins view={myBinsView} onViewChange={setMyBinsView} />
-                    <SharedBins view={sharedBinsView} onViewChange={setSharedBinsView} />
+                    <MyBins view={myBinsView} onViewChange={setMyBinsView} search={search} />
+                    <SharedBins view={sharedBinsView} onViewChange={setSharedBinsView} search={search} />
                 </div>
                 <Footer />
             </div>

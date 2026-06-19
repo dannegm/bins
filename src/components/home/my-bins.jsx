@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, Code2, GitFork, Globe, Sparkles } from 'lucide-react';
+import { useQueryState, parseAsInteger } from 'nuqs';
+import { Plus, Code2, GitFork, Globe, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/helpers/utils';
 import { VISIBILITY } from '@/constants/visibility';
@@ -19,6 +20,8 @@ import {
 } from '@/ui/empty';
 import { BinCard, BinList, ViewToggle } from '@/components/bins/bin-card';
 
+const PER_PAGE = 12;
+
 const useMyBins = uuid =>
     useQuery({
         queryKey: ['bins', uuid],
@@ -33,6 +36,22 @@ const useMyBins = uuid =>
         },
         enabled: !!uuid,
     });
+
+const applyFilter = (bins, filter) => {
+    if (filter === 'public') return bins.filter(b => b.visibility === VISIBILITY.PUBLIC);
+    if (filter === 'private') return bins.filter(b => b.visibility !== VISIBILITY.PUBLIC);
+    return bins;
+};
+
+const applySearch = (bins, search) => {
+    const q = search.toLowerCase().trim();
+    if (!q) return bins;
+    return bins.filter(
+        b =>
+            (b.title ?? '').toLowerCase().includes(q) ||
+            b.bin_files?.some(f => (f.language ?? '').toLowerCase().includes(q)),
+    );
+};
 
 const VisibilityFilter = ({ filter, onChange, t }) => {
     const options = [
@@ -58,6 +77,31 @@ const VisibilityFilter = ({ filter, onChange, t }) => {
                     {opt.label}
                 </button>
             ))}
+        </div>
+    );
+};
+
+const Pagination = ({ page, totalPages, onPage }) => {
+    if (totalPages <= 1) return null;
+    return (
+        <div className='flex items-center justify-center gap-2 pt-2'>
+            <button
+                disabled={page <= 1}
+                onClick={() => onPage(page - 1)}
+                className='flex size-7 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-surface hover:text-foreground disabled:pointer-events-none disabled:opacity-40'
+            >
+                <ChevronLeft className='size-3.5' />
+            </button>
+            <span className='text-xs tabular-nums text-muted-foreground'>
+                {page} / {totalPages}
+            </span>
+            <button
+                disabled={page >= totalPages}
+                onClick={() => onPage(page + 1)}
+                className='flex size-7 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-surface hover:text-foreground disabled:pointer-events-none disabled:opacity-40'
+            >
+                <ChevronRight className='size-3.5' />
+            </button>
         </div>
     );
 };
@@ -134,34 +178,38 @@ const MyBinsEmpty = ({ t, view, onViewChange, filter, onFilterChange }) => (
     </MyBinsLayout>
 );
 
-const applyFilter = (bins, filter) => {
-    if (filter === 'public') return bins.filter(b => b.visibility === VISIBILITY.PUBLIC);
-    if (filter === 'private') return bins.filter(b => b.visibility !== VISIBILITY.PUBLIC);
-    return bins;
-};
-
-export const MyBins = ({ view, onViewChange }) => {
+export const MyBins = ({ view, onViewChange, search = '' }) => {
     const { t } = useTranslation();
     const { user } = useIdentity();
     const [filter, setFilter] = useState('all');
+    const [page, setPage] = useQueryState('my_page', parseAsInteger.withDefault(1));
     const { data: bins = [], isLoading } = useMyBins(user?.uuid);
 
-    if (isLoading) return <MyBinsLoading t={t} view={view} onViewChange={onViewChange} filter={filter} onFilterChange={setFilter} />;
-    if (bins.length === 0) return <MyBinsEmpty t={t} view={view} onViewChange={onViewChange} filter={filter} onFilterChange={setFilter} />;
+    const handleFilterChange = val => {
+        setFilter(val);
+        setPage(1);
+    };
 
-    const filtered = applyFilter(bins, filter);
+    if (isLoading) return <MyBinsLoading t={t} view={view} onViewChange={onViewChange} filter={filter} onFilterChange={handleFilterChange} />;
+    if (bins.length === 0) return <MyBinsEmpty t={t} view={view} onViewChange={onViewChange} filter={filter} onFilterChange={handleFilterChange} />;
+
+    const filtered = applySearch(applyFilter(bins, filter), search);
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+    const safePage = Math.min(page, totalPages);
+    const paginated = filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE);
 
     return (
-        <MyBinsLayout t={t} view={view} onViewChange={onViewChange} filter={filter} onFilterChange={setFilter} count={filtered.length}>
+        <MyBinsLayout t={t} view={view} onViewChange={onViewChange} filter={filter} onFilterChange={handleFilterChange} count={filtered.length}>
             {view === 'grid' ? (
                 <div className='grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4'>
-                    {filtered.map(bin => (
+                    {paginated.map(bin => (
                         <BinCard key={bin.id} bin={bin} />
                     ))}
                 </div>
             ) : (
-                <BinList bins={filtered} />
+                <BinList bins={paginated} />
             )}
+            <Pagination page={safePage} totalPages={totalPages} onPage={setPage} />
         </MyBinsLayout>
     );
 };

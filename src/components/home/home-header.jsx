@@ -36,7 +36,7 @@ const CopyUUID = ({ uuid, color, className }) => {
     );
 };
 
-export const HomeHeader = () => {
+export const HomeHeader = ({ search, onSearchChange }) => {
     const { t } = useTranslation();
     const { user } = useIdentity();
     const { isDark } = useTheme();
@@ -48,7 +48,11 @@ export const HomeHeader = () => {
                     <InputGroupAddon align='inline-start'>
                         <Search />
                     </InputGroupAddon>
-                    <InputGroupInput placeholder={t('home.header.search_placeholder')} />
+                    <InputGroupInput
+                        value={search}
+                        onChange={e => onSearchChange(e.target.value)}
+                        placeholder={t('home.header.search_placeholder')}
+                    />
                 </InputGroup>
 
                 <Button render={<Link to='/new' />} nativeButton={false} className='shrink-0'>
