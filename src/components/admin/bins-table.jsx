@@ -1,11 +1,13 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Link as RouterLink } from '@tanstack/react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { useQueryState, parseAsStringLiteral, parseAsInteger } from 'nuqs';
 import {
+    Braces,
     Eye,
     EyeOff,
     File,
@@ -21,6 +23,8 @@ import {
     ArrowUpDown,
     ArrowUp,
     ArrowDown,
+    ChevronLeft,
+    ChevronRight,
 } from 'lucide-react';
 import { supabase } from '@/services/supabase';
 import { deleteBin } from '@/services/bins';
@@ -46,19 +50,63 @@ import {
 
 const dateFnsLocales = { en: enUS, es };
 
-const useAdminBins = () =>
+const SORT_KEYS = ['updated_at', 'title', 'author', 'views', 'status', 'files', 'languages'];
+const PER_PAGE_OPTIONS = [10, 25, 50];
+
+const useAdminBinsStats = () =>
     useQuery({
-        queryKey: ['admin-bins'],
+        queryKey: ['admin-bins-stats'],
         queryFn: async () => {
-            const { data, error } = await supabase()
-                .from('bins')
-                .select('*, profiles(uuid, name, color_light, color_dark), bin_files(language)')
-                .order('updated_at', { ascending: false })
-                .limit(500);
-            if (error) throw error;
-            return data ?? [];
+            const [
+                { count: total },
+                { count: readonly },
+                { count: totalFiles },
+                { data: viewData },
+            ] = await Promise.all([
+                supabase().from('bins').select('*', { count: 'exact', head: true }),
+                supabase().from('bins').select('*', { count: 'exact', head: true }).eq('is_readonly', true),
+                supabase().from('bin_files').select('*', { count: 'exact', head: true }),
+                supabase().from('bins').select('views'),
+            ]);
+            const totalViews = (viewData ?? []).reduce((sum, b) => sum + (b.views ?? 0), 0);
+            return {
+                total: total ?? 0,
+                readonly: readonly ?? 0,
+                totalFiles: totalFiles ?? 0,
+                totalViews,
+            };
         },
-        refetchOnWindowFocus: false,
+    });
+
+const useAdminBins = ({ page, perPage, sortBy, sortDir, search }) =>
+    useQuery({
+        queryKey: ['admin-bins', page, perPage, sortBy, sortDir, search],
+        queryFn: async () => {
+            let query = supabase()
+                .from('bins')
+                .select(
+                    '*, profiles(uuid, name, color_light, color_dark), bin_files(language)',
+                    { count: 'exact' },
+                );
+
+            const q = search.trim();
+            if (q) query = query.or(`title.ilike.%${q}%,id.ilike.%${q}%`);
+
+            const ascending = sortDir === 'asc';
+            if (sortBy === 'title') query = query.order('title', { ascending, nullsFirst: false });
+            else if (sortBy === 'author')
+                query = query.order('name', { ascending, referencedTable: 'profiles' });
+            else if (sortBy === 'views') query = query.order('views', { ascending });
+            else if (sortBy === 'status') query = query.order('is_readonly', { ascending });
+            else query = query.order('updated_at', { ascending });
+
+            const from = (page - 1) * perPage;
+            query = query.range(from, from + perPage - 1);
+
+            const { data, error, count } = await query;
+            if (error) throw error;
+            return { rows: data ?? [], total: count ?? 0 };
+        },
     });
 
 const LangStack = ({ files }) => {
@@ -165,6 +213,7 @@ const DeleteAction = ({ bin, t }) => {
         onSuccess: () => {
             setOpen(false);
             queryClient.invalidateQueries({ queryKey: ['admin-bins'] });
+            queryClient.invalidateQueries({ queryKey: ['admin-bins-stats'] });
         },
     });
 
@@ -334,109 +383,181 @@ const SortableHead = ({ column, label, sortBy, sortDir, onSort, className, align
     );
 };
 
-const StatsBar = ({ bins, t }) => {
-    const totalViews = bins.reduce((sum, b) => sum + (b.views ?? 0), 0);
-    const totalFiles = bins.reduce((sum, b) => sum + (b.bin_files?.length ?? 0), 0);
-    const readonlyCount = bins.filter(b => b.is_readonly).length;
-
-    const item = (value, label) => (
-        <div className='flex flex-col gap-0.5 rounded-xl border border-border bg-card p-4'>
-            <span className='text-2xl font-semibold tabular-nums text-foreground'>
-                {value.toLocaleString()}
-            </span>
-            <span className='text-xs text-muted-foreground'>{label}</span>
+const StatsBar = ({ stats, t }) => {
+    const item = (value, label, Icon) => (
+        <div className='flex items-center gap-4 rounded-xl border border-border bg-card p-4'>
+            <Icon className='size-12 shrink-0 text-muted-foreground' />
+            <div className='flex flex-col gap-0.5'>
+                <span className='text-2xl font-semibold tabular-nums text-foreground'>
+                    {(value ?? 0).toLocaleString()}
+                </span>
+                <span className='text-xs text-muted-foreground'>{label}</span>
+            </div>
         </div>
     );
 
     return (
         <div className='mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4'>
-            {item(bins.length, t('admin.stats.total_bins'))}
-            {item(totalViews, t('admin.stats.total_views'))}
-            {item(totalFiles, t('admin.stats.total_files'))}
-            {item(readonlyCount, t('admin.stats.readonly_bins'))}
+            {item(stats?.total, t('admin.stats.total_bins'), Braces)}
+            {item(stats?.totalViews, t('admin.stats.total_views'), Eye)}
+            {item(stats?.totalFiles, t('admin.stats.total_files'), File)}
+            {item(stats?.readonly, t('admin.stats.readonly_bins'), Lock)}
         </div>
     );
 };
 
-const getSortValue = (bin, key) => {
-    if (key === 'title') return (bin.title ?? '').toLowerCase();
-    if (key === 'author') return (bin.profiles?.name ?? '').toLowerCase();
-    if (key === 'languages') {
-        const seen = new Set();
-        return (bin.bin_files ?? []).filter(f => {
-            const id = getLanguage(f.language).id;
-            if (seen.has(id)) return false;
-            seen.add(id);
-            return true;
-        }).length;
-    }
-    if (key === 'files') return bin.bin_files?.length ?? 0;
-    if (key === 'views') return bin.views ?? 0;
-    if (key === 'status') return bin.is_readonly ? 1 : 0;
-    if (key === 'updated_at') return bin.updated_at ?? '';
-    return '';
+const getPageNumbers = (page, totalPages) => {
+    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    if (page <= 4) return [1, 2, 3, 4, 5, '…', totalPages];
+    if (page >= totalPages - 3)
+        return [1, '…', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    return [1, '…', page - 1, page, page + 1, '…', totalPages];
 };
+
+const PageNumbers = ({ page, totalPages, onPage }) => {
+    if (totalPages <= 1) return null;
+    const pages = getPageNumbers(page, totalPages);
+
+    return (
+        <div className='flex items-center gap-0.5'>
+            <button
+                disabled={page <= 1}
+                onClick={() => onPage(page - 1)}
+                className='flex size-7 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-surface hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40'
+            >
+                <ChevronLeft className='size-3.5' />
+            </button>
+            {pages.map((p, i) =>
+                p === '…' ? (
+                    <span
+                        key={`ellipsis-${i}`}
+                        className='flex size-7 items-center justify-center text-xs text-muted-foreground'
+                    >
+                        …
+                    </span>
+                ) : (
+                    <button
+                        key={p}
+                        onClick={() => onPage(p)}
+                        className={cn(
+                            'flex size-7 items-center justify-center rounded text-xs font-medium transition-colors',
+                            {
+                                'bg-brand text-white': p === page,
+                                'text-muted-foreground hover:bg-surface hover:text-foreground':
+                                    p !== page,
+                            },
+                        )}
+                    >
+                        {p}
+                    </button>
+                ),
+            )}
+            <button
+                disabled={page >= totalPages}
+                onClick={() => onPage(page + 1)}
+                className='flex size-7 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-surface hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40'
+            >
+                <ChevronRight className='size-3.5' />
+            </button>
+        </div>
+    );
+};
+
+const PerPageSelector = ({ perPage, onPerPage, t }) => (
+    <div className='flex h-7 items-center gap-2'>
+        <span className='text-xs text-muted-foreground'>{t('admin.users.per_page')}</span>
+        <div className='flex items-center gap-0.5'>
+            {PER_PAGE_OPTIONS.map(n => (
+                <button
+                    key={n}
+                    onClick={() => onPerPage(n)}
+                    className={cn('h-5 rounded px-2 text-xs font-medium transition-colors', {
+                        'bg-brand text-white': perPage === n,
+                        'text-muted-foreground hover:text-foreground': perPage !== n,
+                    })}
+                >
+                    {n}
+                </button>
+            ))}
+        </div>
+    </div>
+);
 
 export const BinsTable = () => {
     const { t, i18n } = useTranslation();
-    const [search, setSearch] = useState('');
-    const [sortBy, setSortBy] = useState('updated_at');
-    const [sortDir, setSortDir] = useState('desc');
-    const { data: bins = [], isLoading, isFetching, refetch } = useAdminBins();
     const locale = dateFnsLocales[i18n.language] ?? enUS;
     const formatDate = iso => format(new Date(iso), t('formats.date.short_time'), { locale });
+
+    const [search, setSearch] = useState('');
+    const [sortBy, setSortBy] = useQueryState(
+        'sort',
+        parseAsStringLiteral(SORT_KEYS).withDefault('updated_at'),
+    );
+    const [sortDir, setSortDir] = useQueryState(
+        'dir',
+        parseAsStringLiteral(['asc', 'desc']).withDefault('desc'),
+    );
+    const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
+    const [perPage, setPerPage] = useQueryState('per_page', parseAsInteger.withDefault(25));
+
+    const queryClient = useQueryClient();
+
+    const { data: stats, isFetching: isFetchingStats } = useAdminBinsStats();
+    const {
+        data: { rows = [], total = 0 } = {},
+        isLoading,
+        isFetching,
+    } = useAdminBins({ page, perPage, sortBy, sortDir, search });
+
+    const handleRefresh = () => {
+        queryClient.invalidateQueries({ queryKey: ['admin-bins'] });
+        queryClient.invalidateQueries({ queryKey: ['admin-bins-stats'] });
+    };
+
+    const totalPages = Math.ceil(total / perPage);
 
     const handleSort = col => {
         if (col === sortBy) setSortDir(prev => (prev === 'asc' ? 'desc' : 'asc'));
         else { setSortBy(col); setSortDir('desc'); }
+        setPage(1);
     };
-
-    const filtered = useMemo(() => {
-        const q = search.toLowerCase().trim();
-        let result = q
-            ? bins.filter(
-                  b =>
-                      b.title?.toLowerCase().includes(q) ||
-                      b.id.toLowerCase().includes(q) ||
-                      b.profiles?.name?.toLowerCase().includes(q),
-              )
-            : [...bins];
-
-        result.sort((a, b) => {
-            const av = getSortValue(a, sortBy);
-            const bv = getSortValue(b, sortBy);
-            const cmp = av < bv ? -1 : av > bv ? 1 : 0;
-            return sortDir === 'asc' ? cmp : -cmp;
-        });
-
-        return result;
-    }, [bins, search, sortBy, sortDir]);
+    const handleSearch = val => {
+        setSearch(val);
+        setPage(1);
+    };
+    const handlePerPage = val => {
+        setPerPage(val);
+        setPage(1);
+    };
 
     return (
         <div>
-            <StatsBar bins={bins} t={t} />
+            <StatsBar stats={stats} t={t} />
 
             <div className='mb-4 flex items-center gap-3'>
                 <button
-                    onClick={() => refetch()}
-                    disabled={isFetching}
+                    onClick={handleRefresh}
+                    disabled={isFetching || isFetchingStats}
                     title={t('admin.refresh')}
                     className='flex size-7 items-center justify-center rounded-lg border border-border bg-surface text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50 [&>svg]:size-3.5'
                 >
-                    <RefreshCw className={isFetching ? 'animate-spin' : ''} />
+                    <RefreshCw className={isFetching || isFetchingStats ? 'animate-spin' : ''} />
                 </button>
                 <div className='relative max-w-sm flex-1'>
                     <Search className='pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground' />
                     <Input
                         value={search}
-                        onChange={e => setSearch(e.target.value)}
+                        onChange={e => handleSearch(e.target.value)}
                         placeholder={t('admin.bins.search_placeholder')}
-                        className='pl-8'
+                        className='h-7 pl-8'
                     />
                 </div>
                 <span className='whitespace-nowrap rounded-full border border-border bg-surface px-2.5 py-0.5 text-xs text-muted-foreground'>
-                    {t('admin.count_chip', { shown: filtered.length, total: bins.length })}
+                    {t('admin.count_chip', { shown: rows.length, total })}
                 </span>
+                <div className='ml-auto'>
+                    <PerPageSelector perPage={perPage} onPerPage={handlePerPage} t={t} />
+                </div>
             </div>
 
             <div className='overflow-hidden rounded-xl border border-border'>
@@ -459,29 +580,30 @@ export const BinsTable = () => {
                     <TableBody>
                         {isLoading && (
                             <TableRow>
-                                <TableCell
-                                    colSpan={9}
-                                    className='h-32 text-center text-muted-foreground'
-                                >
+                                <TableCell colSpan={9} className='h-32 text-center text-muted-foreground'>
                                     {t('admin.loading')}
                                 </TableCell>
                             </TableRow>
                         )}
-                        {!isLoading && filtered.length === 0 && (
+                        {!isLoading && rows.length === 0 && (
                             <TableRow>
-                                <TableCell
-                                    colSpan={9}
-                                    className='h-32 text-center text-muted-foreground'
-                                >
+                                <TableCell colSpan={9} className='h-32 text-center text-muted-foreground'>
                                     {t('admin.bins.empty')}
                                 </TableCell>
                             </TableRow>
                         )}
-                        {filtered.map(bin => (
+                        {rows.map(bin => (
                             <BinRow key={bin.id} bin={bin} t={t} formatDate={formatDate} />
                         ))}
                     </TableBody>
                 </Table>
+            </div>
+
+            <div className='flex items-center justify-between pt-4'>
+                <div>
+                    <PageNumbers page={page} totalPages={totalPages} onPage={setPage} />
+                </div>
+                <PerPageSelector perPage={perPage} onPerPage={handlePerPage} t={t} />
             </div>
         </div>
     );

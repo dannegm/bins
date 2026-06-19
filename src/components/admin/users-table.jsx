@@ -6,6 +6,7 @@ import { useQueryState, parseAsStringLiteral, parseAsInteger } from 'nuqs';
 import { format } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
 import {
+    Braces,
     Search,
     ExternalLink,
     Copy,
@@ -18,6 +19,7 @@ import {
     HelpCircle,
     Bot,
     User,
+    Users,
     ShieldCheck,
     ShieldAlert,
     ArrowUpDown,
@@ -444,14 +446,14 @@ const PageNumbers = ({ page, totalPages, onPage }) => {
 };
 
 const PerPageSelector = ({ perPage, onPerPage, t }) => (
-    <div className='flex items-center gap-2'>
+    <div className='flex h-7 items-center gap-2'>
         <span className='text-xs text-muted-foreground'>{t('admin.users.per_page')}</span>
-        <div className='flex items-center gap-1'>
+        <div className='flex items-center gap-0.5'>
             {PER_PAGE_OPTIONS.map(n => (
                 <button
                     key={n}
                     onClick={() => onPerPage(n)}
-                    className={cn('rounded px-2 py-0.5 text-xs font-medium transition-colors', {
+                    className={cn('h-5 rounded px-2 text-xs font-medium transition-colors', {
                         'bg-brand text-white': perPage === n,
                         'text-muted-foreground hover:text-foreground': perPage !== n,
                     })}
@@ -589,21 +591,24 @@ const UserRow = ({ profile, t, formatDate, isMe, isMyIp, onToggleBot, isToggling
 };
 
 const StatsBar = ({ stats, t }) => {
-    const item = (value, label) => (
-        <div className='flex flex-col gap-0.5 rounded-xl border border-border bg-card p-4'>
-            <span className='text-2xl font-semibold tabular-nums text-foreground'>
-                {(value ?? 0).toLocaleString()}
-            </span>
-            <span className='text-xs text-muted-foreground'>{label}</span>
+    const item = (value, label, Icon) => (
+        <div className='flex items-center gap-4 rounded-xl border border-border bg-card p-4'>
+            <Icon className='size-12 shrink-0 text-muted-foreground' />
+            <div className='flex flex-col gap-0.5'>
+                <span className='text-2xl font-semibold tabular-nums text-foreground'>
+                    {(value ?? 0).toLocaleString()}
+                </span>
+                <span className='text-xs text-muted-foreground'>{label}</span>
+            </div>
         </div>
     );
 
     return (
         <div className='mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4'>
-            {item(stats?.total, t('admin.stats.total_users'))}
-            {item(stats?.totalBins, t('admin.stats.total_bins'))}
-            {item(stats?.humans, t('admin.stats.human_users'))}
-            {item(stats?.bots, t('admin.stats.bot_users'))}
+            {item(stats?.total, t('admin.stats.total_users'), Users)}
+            {item(stats?.totalBins, t('admin.stats.total_bins'), Braces)}
+            {item(stats?.humans, t('admin.stats.human_users'), User)}
+            {item(stats?.bots, t('admin.stats.bot_users'), Bot)}
         </div>
     );
 };
@@ -699,17 +704,17 @@ export const UsersTable = () => {
                         value={search}
                         onChange={e => handleSearch(e.target.value)}
                         placeholder={t('admin.users.search_placeholder')}
-                        className='pl-8'
+                        className='h-7 pl-8'
                     />
                 </div>
 
-                <div className='flex items-center gap-1 rounded-lg border border-border bg-surface p-1'>
+                <div className='flex h-7 items-center gap-0.5 rounded-lg border border-border bg-surface px-1'>
                     {FILTER_KEYS.map(key => (
                         <button
                             key={key}
                             onClick={() => handleFilter(key)}
                             className={cn(
-                                'rounded-md px-3 py-1 text-xs font-medium transition-colors',
+                                'h-5 rounded px-3 text-xs font-medium transition-colors',
                                 {
                                     'bg-brand text-white': filter === key,
                                     'text-muted-foreground hover:text-foreground': filter !== key,
