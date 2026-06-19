@@ -8,6 +8,7 @@ import { QueryProvider } from './query-provider';
 import { BusProvider } from './bus-provider';
 import { IdentityProvider } from './identity-provider';
 import { ThemeProvider } from './theme-provider';
+import { ForgottenProvider } from './forgotten-provider';
 import { EditorEventsProvider } from './editor-events-provider';
 import { useExternalCommands } from '@/hooks/use-external-commands';
 import { useGlobalCommands } from '@/hooks/use-global-commands';
@@ -28,14 +29,15 @@ const CommandsBridge = ({ children }) => {
 export const Providers = createProviders([
     [HeadlessGuard],
     [DeviceProvider],
+    [ThemeProvider],
     [NuqsAdapter],
+    [ForgottenProvider],
     [IdentityProvider],
     [BusProvider],
     [EditorEventsProvider],
     [NudgeProvider],
     [CommandsBridge],
     [QueryProvider],
-    [ThemeProvider],
     [ToastProvider],
     [CommandPaletteProvider],
     [NyanCatProvider],

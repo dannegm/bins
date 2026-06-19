@@ -169,6 +169,17 @@
             "cancel": "Cancel",
             "confirm": "Reset everything"
         },
+        "forget": {
+            "title": "Right to be forgotten",
+            "description": "Permanently delete your profile and all your bins from the database. This cannot be undone.",
+            "button": "Forget me",
+            "modal_title": "Are you sure?",
+            "modal_description": "This will permanently delete your profile and all your bins. Type <phrase>forget me</phrase> below to confirm.",
+            "confirm_phrase": "forget me",
+            "confirm_placeholder": "Type \"forget me\" to confirm",
+            "cancel": "Cancel",
+            "confirm": "Delete everything"
+        },
         "import_export": {
             "title": "Import & Export",
             "share_settings_label": "Share settings",
@@ -283,6 +294,11 @@
         },
         "count_chip": "{{shown}} of {{total}} total",
         "refresh": "Refresh data"
+    },
+    "forgotten": {
+        "title": "You've been forgotten",
+        "description": "You requested to be removed from this app. Your data has been permanently deleted.",
+        "cta": "Start fresh"
     },
     "profile": {
         "you": "you",

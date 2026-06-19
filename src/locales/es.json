@@ -169,6 +169,17 @@
             "cancel": "Cancelar",
             "confirm": "Restablecer todo"
         },
+        "forget": {
+            "title": "Derecho al olvido",
+            "description": "Elimina permanentemente tu perfil y todos tus bins de la base de datos. Esta acción no se puede deshacer.",
+            "button": "Olvidarme",
+            "modal_title": "¿Estás seguro?",
+            "modal_description": "Esto eliminará permanentemente tu perfil y todos tus bins. Escribe <phrase>olvídame</phrase> abajo para confirmar.",
+            "confirm_phrase": "olvídame",
+            "confirm_placeholder": "Escribe \"olvídame\" para confirmar",
+            "cancel": "Cancelar",
+            "confirm": "Eliminar todo"
+        },
         "import_export": {
             "title": "Importar y Exportar",
             "share_settings_label": "Compartir configuración",
@@ -283,6 +294,11 @@
         },
         "count_chip": "{{shown}} de {{total}} total",
         "refresh": "Actualizar datos"
+    },
+    "forgotten": {
+        "title": "Has sido olvidado",
+        "description": "Pediste ser eliminado de esta app. Tus datos han sido borrados permanentemente.",
+        "cta": "Volver a empezar"
     },
     "profile": {
         "you": "tú",

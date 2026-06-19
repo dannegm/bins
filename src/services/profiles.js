@@ -1,5 +1,10 @@
 import { supabase } from './supabase';
 
+export const deleteProfile = async uuid => {
+    const { error } = await supabase().from('profiles').delete().eq('uuid', uuid);
+    if (error) throw error;
+};
+
 export const getProfile = async uuid => {
     const { data } = await supabase()
         .from('profiles')
