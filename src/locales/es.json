@@ -71,7 +71,8 @@
             "keybindings": "Atajos",
             "prettier": "Prettier",
             "ai_completions": "Completado IA",
-            "import_export": "Importar y Exportar"
+            "import_export": "Importar y Exportar",
+            "danger_zone": "Zona de peligro"
         },
         "identity": {
             "title": "Identidad",
@@ -159,6 +160,9 @@
             "show": "Mostrar",
             "hide": "Ocultar",
             "key_notice": "Tu clave de API se almacena localmente en este navegador y nunca se envía a ningún servidor que no sea el proveedor de IA."
+        },
+        "danger_zone": {
+            "title": "Zona de peligro"
         },
         "reset": {
             "title": "Restablecer toda la configuración",

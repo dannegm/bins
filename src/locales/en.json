@@ -71,7 +71,8 @@
             "keybindings": "Keybindings",
             "prettier": "Prettier",
             "ai_completions": "AI Completions",
-            "import_export": "Import & Export"
+            "import_export": "Import & Export",
+            "danger_zone": "Danger zone"
         },
         "identity": {
             "title": "Identity",
@@ -159,6 +160,9 @@
             "show": "Show",
             "hide": "Hide",
             "key_notice": "Your API key is stored locally in this browser and never sent to any server other than the AI provider."
+        },
+        "danger_zone": {
+            "title": "Danger zone"
         },
         "reset": {
             "title": "Reset all settings",

@@ -11,6 +11,7 @@ import { KeybindingsSection } from '@/components/settings/keybindings-section';
 import { PrettierSection } from '@/components/settings/prettier-section';
 import { AiCompletionsSection } from '@/components/settings/ai-completions-section';
 import { ImportExportSection } from '@/components/settings/import-export-section';
+import { SectionHeading } from '@/components/settings/settings-ui';
 import { defaultSettings } from '@/constants/default-settings';
 import { settings } from '@/services/settings';
 import { deleteProfile } from '@/services/profiles';
@@ -155,7 +156,7 @@ export const SettingsPage = () => {
 
     return (
         <Layout>
-            <div className='flex h-full flex-col'>
+            <div className='flex h-dvh flex-col'>
                 <header className='shrink-0 border-b border-border px-6 py-4 sm:px-8'>
                     <h1 className='text-sm font-semibold text-foreground'>{t('settings.title')}</h1>
                 </header>
@@ -172,29 +173,33 @@ export const SettingsPage = () => {
                                 <AiCompletionsSection />
                                 <ImportExportSection />
 
-                                <div className='flex flex-col gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-5'>
-                                    <div>
-                                        <p className='text-sm font-medium text-foreground'>
-                                            {t('settings.reset.title')}
-                                        </p>
-                                        <p className='mt-0.5 text-xs text-muted-foreground'>
-                                            {t('settings.reset.description')}
-                                        </p>
+                                <section id='settings-danger-zone'>
+                                    <SectionHeading title={t('settings.danger_zone.title')} />
+                                    <div className='flex flex-col gap-4'>
+                                        <div className='flex flex-col gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-5'>
+                                            <div>
+                                                <p className='text-sm font-medium text-foreground'>
+                                                    {t('settings.reset.title')}
+                                                </p>
+                                                <p className='mt-0.5 text-xs text-muted-foreground'>
+                                                    {t('settings.reset.description')}
+                                                </p>
+                                            </div>
+                                            <ResetConfirmModal t={t} />
+                                        </div>
+                                        <div className='flex flex-col gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-5'>
+                                            <div>
+                                                <p className='text-sm font-medium text-foreground'>
+                                                    {t('settings.forget.title')}
+                                                </p>
+                                                <p className='mt-0.5 text-xs text-muted-foreground'>
+                                                    {t('settings.forget.description')}
+                                                </p>
+                                            </div>
+                                            <ForgetMeModal t={t} />
+                                        </div>
                                     </div>
-                                    <ResetConfirmModal t={t} />
-                                </div>
-
-                                <div className='flex flex-col gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-5'>
-                                    <div>
-                                        <p className='text-sm font-medium text-foreground'>
-                                            {t('settings.forget.title')}
-                                        </p>
-                                        <p className='mt-0.5 text-xs text-muted-foreground'>
-                                            {t('settings.forget.description')}
-                                        </p>
-                                    </div>
-                                    <ForgetMeModal t={t} />
-                                </div>
+                                </section>
                             </div>
                         </div>
                     </div>

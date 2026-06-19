@@ -10,6 +10,7 @@ const NAV_SECTIONS = [
     'prettier',
     'ai-completions',
     'import-export',
+    'danger-zone',
 ];
 
 const NavItem = ({ sectionId, active, label, onClick }) => (
