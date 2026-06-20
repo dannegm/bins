@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { DynamicIcon } from 'lucide-react/dynamic';
 import { ChevronRight, X, ShieldCheck } from 'lucide-react';
 import { useRouterState } from '@tanstack/react-router';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Kbd, KbdGroup } from '@/ui/kbd';
 import { useEvents } from '@/providers/bus-provider';
@@ -12,6 +13,9 @@ import { useSettings } from '@/hooks/use-settings';
 import { defaultSettings } from '@/constants/default-settings';
 import { formatBinding } from '@/hooks/use-hotkey';
 import { createCommands, createPages } from '@/constants/commands';
+import { settings } from '@/services/settings';
+import { claimAdmin } from '@/services/profiles';
+import { toast } from '@/components/system/toast';
 
 const matchesScope = (scope, pathname) => scope === '*' || scope.some(s => pathname.startsWith(s));
 
@@ -19,6 +23,7 @@ export const CommandPalette = () => {
     const { t } = useTranslation();
     const { isOpen, close } = useCommandPalette();
     const { emit } = useEvents();
+    const queryClient = useQueryClient();
     const pathname = useRouterState({ select: s => s.location.pathname });
     const [appKeybindings] = useSettings('appKeybindings', defaultSettings.appKeybindings);
     const [pages, setPages] = useState([]);
@@ -199,7 +204,15 @@ export const CommandPalette = () => {
                                         <Command.Item
                                             value='admin-authenticate'
                                             forceMount
-                                            onSelect={() => run(() => console.log('[admin:authenticate]', adminPassword))}
+                                            onSelect={() => run(() => {
+                                                const uuid = settings.get('user.uuid');
+                                                claimAdmin(uuid, adminPassword)
+                                                    .then(() => {
+                                                        queryClient.invalidateQueries({ queryKey: ['admin', uuid] });
+                                                        toast.success(t('command_palette.admin_success'));
+                                                    })
+                                                    .catch(() => toast.error(t('command_palette.admin_error')));
+                                            })}
                                             className='flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors aria-selected:bg-accent aria-selected:text-accent-foreground [&>svg]:size-4'
                                         >
                                             <div className='text-muted-foreground [&>svg]:size-4'>

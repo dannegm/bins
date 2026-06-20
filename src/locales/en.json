@@ -14,7 +14,9 @@
         "hint_close": "close",
         "hint_back": "back",
         "hint_pick": "pick",
-        "admin_authenticate": "Authenticate as admin"
+        "admin_authenticate": "Authenticate as admin",
+        "admin_success": "Admin access granted",
+        "admin_error": "Whatever you attempted, it failed."
     },
     "sidebar": {
         "home": "Home",

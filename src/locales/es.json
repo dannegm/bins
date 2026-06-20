@@ -14,7 +14,9 @@
         "hint_close": "cerrar",
         "hint_back": "volver",
         "hint_pick": "elegir",
-        "admin_authenticate": "Autenticarse como admin"
+        "admin_authenticate": "Autenticarse como admin",
+        "admin_success": "Acceso admin otorgado",
+        "admin_error": "Lo que sea que intentaste, falló."
     },
     "sidebar": {
         "home": "Inicio",

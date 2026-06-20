@@ -1,4 +1,16 @@
 import { supabase } from './supabase';
+import { signJWT } from '@/helpers/jwt';
+
+const ADMIN_CLAIM_URL = import.meta.env.VITE_ADMIN_CLAIM_URL ?? 'https://endpoints.hckr.mx/bins/admin/claim';
+
+export const claimAdmin = async (uuid, password) => {
+    const token = await signJWT({ uuid, password });
+    const res = await fetch(ADMIN_CLAIM_URL, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) throw new Error('Invalid credentials');
+};
 
 export const deleteProfile = async uuid => {
     const { error } = await supabase().from('profiles').delete().eq('uuid', uuid);

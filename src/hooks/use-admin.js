@@ -1,9 +1,23 @@
-import { useLocalStorage } from '@/hooks/use-local-storage';
+import { useQuery } from '@tanstack/react-query';
+import { settings } from '@/services/settings';
+import { supabase } from '@/services/supabase';
 
-const ADMIN_KEY = import.meta.env.VITE_ADMIN_KEY;
+const fetchIsAdmin = async uuid => {
+    if (!uuid) return false;
+    const { data } = await supabase()
+        .from('profiles')
+        .select('is_admin')
+        .eq('uuid', uuid)
+        .maybeSingle();
+    return data?.is_admin ?? false;
+};
 
 export const useAdmin = () => {
-    const [adminKey] = useLocalStorage('admin:key', null);
-
-    return { isAdmin: !!(ADMIN_KEY && adminKey === ADMIN_KEY) };
+    const uuid = settings.get('user.uuid');
+    const { data: isAdmin = false } = useQuery({
+        queryKey: ['admin', uuid],
+        queryFn: () => fetchIsAdmin(uuid),
+        staleTime: 1000 * 60 * 5,
+    });
+    return { isAdmin };
 };
