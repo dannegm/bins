@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { AnimatePresence } from 'motion/react';
 import { MonacoEditor } from '@/components/editor/monaco-editor';
+import { ErrorBoundary } from '@/components/system/error-boundary';
 import { EditorSkeleton } from '@/components/editor/editor-skeleton';
 import { StatusBar } from '@/components/editor/status-bar';
 import { FileDropOverlay } from '@/components/editor/file-drop-overlay';
@@ -136,18 +137,20 @@ export const EditorCore = ({
         >
             <div className='relative min-h-0 flex-1'>
                 {yContext ? (
-                    <MonacoEditor
-                        yText={yContext.yText}
-                        clientId={user?.uuid}
-                        language={file.language}
-                        readOnly={readOnly}
-                        peers={activePeers}
-                        revealPosition={revealPosition}
-                        onRevealed={onRevealed}
-                        onSave={() => scheduleSave(yContext.yText.toString())}
-                        onCursorChange={handleCursorChange}
-                        onSelectionChange={onSelectionChange}
-                    />
+                    <ErrorBoundary>
+                        <MonacoEditor
+                            yText={yContext.yText}
+                            clientId={user?.uuid}
+                            language={file.language}
+                            readOnly={readOnly}
+                            peers={activePeers}
+                            revealPosition={revealPosition}
+                            onRevealed={onRevealed}
+                            onSave={() => scheduleSave(yContext.yText.toString())}
+                            onCursorChange={handleCursorChange}
+                            onSelectionChange={onSelectionChange}
+                        />
+                    </ErrorBoundary>
                 ) : (
                     <EditorSkeleton />
                 )}

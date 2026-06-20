@@ -2,6 +2,11 @@
     "name": "bins",
     "private": true,
     "version": "0.1.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/dannegm/bins"
+    },
+    "homepage": "https://bins.hckr.mx",
     "type": "module",
     "scripts": {
         "dev": "vite",
@@ -14,6 +19,7 @@
         "@dicebear/core": "^9.4.2",
         "@dicebear/rings": "^9.4.2",
         "@fontsource-variable/geist": "^5.2.9",
+        "@fontsource-variable/geist-mono": "^5.2.8",
         "@supabase/supabase-js": "^2.108.1",
         "@tanstack/react-query": "^5.101.0",
         "@tanstack/react-router": "^1.170.15",
