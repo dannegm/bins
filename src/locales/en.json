@@ -405,5 +405,14 @@
             "error_type": "Multimedia files are not supported",
             "error_read": "Could not read the file"
         }
+    },
+    "login": {
+        "loading": "Importing session…",
+        "success": "Session imported",
+        "success_redirect": "Taking you home…",
+        "error_title": "Something went wrong",
+        "error_expired": "This session link has expired.",
+        "error_invalid": "This session link is invalid.",
+        "go_home": "Go home"
     }
 }

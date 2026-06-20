@@ -1,10 +1,14 @@
-import { SignJWT } from 'jose';
+import { SignJWT, jwtVerify } from 'jose';
 
-export const signJWT = async payload => {
-    const secret = import.meta.env.VITE_SESSION_SECRET;
-    const secretBytes = new TextEncoder().encode(secret);
+const getSecret = () => new TextEncoder().encode(import.meta.env.VITE_SESSION_SECRET);
 
-    return new SignJWT(payload)
-        .setProtectedHeader({ alg: 'HS256' })
-        .sign(secretBytes);
+export const signJWT = async (payload, options = {}) => {
+    let builder = new SignJWT(payload).setProtectedHeader({ alg: 'HS256' });
+    if (options.expiresIn) builder = builder.setExpirationTime(options.expiresIn);
+    return builder.sign(getSecret());
+};
+
+export const verifyJWT = async token => {
+    const { payload } = await jwtVerify(token, getSecret());
+    return payload;
 };

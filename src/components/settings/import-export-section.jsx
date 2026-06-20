@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Check, Copy, Link2 } from 'lucide-react';
+import { Check, Copy, Link2, LogIn } from 'lucide-react';
 import { useCopyToClipboard } from '@uidotdev/usehooks';
 import { settings } from '@/services/settings';
+import { signJWT } from '@/helpers/jwt';
 import { Input } from '@/ui/input';
 import { Button } from '@/ui/button';
 import { SectionHeading, SettingGroup, SettingRow } from './settings-ui';
@@ -30,9 +31,14 @@ const applyConfigFromUrl = rawUrl => {
 };
 
 const ShareSettingsCard = ({ t }) => {
-    const [copiedText, copy] = useCopyToClipboard();
-    const url = buildSettingsUrl();
-    const copied = copiedText === url;
+    const [, copy] = useCopyToClipboard();
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = () => {
+        copy(buildSettingsUrl());
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
 
     return (
         <div className='flex flex-col gap-3 rounded-xl border border-border bg-card p-4'>
@@ -44,12 +50,7 @@ const ShareSettingsCard = ({ t }) => {
                     {t('settings.import_export.share_settings_description')}
                 </p>
             </div>
-            <Button
-                variant='outline'
-                size='sm'
-                onClick={() => copy(url)}
-                className='self-start gap-2'
-            >
+            <Button variant='outline' size='sm' onClick={handleCopy} className='self-start gap-2'>
                 {copied ? <Check className='size-3.5' /> : <Link2 className='size-3.5' />}
                 {copied
                     ? t('settings.import_export.copied')
@@ -103,28 +104,66 @@ const ApplySettingsCard = ({ t }) => {
     );
 };
 
+const ExportSessionCard = ({ t }) => {
+    const [, copy] = useCopyToClipboard();
+    const [link, setLink] = useState('');
+    const [copied, setCopied] = useState(false);
+
+    const generate = async () => {
+        const user = settings.get('user');
+        const token = await signJWT({ user }, { expiresIn: '15m' });
+        const url = `${window.location.origin}/login?token=${token}`;
+        setLink(url);
+        copy(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    return (
+        <div className='flex flex-col gap-3 rounded-xl border border-border bg-card p-4'>
+            <div>
+                <p className='text-sm font-medium text-foreground'>
+                    {t('settings.import_export.export_session_label')}
+                </p>
+                <p className='mt-0.5 text-xs text-muted-foreground'>
+                    {t('settings.import_export.export_session_description')}
+                </p>
+            </div>
+            {link && (
+                <Input value={link} readOnly className='font-mono text-xs text-muted-foreground' />
+            )}
+            <Button variant='outline' size='sm' onClick={generate} className='self-start gap-2'>
+                {copied ? <Check className='size-3.5' /> : <LogIn className='size-3.5' />}
+                {copied
+                    ? t('settings.import_export.copied')
+                    : t('settings.import_export.export_session_button')}
+            </Button>
+        </div>
+    );
+};
+
 export const ImportExportSection = () => {
     const { t } = useTranslation();
+
+    useEffect(() => {
+        const config = new URLSearchParams(window.location.search).get('config');
+        if (!config) return;
+        try {
+            const parsed = JSON.parse(decodeURIComponent(config));
+            const current = settings.getAll();
+            settings.setAll({ ...current, ...parsed });
+        } catch {
+            // malformed config — ignore
+        }
+    }, []);
 
     return (
         <section id='settings-import-export'>
             <SectionHeading title={t('settings.import_export.title')} />
             <div className='flex flex-col gap-3'>
+                <ExportSessionCard t={t} />
                 <ShareSettingsCard t={t} />
                 <ApplySettingsCard t={t} />
-                <div className='flex flex-col gap-3 rounded-xl border border-border bg-card p-4 opacity-60'>
-                    <div>
-                        <p className='text-sm font-medium text-foreground'>
-                            {t('settings.import_export.export_session_label')}
-                        </p>
-                        <p className='mt-0.5 text-xs text-muted-foreground'>
-                            {t('settings.import_export.export_session_description')}
-                        </p>
-                    </div>
-                    <Button variant='outline' size='sm' disabled className='self-start'>
-                        {t('settings.import_export.export_session_button')}
-                    </Button>
-                </div>
             </div>
         </section>
     );

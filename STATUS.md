@@ -41,6 +41,9 @@ Todo lo planificado más extras:
 - ✅ Expiración de bins
 - ✅ Descarga individual y ZIP
 - ✅ Mobile nav y layout responsivo (pulido continuo)
+- ✅ Admin auth — JWT HS256 con `jose`, POST a `/bins/admin/claim`, `useAdmin` consulta `profiles.is_admin`
+- ✅ RLS policies granulares — admin bypass total, identidad por `x-client-id`
+- ✅ Session export/import — JWT firmado con exp 15m, `/login` con view animada, auto-apply de config por URL
 
 ---
 
@@ -62,8 +65,6 @@ El bloque más grande. Los keybindings y comandos de la palette ya están regist
 
 | Feature | Estado | Notas |
 |---|---|---|
-| Session export/import JWT | Botón deshabilitado, `/login` es stub | Requiere `jose` + `VITE_SESSION_SECRET` |
-| Admin auth funcional | UI lista en command palette | Solo hace `console.log` del password |
 | Error boundary BSOD | No existe | `components/system/error-boundary.jsx` |
 | Search widget drag+snap | No existe | `components/system/search-widget.jsx` |
 | Paquetes npm modal | No existe | `components/system/packages-modal.jsx` |
@@ -72,10 +73,6 @@ El bloque más grande. Los keybindings y comandos de la palette ya están regist
 | Tips widget en editor | Tips existen en `constants/tips.js` | Falta icono 💡 en status bar + widget flotante |
 | Lenguajes custom | No implementados | Arduino, CSV, .env, logs, Minecraft |
 
-### Supabase pendiente
-
-- [ ] Índice `idx_profiles_is_bot`
-- [ ] Cron job de borrado de bots (lunes 3am, cascada a bins)
 
 ---
 
@@ -84,7 +81,5 @@ El bloque más grande. Los keybindings y comandos de la palette ya están regist
 **En orden de impacto:**
 
 1. **Runners (Fase 2 completa)** — es la feature distintiva del producto, lo que lo diferencia de un Pastebin normal
-2. **Session export JWT** — login page + botón en settings + generación del JWT
-3. **Admin auth funcional** — pequeño, solo conectar el password del command palette a lógica real
-4. **Favicon + document.title** — pulido de calidad que se nota mucho en uso diario
+2. **Favicon + document.title** — pulido de calidad que se nota mucho en uso diario
 5. **Error boundary BSOD** — safety net antes de producción seria

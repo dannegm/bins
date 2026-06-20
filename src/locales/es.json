@@ -405,5 +405,14 @@
             "error_type": "Los archivos multimedia no están soportados",
             "error_read": "No se pudo leer el archivo"
         }
+    },
+    "login": {
+        "loading": "Importando sesión…",
+        "success": "Sesión importada",
+        "success_redirect": "Redirigiendo a inicio…",
+        "error_title": "Algo salió mal",
+        "error_expired": "Este enlace de sesión ha expirado.",
+        "error_invalid": "Este enlace de sesión no es válido.",
+        "go_home": "Ir al inicio"
     }
 }
