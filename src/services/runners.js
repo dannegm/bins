@@ -1,5 +1,6 @@
-import { Eye, Table, MessageCircle } from 'lucide-react';
+import { Eye, Table, MessageCircle, Globe } from 'lucide-react';
 import { MarkdownRunner } from '@/components/runners/markdown-runner';
+import { HtmlRunner } from '@/components/runners/html-runner';
 import { CsvRunner } from '@/components/runners/csv-runner';
 import { WhatsAppRunner } from '@/components/runners/whatsapp-runner';
 
@@ -10,6 +11,13 @@ const RUNNERS = [
         icon: Eye,
         component: MarkdownRunner,
         languages: ['markdown'],
+    },
+    {
+        id: 'html',
+        label: 'Preview',
+        icon: Globe,
+        component: HtmlRunner,
+        languages: ['html'],
     },
     {
         id: 'csv',
