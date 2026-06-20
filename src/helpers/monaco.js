@@ -5,12 +5,15 @@ import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker';
 import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker';
 import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
 import { MONACO_THEMES } from '@/constants/themes';
+import { registerCustomLanguages } from '@/helpers/monaco-languages';
 
 export const defineEditorThemes = () => {
     for (const theme of MONACO_THEMES) {
         monaco.editor.defineTheme(`bins-${theme.id}`, theme.definition);
     }
 };
+
+export { registerCustomLanguages };
 
 export const initMonacoWorkers = () => {
     self.MonacoEnvironment = {

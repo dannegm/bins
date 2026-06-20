@@ -215,6 +215,14 @@ export const LANGUAGES = {
         icon: 'devicon-csharp-plain',
         color: '#239120',
     },
+    csv: {
+        id: 'csv',
+        monacoId: 'csv',
+        label: 'CSV',
+        extensions: ['.csv'],
+        icon: null,
+        color: '#217346',
+    },
     plaintext: {
         id: 'plaintext',
         monacoId: 'plaintext',
@@ -257,6 +265,7 @@ const MIME_TYPES = {
     c: 'text/x-csrc',
     cpp: 'text/x-c++src',
     csharp: 'text/x-csharp',
+    csv: 'text/csv',
     plaintext: 'text/plain',
 };
 

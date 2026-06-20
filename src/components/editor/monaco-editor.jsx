@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import * as monaco from 'monaco-editor';
 import { desaturate, parseToRgb } from 'polished';
-import { initMonacoWorkers, defineEditorThemes } from '@/helpers/monaco';
+import { initMonacoWorkers, defineEditorThemes, registerCustomLanguages } from '@/helpers/monaco';
 import { useSettings } from '@/hooks/use-settings';
 import { useIdentity } from '@/hooks/use-identity';
 import { useTheme } from '@/providers/theme-provider';
@@ -30,6 +30,7 @@ const contrastColor = color => {
 
 initMonacoWorkers();
 defineEditorThemes();
+registerCustomLanguages();
 
 export const MonacoEditor = ({
     yText,
