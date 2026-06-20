@@ -413,6 +413,9 @@
             "csv": {
                 "threshold": "Threshold",
                 "threshold_desc": "0 = exact match only · 100 = anything goes"
+            },
+            "whatsapp": {
+                "empty": "No messages"
             }
         }
     },

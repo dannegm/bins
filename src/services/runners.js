@@ -1,6 +1,7 @@
-import { Eye, Table } from 'lucide-react';
+import { Eye, Table, MessageCircle } from 'lucide-react';
 import { MarkdownRunner } from '@/components/runners/markdown-runner';
 import { CsvRunner } from '@/components/runners/csv-runner';
+import { WhatsAppRunner } from '@/components/runners/whatsapp-runner';
 
 const RUNNERS = [
     {
@@ -16,6 +17,13 @@ const RUNNERS = [
         icon: Table,
         component: CsvRunner,
         languages: ['csv'],
+    },
+    {
+        id: 'whatsapp',
+        label: 'Preview',
+        icon: MessageCircle,
+        component: WhatsAppRunner,
+        languages: ['whatsapp'],
     },
 ];
 

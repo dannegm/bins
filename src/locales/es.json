@@ -413,6 +413,9 @@
             "csv": {
                 "threshold": "Umbral",
                 "threshold_desc": "0 = solo coincidencias exactas · 100 = todo coincide"
+            },
+            "whatsapp": {
+                "empty": "Sin mensajes"
             }
         }
     },

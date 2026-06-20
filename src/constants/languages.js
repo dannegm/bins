@@ -223,6 +223,14 @@ export const LANGUAGES = {
         icon: null,
         color: '#217346',
     },
+    whatsapp: {
+        id: 'whatsapp',
+        monacoId: 'whatsapp',
+        label: 'WhatsApp',
+        extensions: ['.wachat'],
+        icon: null,
+        color: '#25d366',
+    },
     plaintext: {
         id: 'plaintext',
         monacoId: 'plaintext',
@@ -266,6 +274,7 @@ const MIME_TYPES = {
     cpp: 'text/x-c++src',
     csharp: 'text/x-csharp',
     csv: 'text/csv',
+    whatsapp: 'text/x-whatsapp',
     plaintext: 'text/plain',
 };
 
