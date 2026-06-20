@@ -70,8 +70,8 @@ export const UserPage = () => {
                         <ProfileBins bins={displayBins} isLoading={binsLoading} view={profileBinsView} onViewChange={setProfileBinsView} />
                         <ProfileSharedBins bins={sharedBins} view={profileSharedBinsView} onViewChange={setProfileSharedBinsView} />
                     </div>
+                    <Footer />
                 </div>
-                <Footer />
             </div>
         </Layout>
     );

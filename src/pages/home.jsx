@@ -20,8 +20,8 @@ export const HomePage = () => {
                     <TipsCarousel />
                     <MyBins view={myBinsView} onViewChange={setMyBinsView} search={search} />
                     <SharedBins view={sharedBinsView} onViewChange={setSharedBinsView} search={search} />
+                    <Footer />
                 </div>
-                <Footer />
             </div>
         </Layout>
     );

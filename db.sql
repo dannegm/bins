@@ -154,8 +154,14 @@ create policy "bins: anyone can insert"
 
 create policy "bins: update when not readonly"
   on bins.bins for update
-  using (is_readonly = false)
-  with check (is_readonly = false);
+  using (
+    is_readonly = false
+    or author_id::text = current_setting('request.headers', true)::json->>'x-client-id'
+  )
+  with check (
+    is_readonly = false
+    or author_id::text = current_setting('request.headers', true)::json->>'x-client-id'
+  );
 
 create policy "bins: owner can delete"
   on bins.bins for delete
@@ -186,7 +192,10 @@ create policy "bin_files: insert inherits bin readonly"
     exists (
       select 1 from bins.bins b
       where b.id = bin_id
-      and b.is_readonly = false
+      and (
+        b.is_readonly = false
+        or b.author_id::text = current_setting('request.headers', true)::json->>'x-client-id'
+      )
     )
   );
 
@@ -196,7 +205,10 @@ create policy "bin_files: update inherits bin readonly"
     exists (
       select 1 from bins.bins b
       where b.id = bin_id
-      and b.is_readonly = false
+      and (
+        b.is_readonly = false
+        or b.author_id::text = current_setting('request.headers', true)::json->>'x-client-id'
+      )
     )
   );
 

@@ -65,7 +65,7 @@ El bloque más grande. Los keybindings y comandos de la palette ya están regist
 
 | Feature | Estado | Notas |
 |---|---|---|
-| Error boundary BSOD | No existe | `components/system/error-boundary.jsx` |
+| Error boundary BSOD | ✅ | BSOD estilo Win10, `@container` queries, stop codes, faulting symbol, report issue |
 | Search widget drag+snap | No existe | `components/system/search-widget.jsx` |
 | Paquetes npm modal | No existe | `components/system/packages-modal.jsx` |
 | Favicon dinámico | No existe | `hooks/use-favicon.js` — dot según estado |
@@ -82,4 +82,4 @@ El bloque más grande. Los keybindings y comandos de la palette ya están regist
 
 1. **Runners (Fase 2 completa)** — es la feature distintiva del producto, lo que lo diferencia de un Pastebin normal
 2. **Favicon + document.title** — pulido de calidad que se nota mucho en uso diario
-5. **Error boundary BSOD** — safety net antes de producción seria
+5. ~~**Error boundary BSOD**~~ ✅

@@ -131,7 +131,7 @@ const MyBinsLayout = ({ t, view, onViewChange, filter, onFilterChange, count, ch
 const MyBinsLoading = ({ t, view, onViewChange, filter, onFilterChange }) => (
     <MyBinsLayout t={t} view={view} onViewChange={onViewChange} filter={filter} onFilterChange={onFilterChange}>
         {view === 'grid' ? (
-            <div className='grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4'>
                 {Array.from({ length: 4 }).map((_, i) => (
                     <Skeleton key={i} className='h-24 rounded-xl' />
                 ))}
@@ -201,7 +201,7 @@ export const MyBins = ({ view, onViewChange, search = '' }) => {
     return (
         <MyBinsLayout t={t} view={view} onViewChange={onViewChange} filter={filter} onFilterChange={handleFilterChange} count={filtered.length}>
             {view === 'grid' ? (
-                <div className='grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4'>
+                <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4'>
                     {paginated.map(bin => (
                         <BinCard key={bin.id} bin={bin} />
                     ))}

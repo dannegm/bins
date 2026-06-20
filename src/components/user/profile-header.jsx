@@ -107,7 +107,7 @@ export const ProfileHeader = ({ profile, bins, isLoading }) => {
 
     return (
         <div
-            className='relative flex flex-col shrink-0 items-center gap-6 overflow-hidden border-b border-border px-8 py-12'
+            className='relative flex flex-col shrink-0 items-center gap-6 overflow-hidden border-b border-border px-4 sm:px-8 py-12'
             style={{ '--user-color': color }}
         >
             <FlickeringGrid
@@ -165,7 +165,7 @@ export const ProfileHeader = ({ profile, bins, isLoading }) => {
                 </button>
             </div>
 
-            <div className='relative z-10 flex items-center gap-10'>
+            <div className='relative z-10 flex items-center gap-5 sm:gap-10'>
                 <StatPill label={t('profile.stats.bins')} value={bins.length} />
                 <div className='h-8 w-px bg-border' />
                 <StatPill label={t('profile.stats.views')} value={totalViews.toLocaleString()} />
