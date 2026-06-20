@@ -1,8 +1,9 @@
-import { Eye, Table, MessageCircle, Globe } from 'lucide-react';
+import { Eye, Table, MessageCircle, Globe, Terminal } from 'lucide-react';
 import { MarkdownRunner } from '@/components/runners/markdown-runner';
 import { HtmlRunner } from '@/components/runners/html-runner';
 import { CsvRunner } from '@/components/runners/csv-runner';
 import { WhatsAppRunner } from '@/components/runners/whatsapp-runner';
+import { JsRunner } from '@/components/runners/js-runner';
 
 const RUNNERS = [
     {
@@ -32,6 +33,13 @@ const RUNNERS = [
         icon: MessageCircle,
         component: WhatsAppRunner,
         languages: ['whatsapp'],
+    },
+    {
+        id: 'js',
+        label: 'Console',
+        icon: Terminal,
+        component: JsRunner,
+        languages: ['javascript', 'typescript', 'jsx', 'tsx'],
     },
 ];
 

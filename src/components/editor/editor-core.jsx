@@ -188,7 +188,7 @@ const [isDragging, setIsDragging] = useState(false);
 
     const runnerPane = runner && (
         <ErrorBoundary>
-            <RunnerPanel runner={runner} content={file.content ?? ''} onClose={onCloseRunner} />
+            <RunnerPanel runner={runner} content={file.content ?? ''} language={file.language} onClose={onCloseRunner} />
         </ErrorBoundary>
     );
 

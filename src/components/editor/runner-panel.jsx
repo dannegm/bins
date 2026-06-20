@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ScrollArea } from '@/ui/scroll-area';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/ui/tooltip';
 
-export const RunnerPanel = ({ runner, content, onClose }) => {
+export const RunnerPanel = ({ runner, content, language, onClose }) => {
     const { t } = useTranslation();
     const RunnerComponent = runner?.component;
 
@@ -27,7 +27,7 @@ export const RunnerPanel = ({ runner, content, onClose }) => {
             </div>
             <div className='absolute inset-x-0 bottom-0 top-0 sm:top-8'>
                 <ScrollArea className='h-full'>
-                    {RunnerComponent && <RunnerComponent content={content} />}
+                    {RunnerComponent && <RunnerComponent content={content} language={language} />}
                 </ScrollArea>
             </div>
         </div>
