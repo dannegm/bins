@@ -17,7 +17,7 @@ export const defaultSettings = {
     minimap: false,
 
     searchWidget: { x: 0, y: 0 },
-    runnerPanel: { size: 40 },
+    runnerPanel: { layouts: {} },
 
     tipsEnabled: true,
     binView: {

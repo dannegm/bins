@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Redo2, Plus, Trash2, X, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Undo2, Redo2, Plus, Trash2, X, FileText, ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/helpers/utils';
 import { getLanguage } from '@/constants/languages';
@@ -263,12 +263,31 @@ const TabStrip = ({
     );
 };
 
+const RunnerToggle = ({ isActive, onToggle, t }) => (
+    <button
+        onClick={onToggle}
+        title={isActive ? t('editor.tab_bar.runner_hide') : t('editor.tab_bar.runner_show')}
+        className={cn(
+            'flex size-10 shrink-0 items-center justify-center border-l border-border transition-all',
+            {
+                'text-brand bg-brand/10 hover:bg-brand/20': isActive,
+                'text-muted-foreground hover:bg-surface-raised hover:text-foreground': !isActive,
+            },
+        )}
+    >
+        <Play className={cn('size-3.5', { 'fill-brand': isActive })} />
+    </button>
+);
+
 export const TabBar = ({
     files,
     activeFileId,
     isReadonly,
     peers = {},
     user,
+    runner,
+    showRunner,
+    onToggleRunner,
     onTabChange,
     onCreateFile,
     onDeleteFile,
@@ -333,6 +352,12 @@ export const TabBar = ({
                 >
                     <Plus className='size-4' />
                 </button>
+            )}
+            {runner && (
+                <>
+                    <span className='flex-1' />
+                    <RunnerToggle isActive={showRunner} onToggle={onToggleRunner} t={t} />
+                </>
             )}
         </div>
     );

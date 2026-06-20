@@ -370,6 +370,8 @@
             "undo": "Undo",
             "redo": "Redo",
             "new_file": "New file",
+            "runner_show": "Open runner",
+            "runner_hide": "Close runner",
             "delete_file": "delete",
             "confirm_delete": "confirm",
             "share": "Share",
@@ -404,6 +406,9 @@
             "error_size": "File exceeds the 500 KB limit",
             "error_type": "Multimedia files are not supported",
             "error_read": "Could not read the file"
+        },
+        "runner_panel": {
+            "close": "Close runner"
         }
     },
     "login": {

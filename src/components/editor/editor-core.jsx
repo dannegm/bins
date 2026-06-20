@@ -1,14 +1,20 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { AnimatePresence } from 'motion/react';
 import { MonacoEditor } from '@/components/editor/monaco-editor';
+import { RunnerPanel } from '@/components/editor/runner-panel';
 import { ErrorBoundary } from '@/components/system/error-boundary';
 import { EditorSkeleton } from '@/components/editor/editor-skeleton';
 import { StatusBar } from '@/components/editor/status-bar';
 import { FileDropOverlay } from '@/components/editor/file-drop-overlay';
+import { useDefaultLayout } from 'react-resizable-panels';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/ui/resizable';
+import { Drawer, DrawerContent } from '@/ui/drawer';
 import { updateFile } from '@/services/bin-files';
 import { initYDoc } from '@/services/yjs';
+import { settings } from '@/services/settings';
 import { useIdentity } from '@/hooks/use-identity';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const SAVE_DEBOUNCE_MS = 1500;
 
@@ -26,8 +32,12 @@ export const EditorCore = ({
     onSelectionChange,
     onCreateFile,
     onContentSaved,
+    runner = null,
+    showRunner = false,
+    onCloseRunner,
 }) => {
     const { user } = useIdentity();
+    const isMobile = useIsMobile();
     const [saveStatus, setSaveStatus] = useState('idle');
     const [cursor, setCursor] = useState({ lineNumber: 1, column: 1 });
     const [lineCount, setLineCount] = useState(1);
@@ -35,6 +45,26 @@ export const EditorCore = ({
     const $saveTimer = useRef(null);
     const $hasLocalEdits = useRef(false);
     const [isDragging, setIsDragging] = useState(false);
+
+    const panelStorage = useMemo(
+        () => ({
+            getItem: name => {
+                const layouts = settings.get('runnerPanel.layouts', {});
+                return layouts[name] ?? null;
+            },
+            setItem: (name, value) => {
+                const layouts = settings.get('runnerPanel.layouts', {});
+                settings.set('runnerPanel.layouts', { ...layouts, [name]: value });
+            },
+        }),
+        [],
+    );
+
+    const panelGroupProps = useDefaultLayout({
+        panelIds: [`editor:${file.id}`, `runner:${file.id}`],
+        storage: panelStorage,
+        defaultLayout: [50, 50],
+    });
 
     useEffect(() => {
         const ctx = initYDoc(binId, file.id, file.content ?? '');
@@ -124,9 +154,47 @@ export const EditorCore = ({
         if (!e.currentTarget.contains(e.relatedTarget)) setIsDragging(false);
     };
 
+    const editorPane = (
+        <div className='relative h-full min-w-0'>
+            {yContext ? (
+                <ErrorBoundary>
+                    <MonacoEditor
+                        yText={yContext.yText}
+                        clientId={user?.uuid}
+                        language={file.language}
+                        readOnly={readOnly}
+                        peers={activePeers}
+                        revealPosition={revealPosition}
+                        onRevealed={onRevealed}
+                        onSave={() => scheduleSave(yContext.yText.toString())}
+                        onCursorChange={handleCursorChange}
+                        onSelectionChange={onSelectionChange}
+                    />
+                </ErrorBoundary>
+            ) : (
+                <EditorSkeleton />
+            )}
+            <AnimatePresence>
+                {isDragging && yContext && !readOnly && (
+                    <FileDropOverlay
+                        yContext={yContext}
+                        onCreateFile={onCreateFile}
+                        onDismiss={() => setIsDragging(false)}
+                    />
+                )}
+            </AnimatePresence>
+        </div>
+    );
+
+    const runnerPane = runner && (
+        <ErrorBoundary>
+            <RunnerPanel runner={runner} content={file.content ?? ''} onClose={onCloseRunner} />
+        </ErrorBoundary>
+    );
+
     return (
         <div
-            className='flex min-h-0 flex-1 flex-col'
+            className='flex min-h-0 flex-1 flex-col overflow-hidden'
             onDragEnter={handleDragEnter}
             onDragLeave={handleDragLeave}
             onDragOver={e => e.preventDefault()}
@@ -135,34 +203,35 @@ export const EditorCore = ({
                 setIsDragging(false);
             }}
         >
-            <div className='relative min-h-0 flex-1'>
-                {yContext ? (
-                    <ErrorBoundary>
-                        <MonacoEditor
-                            yText={yContext.yText}
-                            clientId={user?.uuid}
-                            language={file.language}
-                            readOnly={readOnly}
-                            peers={activePeers}
-                            revealPosition={revealPosition}
-                            onRevealed={onRevealed}
-                            onSave={() => scheduleSave(yContext.yText.toString())}
-                            onCursorChange={handleCursorChange}
-                            onSelectionChange={onSelectionChange}
-                        />
-                    </ErrorBoundary>
+            <div className='min-h-0 flex-1 overflow-hidden'>
+                {isMobile ? (
+                    <>
+                        <div className='h-full'>{editorPane}</div>
+                        <Drawer
+                            open={showRunner && !!runner}
+                            onOpenChange={open => !open && onCloseRunner?.()}
+                            direction='bottom'
+                        >
+                            <DrawerContent className='h-[calc(100dvh-5rem)] rounded-none p-0'>
+                                {runnerPane}
+                            </DrawerContent>
+                        </Drawer>
+                    </>
                 ) : (
-                    <EditorSkeleton />
+                    <ResizablePanelGroup direction='horizontal' {...panelGroupProps}>
+                        <ResizablePanel id={`editor:${file.id}`} className='relative'>
+                            {editorPane}
+                        </ResizablePanel>
+                        {showRunner && runner && (
+                            <>
+                                <ResizableHandle withHandle />
+                                <ResizablePanel id={`runner:${file.id}`} className='flex flex-col'>
+                                    {runnerPane}
+                                </ResizablePanel>
+                            </>
+                        )}
+                    </ResizablePanelGroup>
                 )}
-                <AnimatePresence>
-                    {isDragging && yContext && !readOnly && (
-                        <FileDropOverlay
-                            yContext={yContext}
-                            onCreateFile={onCreateFile}
-                            onDismiss={() => setIsDragging(false)}
-                        />
-                    )}
-                </AnimatePresence>
             </div>
             <StatusBar
                 language={file.language}

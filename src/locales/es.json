@@ -370,6 +370,8 @@
             "undo": "Deshacer",
             "redo": "Rehacer",
             "new_file": "Nuevo archivo",
+            "runner_show": "Abrir runner",
+            "runner_hide": "Cerrar runner",
             "delete_file": "eliminar",
             "confirm_delete": "confirmar",
             "share": "Compartir",
@@ -404,6 +406,9 @@
             "error_size": "El archivo supera el límite de 500 KB",
             "error_type": "Los archivos multimedia no están soportados",
             "error_read": "No se pudo leer el archivo"
+        },
+        "runner_panel": {
+            "close": "Cerrar runner"
         }
     },
     "login": {

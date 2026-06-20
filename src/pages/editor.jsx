@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
+import { useQueryState, parseAsString, parseAsBoolean } from 'nuqs';
 import { toast } from '@/components/system/toast';
 import { Route } from '@/routes/editor.$binId';
 import { VISIBILITY } from '@/constants/visibility';
@@ -17,6 +18,7 @@ import { useIdentity } from '@/hooks/use-identity';
 import { useAdmin } from '@/hooks/use-admin';
 import { useListener, useEvents } from '@/providers/bus-provider';
 import { getLanguageByFilename } from '@/constants/languages';
+import { getRunner } from '@/services/runners';
 import { FlickeringGrid } from '@/ui/flickering-grid';
 import CoffeeLoader from '@/components/system/coffee-loader';
 
@@ -47,10 +49,11 @@ export const EditorPage = () => {
     const { isAdmin } = useAdmin();
     const { emit } = useEvents();
     const navigate = useNavigate();
+    const [showRunner, setShowRunner] = useQueryState('runner', parseAsBoolean.withDefault(false));
 
     const [bin, setBin] = useState(null);
     const [files, setFiles] = useState([]);
-    const [activeFileId, setActiveFileId] = useState(null);
+    const [activeFileId, setActiveFileId] = useQueryState('file', parseAsString);
     const [isLoading, setIsLoading] = useState(true);
     const [peers, setPeers] = useState({});
     const [pendingReveal, setPendingReveal] = useState(null);
@@ -195,6 +198,10 @@ export const EditorPage = () => {
     );
 
     useListener(
+        'editor:toggle-runner',
+        useCallback(() => setShowRunner(prev => !prev), [setShowRunner]),
+    );
+    useListener(
         'bin:share',
         useCallback(() => handleShare(), []),
     );
@@ -272,7 +279,8 @@ export const EditorPage = () => {
 
                 if (!mounted) return;
                 setFiles(fileList);
-                setActiveFileId(fileList[0].id);
+                const validId = fileList.find(f => f.id === activeFileId)?.id ?? fileList[0].id;
+                setActiveFileId(validId);
             } finally {
                 if (mounted) setIsLoading(false);
             }
@@ -363,6 +371,7 @@ export const EditorPage = () => {
 
     const isAuthor = user?.uuid === bin?.author_id;
     const isGuestReadonly = !isAuthor && !isAdmin && (bin?.is_readonly ?? true);
+    const runner = activeFile ? getRunner(activeFile.language) : null;
 
     const broadcast = (event, payload) => {
         $binChannel.current?.send({ type: 'broadcast', event, payload });
@@ -445,7 +454,8 @@ export const EditorPage = () => {
     const handleShare = async () => {
         await permanentizeBin(binId);
         $hasBeenSaved.current = true;
-        await navigator.clipboard.writeText(window.location.href);
+        const shareUrl = `${window.location.origin}/editor/${binId}`;
+        await navigator.clipboard.writeText(shareUrl);
         toast.success(t('editor.bin_header.share_copied'));
     };
 
@@ -481,6 +491,9 @@ export const EditorPage = () => {
                     isReadonly={isGuestReadonly}
                     peers={peers}
                     user={user}
+                    runner={runner}
+                    showRunner={showRunner}
+                    onToggleRunner={() => setShowRunner(prev => !prev)}
                     onTabChange={setActiveFileId}
                     onCreateFile={handleCreateFile}
                     onDeleteFile={handleDeleteFile}
@@ -507,6 +520,9 @@ export const EditorPage = () => {
                         onLanguageChange={handleLanguageChange}
                         onCreateFile={handleCreateFile}
                         onContentSaved={content => handleContentSaved(activeFileId, content)}
+                        runner={runner}
+                        showRunner={showRunner}
+                        onCloseRunner={() => setShowRunner(false)}
                     />
                 )}
             </div>
