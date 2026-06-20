@@ -96,7 +96,14 @@ const FileTab = ({
                     className='min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none'
                 />
             ) : (
-                <span className='min-w-0 flex-1 truncate'>{file.name}</span>
+                <TooltipProvider delay={1500}>
+                    <Tooltip>
+                        <TooltipTrigger render={<span />} className='min-w-0 flex-1 truncate'>
+                            {file.name}
+                        </TooltipTrigger>
+                        <TooltipContent side='bottom' align='start'>{file.name}</TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             )}
 
             {!isReadonly && (
@@ -264,19 +271,25 @@ const TabStrip = ({
 };
 
 const RunnerToggle = ({ isActive, onToggle, t }) => (
-    <button
-        onClick={onToggle}
-        title={isActive ? t('editor.tab_bar.runner_hide') : t('editor.tab_bar.runner_show')}
-        className={cn(
-            'flex size-10 shrink-0 items-center justify-center border-l border-border transition-all',
-            {
-                'text-brand bg-brand/10 hover:bg-brand/20': isActive,
-                'text-muted-foreground hover:bg-surface-raised hover:text-foreground': !isActive,
-            },
-        )}
-    >
-        <Play className={cn('size-3.5', { 'fill-brand': isActive })} />
-    </button>
+    <TooltipProvider delay={1500}>
+        <Tooltip>
+            <TooltipTrigger
+                onClick={onToggle}
+                className={cn(
+                    'flex size-10 shrink-0 items-center justify-center border-l border-border transition-all',
+                    {
+                        'text-brand bg-brand/10 hover:bg-brand/20': isActive,
+                        'text-muted-foreground hover:bg-surface-raised hover:text-foreground': !isActive,
+                    },
+                )}
+            >
+                <Play className={cn('size-3.5', { 'fill-brand': isActive })} />
+            </TooltipTrigger>
+            <TooltipContent side='bottom' align='end'>
+                {isActive ? t('editor.tab_bar.runner_hide') : t('editor.tab_bar.runner_show')}
+            </TooltipContent>
+        </Tooltip>
+    </TooltipProvider>
 );
 
 export const TabBar = ({
@@ -339,19 +352,25 @@ export const TabBar = ({
                 getTabGradient={getTabGradient}
             />
             {!isReadonly && (
-                <button
-                    onClick={canCreate ? onCreateFile : undefined}
-                    title={t('editor.tab_bar.new_file')}
-                    className={cn(
-                        'flex size-10 shrink-0 items-center justify-center border-l border-border text-muted-foreground transition-all',
-                        {
-                            'opacity-30 hover:opacity-60': !canCreate,
-                            'hover:bg-surface-raised hover:text-foreground': canCreate,
-                        },
-                    )}
-                >
-                    <Plus className='size-4' />
-                </button>
+                <TooltipProvider delay={1500}>
+                    <Tooltip>
+                        <TooltipTrigger
+                            onClick={canCreate ? onCreateFile : undefined}
+                            className={cn(
+                                'flex size-10 shrink-0 items-center justify-center border-l border-border text-muted-foreground transition-all',
+                                {
+                                    'opacity-30 hover:opacity-60': !canCreate,
+                                    'hover:bg-surface-raised hover:text-foreground': canCreate,
+                                },
+                            )}
+                        >
+                            <Plus className='size-4' />
+                        </TooltipTrigger>
+                        <TooltipContent side='bottom' align='start'>
+                            {t('editor.tab_bar.new_file')}
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             )}
             {runner && (
                 <>

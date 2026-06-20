@@ -364,7 +364,8 @@
             "visibility_unlisted_desc": "Solo personas con el enlace pueden verlo",
             "visibility_private": "Privado",
             "visibility_private_desc": "Solo tú puedes acceder a este bin",
-            "share_disabled": "Compartir está desactivado para bins privados"
+            "share_disabled": "Compartir está desactivado para bins privados",
+            "edit_title": "Editar título"
         },
         "tab_bar": {
             "undo": "Deshacer",

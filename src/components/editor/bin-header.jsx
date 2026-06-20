@@ -368,12 +368,19 @@ export const BinHeader = ({ bin, activeFile, files = [], isAuthor, isAdmin, isOw
                     </span>
                 )}
                 {isAuthor && (
-                    <button
-                        onClick={startEdit}
-                        className='shrink-0 text-muted-foreground transition-colors hover:text-foreground'
-                    >
-                        <Pencil className='size-3' />
-                    </button>
+                    <TooltipProvider delay={1500}>
+                        <Tooltip>
+                            <TooltipTrigger
+                                onClick={startEdit}
+                                className='shrink-0 text-muted-foreground transition-colors hover:text-foreground'
+                            >
+                                <Pencil className='size-3' />
+                            </TooltipTrigger>
+                            <TooltipContent side='bottom' align='end'>
+                                {t('editor.bin_header.edit_title')}
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                 )}
             </div>
 

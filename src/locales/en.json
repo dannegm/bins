@@ -364,7 +364,8 @@
             "visibility_unlisted_desc": "Only people with the link can view",
             "visibility_private": "Private",
             "visibility_private_desc": "Only you can access this bin",
-            "share_disabled": "Sharing is disabled for private bins"
+            "share_disabled": "Sharing is disabled for private bins",
+            "edit_title": "Edit title"
         },
         "tab_bar": {
             "undo": "Undo",

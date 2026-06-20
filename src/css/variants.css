@@ -2,6 +2,13 @@
 @custom-variant short (@media (max-height: 600px));
 @custom-variant editor-focused (&:where([data-editor-focused='true'], [data-editor-focused='true'] *));
 
+@custom-variant page-home (&:where([data-page='home'], [data-page='home'] *));
+@custom-variant page-editor (&:where([data-page='editor'], [data-page='editor'] *));
+@custom-variant page-embed (&:where([data-page='embed'], [data-page='embed'] *));
+@custom-variant page-settings (&:where([data-page='settings'], [data-page='settings'] *));
+@custom-variant page-user (&:where([data-page='user'], [data-page='user'] *));
+@custom-variant page-admin (&:where([data-page='admin'], [data-page='admin'] *));
+
 @custom-variant chrome (&:where([data-browser='chrome'], [data-browser='chrome'] *));
 @custom-variant firefox (&:where([data-browser='firefox'], [data-browser='firefox'] *));
 @custom-variant safari (&:where([data-browser='safari'], [data-browser='safari'] *));
