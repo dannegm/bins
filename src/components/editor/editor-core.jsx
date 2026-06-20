@@ -44,7 +44,7 @@ export const EditorCore = ({
     const [yContext, setYContext] = useState(null);
     const $saveTimer = useRef(null);
     const $hasLocalEdits = useRef(false);
-    const [isDragging, setIsDragging] = useState(false);
+const [isDragging, setIsDragging] = useState(false);
 
     const panelStorage = useMemo(
         () => ({
@@ -219,13 +219,13 @@ export const EditorCore = ({
                     </>
                 ) : (
                     <ResizablePanelGroup direction='horizontal' {...panelGroupProps}>
-                        <ResizablePanel id={`editor:${file.id}`} className='relative'>
+                        <ResizablePanel collapsible minSize={200} id={`editor:${file.id}`} className='relative'>
                             {editorPane}
                         </ResizablePanel>
                         {showRunner && runner && (
                             <>
                                 <ResizableHandle withHandle />
-                                <ResizablePanel id={`runner:${file.id}`} className='relative flex flex-col'>
+                                <ResizablePanel minSize={400} id={`runner:${file.id}`} className='relative flex flex-col'>
                                     {runnerPane}
                                 </ResizablePanel>
                             </>
