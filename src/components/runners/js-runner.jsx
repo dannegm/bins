@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { transform } from 'sucrase';
 import { ThemedJsonView } from '@/components/ui/themed-json-view';
 import { InlineValue } from '@/components/ui/inline-value';
@@ -246,6 +246,7 @@ export const JsRunner = ({ content, language }) => {
     const [entries, setEntries] = useState([]);
     const [runKey, setRunKey] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
+    const $iframe = useRef(null);
 
     const { code, error } = useMemo(
         () => transpile(content ?? '', language ?? 'javascript'),
@@ -265,6 +266,7 @@ export const JsRunner = ({ content, language }) => {
 
     useEffect(() => {
         const handler = e => {
+            if (e.source !== $iframe.current?.contentWindow) return;
             if (e.data?.type === 'bins:done') {
                 setIsLoading(false);
                 return;
@@ -295,7 +297,7 @@ export const JsRunner = ({ content, language }) => {
 
     return (
         <div className='flex h-full flex-col select-text'>
-            <iframe key={runKey} className='hidden' sandbox='allow-scripts' srcDoc={srcDoc} />
+            <iframe ref={$iframe} key={runKey} className='hidden' sandbox='allow-scripts' srcDoc={srcDoc} />
             {isLoading && entries.length === 0 ? (
                 <RunnerSkeleton />
             ) : entries.length === 0 ? (
