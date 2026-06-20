@@ -4,7 +4,7 @@ export const Footer = () => {
     const { t } = useTranslation();
 
     return (
-        <footer className='flex items-center gap-2 border-t border-border px-8 py-4 mb-1 text-xs text-muted-foreground'>
+        <footer className='mt-auto flex items-center gap-2 border-t border-border px-8 py-4 mb-1 text-xs text-muted-foreground'>
             <span className="inline sm:hidden">BINS.</span>
             <span className="hidden sm:inline">{t('footer.tagline')}</span>
 

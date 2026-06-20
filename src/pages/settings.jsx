@@ -72,7 +72,9 @@ const ForgetMeModal = ({ t }) => {
                             <Trans
                                 i18nKey='settings.forget.modal_description'
                                 components={{
-                                    phrase: <code className='rounded bg-surface px-1.5 py-0.5 font-mono text-xs text-foreground' />,
+                                    phrase: (
+                                        <code className='rounded bg-surface px-1.5 py-0.5 font-mono text-xs text-foreground' />
+                                    ),
                                 }}
                             />
                         </Dialog.Description>
@@ -155,8 +157,8 @@ export const SettingsPage = () => {
     const $scrollContainer = useRef(null);
 
     return (
-        <Layout>
-            <div className='flex h-dvh flex-col'>
+        <Layout noScroll>
+            <div className='flex h-dvh flex-col pb-8 sm:pb-0'>
                 <header className='shrink-0 border-b border-border px-6 py-4 sm:px-8'>
                     <h1 className='text-sm font-semibold text-foreground'>{t('settings.title')}</h1>
                 </header>

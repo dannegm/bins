@@ -15,11 +15,13 @@ export const HomePage = () => {
     return (
         <Layout>
             <div className='flex h-full flex-col'>
-                <div className='flex flex-1 flex-col gap-8 overflow-y-auto p-8'>
-                    <HomeHeader search={search} onSearchChange={setSearch} />
-                    <TipsCarousel />
-                    <MyBins view={myBinsView} onViewChange={setMyBinsView} search={search} />
-                    <SharedBins view={sharedBinsView} onViewChange={setSharedBinsView} search={search} />
+                <div className='flex flex-1 flex-col overflow-y-auto'>
+                    <div className='flex flex-col gap-8 p-8'>
+                        <HomeHeader search={search} onSearchChange={setSearch} />
+                        <TipsCarousel />
+                        <MyBins view={myBinsView} onViewChange={setMyBinsView} search={search} />
+                        <SharedBins view={sharedBinsView} onViewChange={setSharedBinsView} search={search} />
+                    </div>
                     <Footer />
                 </div>
             </div>

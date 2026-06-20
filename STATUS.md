@@ -2,48 +2,7 @@
 
 ## TL;DR
 
-Fase 1 completa, Fase 2 pendiente, Fase 3 ~60%. El producto es funcional y desplegable como está — falta el sistema de runners y algunos pulidos.
-
----
-
-## Qué está hecho
-
-### Fase 1 — MVP ✅ Completo
-
-Todo lo planificado más extras:
-
-- Scaffold completo (Vite + React + Tailwind v4 + Base UI + TanStack Router/Query)
-- 6 temas UI (Dark, Light, Dracula, Rosé Pine Dawn, Tlapalli Quartz, Tlapalli Fire Opal) + temas Monaco
-- Identidad anónima — UUID en localStorage, upsert silencioso a Supabase en cada visita
-- Editor colaborativo — Monaco + Yjs CRDT + Supabase Realtime, cursores remotos con decoraciones
-- Tabs — drag & drop, rename, confirmación al borrar, dot en cambios no vistos, undo/redo
-- Home — hero, tus bins, compartidos contigo, búsqueda, paginación, filtros
-- Settings completo — Identidad, Apariencia, Editor, Keybindings, Prettier, AI Completions, Import/Export, Danger Zone; headers sticky
-- AI Completions — Claude, OpenAI, Gemini, OpenRouter, Ollama, Custom (JSON y JS)
-- Command palette — navegación numérica, páginas anidadas, admin auth con prefijo `$%&:`
-- Fork con página de animación (`/fork/:binId`)
-- Share con visibilidad (public / unlisted / private)
-- Perfil público `/user/:uuid`
-- Modo admin `/admin/bins` y `/admin/users` — edición override, sticky headers
-- Embed `/embed/:id` (readonly, sin UI)
-- Expiración de bins — `expires_at` + cron job de limpieza
-- Descarga individual y ZIP (fflate)
-- Right to be forgotten — elimina perfil + bins + redirige a `/forgotten`
-- Nudge MSN — sonido + shake + vibración en móvil
-- Global dropzone — arrastrar archivo desde fuera del editor crea un bin nuevo
-- Toasts headless personalizados con tokens del tema
-- Import/Export de settings via URL
-
-### Fase 3 — Polish (parcial)
-
-- ✅ Embed
-- ✅ Modo admin
-- ✅ Expiración de bins
-- ✅ Descarga individual y ZIP
-- ✅ Mobile nav y layout responsivo (pulido continuo)
-- ✅ Admin auth — JWT HS256 con `jose`, POST a `/bins/admin/claim`, `useAdmin` consulta `profiles.is_admin`
-- ✅ RLS policies granulares — admin bypass total, identidad por `x-client-id`
-- ✅ Session export/import — JWT firmado con exp 15m, `/login` con view animada, auto-apply de config por URL
+Fase 1 completa, Fase 2 pendiente, Fase 3 ~70%. El producto es funcional y desplegable como está — falta el sistema de runners y algunos pulidos.
 
 ---
 
@@ -63,16 +22,14 @@ El bloque más grande. Los keybindings y comandos de la palette ya están regist
 
 ### Fase 3 — Polish pendiente
 
-| Feature | Estado | Notas |
-|---|---|---|
-| Error boundary BSOD | ✅ | BSOD estilo Win10, `@container` queries, stop codes, faulting symbol, report issue |
-| Search widget drag+snap | No existe | `components/system/search-widget.jsx` |
-| Paquetes npm modal | No existe | `components/system/packages-modal.jsx` |
-| Favicon dinámico | No existe | `hooks/use-favicon.js` — dot según estado |
-| `document.title` dinámico | No existe | `hooks/use-document-title.js` — prefijos ✏️/💡 |
-| Tips widget en editor | Tips existen en `constants/tips.js` | Falta icono 💡 en status bar + widget flotante |
-| Lenguajes custom | No implementados | Arduino, CSV, .env, logs, Minecraft |
-
+| Feature | Notas |
+|---|---|
+| Search widget drag+snap | `components/system/search-widget.jsx` |
+| Paquetes npm modal | `components/system/packages-modal.jsx` |
+| Favicon dinámico | `hooks/use-favicon.js` — dot según estado |
+| `document.title` dinámico | `hooks/use-document-title.js` — prefijos ✏️/💡 |
+| Tips widget en editor | Tips en `constants/tips.js`, falta icono 💡 en status bar + widget flotante |
+| Lenguajes custom | Arduino, CSV, .env, logs, Minecraft |
 
 ---
 
@@ -82,4 +39,3 @@ El bloque más grande. Los keybindings y comandos de la palette ya están regist
 
 1. **Runners (Fase 2 completa)** — es la feature distintiva del producto, lo que lo diferencia de un Pastebin normal
 2. **Favicon + document.title** — pulido de calidad que se nota mucho en uso diario
-5. ~~**Error boundary BSOD**~~ ✅
