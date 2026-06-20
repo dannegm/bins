@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { transform } from 'sucrase';
+import JsonView from '@microlink/react-json-view';
 import { cn } from '@/helpers/utils';
 
 const REACT_SHIM = `var React = {
@@ -40,37 +41,54 @@ const CONSOLE_SHIM = `(function () {
     });
     window.__r__ = function (v, line, src) {
         if (v !== undefined) {
-            window.parent.postMessage({ type: 'bins:result', value: serialize(v), line: line, source: src }, '*');
+            var json = null;
+            var isJson = false;
+            try {
+                var s = JSON.stringify(v);
+                if (s !== undefined) { isJson = true; json = s; }
+            } catch (e) {}
+            window.parent.postMessage({
+                type: 'bins:result',
+                value: isJson ? json : serialize(v),
+                isJson: isJson,
+                line: line,
+                source: src,
+            }, '*');
         }
         return v;
     };
 })();`;
 
-const SKIP_START_RE = /^\s*(const\b|let\b|var\b|function\b|class\b|if\b|else\b|for\b|while\b|do\b|switch\b|try\b|catch\b|finally\b|throw\b|return\b|break\b|continue\b|import\b|export\b|\/\/|\/\*)/;
+const SKIP_START_RE =
+    /^\s*(const\b|let\b|var\b|function\b|class\b|if\b|else\b|for\b|while\b|do\b|switch\b|try\b|catch\b|finally\b|throw\b|return\b|break\b|continue\b|import\b|export\b|\/\/|\/\*)/;
 const CHAIN_RE = /^\s*\??\./;
 
 const instrumentExpressions = (code, originalCode) => {
     const lines = code.split('\n');
     const srcLines = originalCode.split('\n');
-    return lines.map((line, i) => {
-        const t = line.trim();
-        if (!t) return line;
-        if (t[0] === '}' || t[0] === '{' || t[0] === ']' || t[0] === ')') return line;
-        if (t.endsWith(',') || t.endsWith('{') || t.endsWith('(') || t.endsWith('[')) return line;
-        if (SKIP_START_RE.test(t) || CHAIN_RE.test(t)) return line;
-        const next = lines.slice(i + 1).find(l => l.trim());
-        if (next && CHAIN_RE.test(next)) return line;
-        const expr = t.replace(/;$/, '');
-        const srcRaw = ((srcLines[i] ?? t).trim().replace(/;$/, ''));
-        const src = srcRaw.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-        return `__r__(${expr}, ${i + 1}, '${src}');`;
-    }).join('\n');
+    return lines
+        .map((line, i) => {
+            const t = line.trim();
+            if (!t) return line;
+            if (t[0] === '}' || t[0] === '{' || t[0] === ']' || t[0] === ')') return line;
+            if (t.endsWith(',') || t.endsWith('{') || t.endsWith('(') || t.endsWith('['))
+                return line;
+            if (SKIP_START_RE.test(t) || CHAIN_RE.test(t)) return line;
+            const next = lines.slice(i + 1).find(l => l.trim());
+            if (next && CHAIN_RE.test(next)) return line;
+            const expr = t.replace(/;$/, '');
+            const srcRaw = (srcLines[i] ?? t).trim().replace(/;$/, '');
+            const src = srcRaw.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+            return `__r__(${expr}, ${i + 1}, '${src}');`;
+        })
+        .join('\n');
 };
 
-const stripExports = code => code
-    .replace(/^export\s+default\s+/gm, '')
-    .replace(/^export\s+((?:async\s+)?(?:const|let|var|function|class))\s+/gm, '$1 ')
-    .replace(/^export\s*\{[^}]*\};?/gm, '');
+const stripExports = code =>
+    code
+        .replace(/^export\s+default\s+/gm, '')
+        .replace(/^export\s+((?:async\s+)?(?:const|let|var|function|class))\s+/gm, '$1 ')
+        .replace(/^export\s*\{[^}]*\};?/gm, '');
 
 const makeDoc = (code, originalCode, isJsx) => {
     const instrumented = instrumentExpressions(stripExports(code), originalCode);
@@ -94,27 +112,49 @@ const transpile = (code, language) => {
 };
 
 const LEVELS = {
-    log:   { prefix: '▸', className: 'text-foreground' },
-    info:  { prefix: 'ℹ', className: 'text-muted-foreground' },
-    warn:  { prefix: '⚠', className: 'text-warning' },
+    log: { prefix: '▸', className: 'text-foreground' },
+    info: { prefix: 'ℹ', className: 'text-muted-foreground' },
+    warn: { prefix: '⚠', className: 'text-warning' },
     error: { prefix: '✕', className: 'text-destructive' },
 };
 
 const ConsoleEntry = ({ entry }) => {
     const { prefix, className } = LEVELS[entry.method] ?? LEVELS.log;
     return (
-        <div className={cn('flex gap-2 border-b border-border px-3 py-1.5 font-mono text-xs last:border-b-0', className)}>
+        <div
+            className={cn(
+                'flex gap-2 border-b border-border px-3 py-1.5 font-mono text-xs last:border-b-0',
+                className,
+            )}
+        >
             <span className='shrink-0 select-none text-muted-foreground'>{prefix}</span>
             <span className='min-w-0 whitespace-pre-wrap break-all'>{entry.args.join(' ')}</span>
         </div>
     );
 };
 
+const toJsonSrc = v => (v !== null && typeof v === 'object' ? v : [v]);
+
 const ResultEntry = ({ entry }) => (
-    <div className='flex gap-2 border-b border-border px-3 py-1.5 font-mono text-xs last:border-b-0'>
-        <span className='shrink-0 select-none text-muted-foreground'>{entry.line}</span>
-        <span className='shrink-0 select-none text-muted-foreground'>→</span>
-        <span className='min-w-0 whitespace-pre-wrap break-all text-foreground'>{entry.value}</span>
+    <div className='flex gap-2 border-b border-border font-mono last:border-b-0'>
+        <span className='shrink-0 pl-4 pr-2 py-6 text-sm select-none text-muted-foreground'>
+            {entry.line}
+        </span>
+        <div className='min-w-0'>
+            {entry.isJson ? (
+                <JsonView
+                    src={toJsonSrc(entry.value)}
+                    name={false}
+                    collapsed={3}
+                    iconStyle='square'
+                    style={{ background: 'transparent', fontSize: '14px', fontFamily: 'inherit' }}
+                    displayArrayKey={false}
+                    displayObjectSize={false}
+                />
+            ) : (
+                <pre className='text-foreground'>{entry.value}</pre>
+            )}
+        </div>
     </div>
 );
 
@@ -141,7 +181,7 @@ export const JsRunner = ({ content, language }) => {
     );
 
     const srcDoc = useMemo(
-        () => code ? makeDoc(code, content ?? '', language === 'jsx' || language === 'tsx') : '',
+        () => (code ? makeDoc(code, content ?? '', language === 'jsx' || language === 'tsx') : ''),
         [code, content, language],
     );
 
@@ -157,10 +197,23 @@ export const JsRunner = ({ content, language }) => {
     useEffect(() => {
         const handler = e => {
             if (e.data?.type === 'bins:console') {
-                setEntries(prev => [...prev, { type: 'console', method: e.data.method, args: e.data.args }]);
+                setEntries(prev => [
+                    ...prev,
+                    { type: 'console', method: e.data.method, args: e.data.args },
+                ]);
             }
             if (e.data?.type === 'bins:result') {
-                setEntries(prev => [...prev, { type: 'result', value: e.data.value, source: e.data.source, line: e.data.line }]);
+                const value = e.data.isJson ? JSON.parse(e.data.value) : e.data.value;
+                setEntries(prev => [
+                    ...prev,
+                    {
+                        type: 'result',
+                        value,
+                        isJson: e.data.isJson,
+                        source: e.data.source,
+                        line: e.data.line,
+                    },
+                ]);
             }
         };
         window.addEventListener('message', handler);
@@ -171,20 +224,17 @@ export const JsRunner = ({ content, language }) => {
 
     return (
         <div className='flex h-full flex-col select-text'>
-            <iframe
-                key={runKey}
-                className='hidden'
-                sandbox='allow-scripts'
-                srcDoc={srcDoc}
-            />
+            <iframe key={runKey} className='hidden' sandbox='allow-scripts' srcDoc={srcDoc} />
             {entries.length === 0 ? (
                 <EmptyState />
             ) : (
                 <div className='min-h-0 flex-1 overflow-y-auto'>
                     {entries.map((entry, i) =>
-                        entry.type === 'result'
-                            ? <ResultEntry key={i} entry={entry} />
-                            : <ConsoleEntry key={i} entry={entry} />
+                        entry.type === 'result' ? (
+                            <ResultEntry key={i} entry={entry} />
+                        ) : (
+                            <ConsoleEntry key={i} entry={entry} />
+                        ),
                     )}
                 </div>
             )}
