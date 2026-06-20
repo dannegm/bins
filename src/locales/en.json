@@ -416,6 +416,9 @@
             },
             "whatsapp": {
                 "empty": "No messages"
+            },
+            "html": {
+                "untitled": "Untitled"
             }
         }
     },
