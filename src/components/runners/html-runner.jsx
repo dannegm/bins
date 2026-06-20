@@ -15,6 +15,16 @@ const INJECTED_SCRIPT = `<script>
         if (e.data?.type === 'bins:forward') history.forward();
         if (e.data?.type === 'bins:reload') location.reload();
     });
+    document.addEventListener('click', function (e) {
+        var a = e.target.closest('a');
+        if (!a) return;
+        var href = a.getAttribute('href');
+        if (href && href.startsWith('#')) {
+            e.preventDefault();
+            var target = document.getElementById(href.slice(1));
+            if (target) target.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
     notify();
 })();
 </script>`;
