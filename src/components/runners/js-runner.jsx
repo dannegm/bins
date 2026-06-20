@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { transform } from 'sucrase';
 import { cn } from '@/helpers/utils';
 
@@ -31,23 +31,55 @@ const CONSOLE_SHIM = `(function () {
         };
     });
     window.addEventListener('error', function (e) {
-        send('error', [e.message]);
+        var loc = e.lineno ? ' (line ' + e.lineno + ')' : '';
+        send('error', [e.message + loc]);
     });
     window.addEventListener('unhandledrejection', function (e) {
         var msg = e.reason instanceof Error ? e.reason.message : String(e.reason);
         send('error', ['UnhandledPromiseRejection: ' + msg]);
     });
+    window.__r__ = function (v, line, src) {
+        if (v !== undefined) {
+            window.parent.postMessage({ type: 'bins:result', value: serialize(v), line: line, source: src }, '*');
+        }
+        return v;
+    };
 })();`;
+
+const SKIP_START_RE = /^\s*(const\b|let\b|var\b|function\b|class\b|if\b|else\b|for\b|while\b|do\b|switch\b|try\b|catch\b|finally\b|throw\b|return\b|break\b|continue\b|import\b|export\b|\/\/|\/\*)/;
+const CHAIN_RE = /^\s*\??\./;
+
+const instrumentExpressions = (code, originalCode) => {
+    const lines = code.split('\n');
+    const srcLines = originalCode.split('\n');
+    return lines.map((line, i) => {
+        const t = line.trim();
+        if (!t) return line;
+        if (t[0] === '}' || t[0] === '{' || t[0] === ']' || t[0] === ')') return line;
+        if (t.endsWith(',') || t.endsWith('{') || t.endsWith('(') || t.endsWith('[')) return line;
+        if (SKIP_START_RE.test(t) || CHAIN_RE.test(t)) return line;
+        const next = lines.slice(i + 1).find(l => l.trim());
+        if (next && CHAIN_RE.test(next)) return line;
+        const expr = t.replace(/;$/, '');
+        const srcRaw = ((srcLines[i] ?? t).trim().replace(/;$/, ''));
+        const src = srcRaw.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+        return `__r__(${expr}, ${i + 1}, '${src}');`;
+    }).join('\n');
+};
 
 const stripExports = code => code
     .replace(/^export\s+default\s+/gm, '')
     .replace(/^export\s+((?:async\s+)?(?:const|let|var|function|class))\s+/gm, '$1 ')
     .replace(/^export\s*\{[^}]*\};?/gm, '');
 
-const makeDoc = (code, isJsx) => `<!DOCTYPE html><html><body>
+const makeDoc = (code, originalCode, isJsx) => {
+    const instrumented = instrumentExpressions(stripExports(code), originalCode);
+    const catchBlock = `catch(e){var m=e instanceof Error?e.name+': '+e.message:String(e);if(e&&e.stack){var s=e.stack.match(/:(\\d+):(\\d+)/);if(s)m+=' (line '+s[1]+')';}console.error(m);}`;
+    return `<!DOCTYPE html><html><body>
 <script>${CONSOLE_SHIM}${isJsx ? REACT_SHIM : ''}</script>
-<script>try{${stripExports(code)}}catch(e){console.error(e instanceof Error?e.name+': '+e.message:String(e));}</script>
+<script>try{${instrumented}}${catchBlock}</script>
 </body></html>`;
+};
 
 const transpile = (code, language) => {
     try {
@@ -72,11 +104,19 @@ const ConsoleEntry = ({ entry }) => {
     const { prefix, className } = LEVELS[entry.method] ?? LEVELS.log;
     return (
         <div className={cn('flex gap-2 border-b border-border px-3 py-1.5 font-mono text-xs last:border-b-0', className)}>
-            <span className='shrink-0 select-none opacity-50'>{prefix}</span>
+            <span className='shrink-0 select-none text-muted-foreground'>{prefix}</span>
             <span className='min-w-0 whitespace-pre-wrap break-all'>{entry.args.join(' ')}</span>
         </div>
     );
 };
+
+const ResultEntry = ({ entry }) => (
+    <div className='flex gap-2 border-b border-border px-3 py-1.5 font-mono text-xs last:border-b-0'>
+        <span className='shrink-0 select-none text-muted-foreground'>{entry.line}</span>
+        <span className='shrink-0 select-none text-muted-foreground'>→</span>
+        <span className='min-w-0 whitespace-pre-wrap break-all text-foreground'>{entry.value}</span>
+    </div>
+);
 
 const TranspileError = ({ message }) => (
     <div className='flex gap-2 px-3 py-2 font-mono text-xs text-destructive'>
@@ -101,8 +141,8 @@ export const JsRunner = ({ content, language }) => {
     );
 
     const srcDoc = useMemo(
-        () => code ? makeDoc(code, language === 'jsx' || language === 'tsx') : '',
-        [code, language],
+        () => code ? makeDoc(code, content ?? '', language === 'jsx' || language === 'tsx') : '',
+        [code, content, language],
     );
 
     useEffect(() => {
@@ -110,7 +150,6 @@ export const JsRunner = ({ content, language }) => {
         setRunKey(k => k + 1);
     }, [srcDoc]);
 
-    // Run on mount in case srcDoc is already set (no content change will fire)
     useEffect(() => {
         if (srcDoc) setRunKey(k => k + 1);
     }, []);
@@ -118,7 +157,10 @@ export const JsRunner = ({ content, language }) => {
     useEffect(() => {
         const handler = e => {
             if (e.data?.type === 'bins:console') {
-                setEntries(prev => [...prev, { method: e.data.method, args: e.data.args }]);
+                setEntries(prev => [...prev, { type: 'console', method: e.data.method, args: e.data.args }]);
+            }
+            if (e.data?.type === 'bins:result') {
+                setEntries(prev => [...prev, { type: 'result', value: e.data.value, source: e.data.source, line: e.data.line }]);
             }
         };
         window.addEventListener('message', handler);
@@ -128,7 +170,7 @@ export const JsRunner = ({ content, language }) => {
     if (error) return <TranspileError message={error} />;
 
     return (
-        <div className='flex h-full flex-col'>
+        <div className='flex h-full flex-col select-text'>
             <iframe
                 key={runKey}
                 className='hidden'
@@ -139,7 +181,11 @@ export const JsRunner = ({ content, language }) => {
                 <EmptyState />
             ) : (
                 <div className='min-h-0 flex-1 overflow-y-auto'>
-                    {entries.map((entry, i) => <ConsoleEntry key={i} entry={entry} />)}
+                    {entries.map((entry, i) =>
+                        entry.type === 'result'
+                            ? <ResultEntry key={i} entry={entry} />
+                            : <ConsoleEntry key={i} entry={entry} />
+                    )}
                 </div>
             )}
         </div>
