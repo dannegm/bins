@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { transform } from 'sucrase';
-import JsonView from '@microlink/react-json-view';
+import { ThemedJsonView } from '@/components/ui/themed-json-view';
+import { InlineValue } from '@/components/ui/inline-value';
 import { cn } from '@/helpers/utils';
 
 const REACT_SHIM = `var React = {
@@ -133,26 +134,26 @@ const ConsoleEntry = ({ entry }) => {
     );
 };
 
-const toJsonSrc = v => (v !== null && typeof v === 'object' ? v : [v]);
+const isJsonObject = v => v !== null && typeof v === 'object';
 
 const ResultEntry = ({ entry }) => (
     <div className='flex gap-2 border-b border-border font-mono last:border-b-0'>
-        <span className='shrink-0 pl-4 pr-2 py-6 text-sm select-none text-muted-foreground'>
+        <span className='shrink-0 pl-4 pr-2 py-2.5 text-sm select-none text-muted-foreground'>
             {entry.line}
         </span>
         <div className='min-w-0'>
-            {entry.isJson ? (
-                <JsonView
-                    src={toJsonSrc(entry.value)}
+            {entry.isJson && isJsonObject(entry.value) ? (
+                <ThemedJsonView
+                    className='py-3.25'
+                    src={entry.value}
                     name={false}
                     collapsed={3}
                     iconStyle='square'
-                    style={{ background: 'transparent', fontSize: '14px', fontFamily: 'inherit' }}
-                    displayArrayKey={false}
-                    displayObjectSize={false}
                 />
+            ) : entry.isJson ? (
+                <InlineValue value={entry.value} className='py-3' />
             ) : (
-                <pre className='text-foreground'>{entry.value}</pre>
+                <InlineValue value={entry.value} className='py-3 text-foreground text-xs' />
             )}
         </div>
     </div>

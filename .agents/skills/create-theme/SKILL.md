@@ -278,11 +278,64 @@ Open `src/constants/themes.js`.
 
    If you cannot determine the author info from the JSON or its GitHub page, ask the user before proceeding. Never leave `name` and `nick` both absent.
 
-## Step 8 — Confirm
+## Step 8 — Append to json-view-themes.js
+
+Open `src/constants/json-view-themes.js` and append a new entry to `JSON_VIEW_THEMES`.
+
+This is a base16 color object used by `ThemedJsonView` to syntax-color JSON output in the JS runner.
+
+**Color mapping guide** (derive from the colors already chosen in Step 2):
+
+| base16 key | Role in JsonView | Source |
+|---|---|---|
+| `base00` | background | `--background` |
+| `base01` | lighter bg | `--surface` |
+| `base02` | selection bg | `--surface-raised` |
+| `base03` | brackets, punctuation | `--muted-foreground` |
+| `base04` | secondary text | midpoint between muted-fg and fg |
+| `base05` | default foreground | `--foreground` |
+| `base06` | lighter fg | slightly toward `--foreground` |
+| `base07` | brightest | white (dark) or darkest (light) |
+| `base08` | null / undefined / errors | `--destructive` |
+| `base09` | numbers | `--warning` or a warm orange that reads on this bg |
+| `base0A` | misc (classes) | amber/yellow harmonizing with the palette |
+| `base0B` | strings | `--success` or a readable green |
+| `base0C` | regex / escape chars | a cyan/teal that fits the palette |
+| `base0D` | **object keys** | `--brand` |
+| `base0E` | **booleans** | a purple or secondary accent |
+| `base0F` | deprecated | a muted red or pink |
+
+For **light** themes: syntax colors must be darker (700–800 shade equivalent) to stay readable on the light background.
+For **dark** themes: syntax colors can be lighter (300–400 shade equivalent).
+
+```js
+'{slug}': {
+    scheme: 'bins-{slug}',
+    author: 'bins',
+    base00: '{--background}',
+    base01: '{--surface}',
+    base02: '{--surface-raised}',
+    base03: '{--muted-foreground}',
+    base04: '{midpoint}',
+    base05: '{--foreground}',
+    base06: '{near fg}',
+    base07: '{brightest}',
+    base08: '{--destructive}',
+    base09: '{number color}',
+    base0A: '{yellow/amber}',
+    base0B: '{--success or green}',
+    base0C: '{cyan/teal}',
+    base0D: '{--brand}',
+    base0E: '{purple/secondary accent}',
+    base0F: '{muted red/pink}',
+},
+```
+
+## Step 9 — Confirm
 
 Report to the user:
 - Theme name and slug
 - Whether it's light or dark
-- The 4 files modified/created (CSS, index.css, themes.js ×3 changes)
+- The 5 files modified/created (CSS, index.css, themes.js ×3 changes, json-view-themes.js)
 - The brand color chosen and why
 - Any colors that had no direct VS Code equivalent and what fallback was used
