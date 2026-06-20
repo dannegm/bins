@@ -44,10 +44,9 @@ const BSODScreen = ({ error, errorInfo }) => {
 
     return (
         <div
-            className='absolute inset-0 z-[9999] overflow-y-auto px-8 pt-[20vh] pb-8 sm:px-16 sm:pb-16 font-mono'
-            style={{ background: '#0f3276', color: '#ffffff' }}
+            className='@container absolute inset-0 z-9999 overflow-y-auto px-8 pt-[20vh] pb-8 @sm:px-16 @sm:pb-16 font-mono bg-background text-foreground'
         >
-            <div className='mx-auto w-full sm:max-w-[75ch]'>
+            <div className='mx-auto w-full @sm:max-w-[75ch]'>
                 <p className='mb-6 text-9xl font-thin font-sans'>:(</p>
 
                 <p className='mb-4 text-3xl font-semibold leading-snug text-pretty'>

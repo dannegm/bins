@@ -61,8 +61,6 @@ export const MonacoEditor = ({
     const { user } = useIdentity();
     const { isDark } = useTheme();
 
-    useEffect(() => { throw new Error('test bsod') }, [])
-
     useEffect(() => {
         if (!$container.current) return;
 
