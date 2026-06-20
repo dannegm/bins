@@ -409,7 +409,11 @@
             "error_read": "Could not read the file"
         },
         "runner_panel": {
-            "close": "Close runner"
+            "close": "Close runner",
+            "csv": {
+                "threshold": "Threshold",
+                "threshold_desc": "0 = exact match only · 100 = anything goes"
+            }
         }
     },
     "login": {

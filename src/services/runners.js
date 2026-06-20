@@ -1,5 +1,6 @@
-import { Eye } from 'lucide-react';
+import { Eye, Table } from 'lucide-react';
 import { MarkdownRunner } from '@/components/runners/markdown-runner';
+import { CsvRunner } from '@/components/runners/csv-runner';
 
 const RUNNERS = [
     {
@@ -8,6 +9,13 @@ const RUNNERS = [
         icon: Eye,
         component: MarkdownRunner,
         languages: ['markdown'],
+    },
+    {
+        id: 'csv',
+        label: 'Preview',
+        icon: Table,
+        component: CsvRunner,
+        languages: ['csv'],
     },
 ];
 

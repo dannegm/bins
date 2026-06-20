@@ -225,7 +225,7 @@ export const EditorCore = ({
                         {showRunner && runner && (
                             <>
                                 <ResizableHandle withHandle />
-                                <ResizablePanel id={`runner:${file.id}`} className='flex flex-col'>
+                                <ResizablePanel id={`runner:${file.id}`} className='relative flex flex-col'>
                                     {runnerPane}
                                 </ResizablePanel>
                             </>

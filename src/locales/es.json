@@ -409,7 +409,11 @@
             "error_read": "No se pudo leer el archivo"
         },
         "runner_panel": {
-            "close": "Cerrar runner"
+            "close": "Cerrar runner",
+            "csv": {
+                "threshold": "Umbral",
+                "threshold_desc": "0 = solo coincidencias exactas · 100 = todo coincide"
+            }
         }
     },
     "login": {
