@@ -6,6 +6,8 @@ export const ThemedJsonView = ({ className, src, ...props }) => {
     const { uiTheme } = useTheme();
     const theme = JSON_VIEW_THEMES[uiTheme] ?? JSON_VIEW_THEMES.dark;
 
+    if (src === null || typeof src !== 'object') return null;
+
     return (
         <div className={className}>
             <JsonView

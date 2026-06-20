@@ -2,7 +2,9 @@ import { useState, useEffect, useMemo } from 'react';
 import { transform } from 'sucrase';
 import { ThemedJsonView } from '@/components/ui/themed-json-view';
 import { InlineValue } from '@/components/ui/inline-value';
+import { ScrambleText } from '@/components/system/scramble-text';
 import { cn } from '@/helpers/utils';
+import { useEvents } from '@/providers/bus-provider';
 
 const REACT_SHIM = `var React = {
     createElement: function(type, props) {
@@ -33,8 +35,7 @@ const CONSOLE_SHIM = `(function () {
         };
     });
     window.addEventListener('error', function (e) {
-        var loc = e.lineno ? ' (line ' + e.lineno + ')' : '';
-        send('error', [e.message + loc]);
+        window.parent.postMessage({ type: 'bins:console', method: 'error', args: [e.message], line: e.lineno || null }, '*');
     });
     window.addEventListener('unhandledrejection', function (e) {
         var msg = e.reason instanceof Error ? e.reason.message : String(e.reason);
@@ -91,12 +92,21 @@ const stripExports = code =>
         .replace(/^export\s+((?:async\s+)?(?:const|let|var|function|class))\s+/gm, '$1 ')
         .replace(/^export\s*\{[^}]*\};?/gm, '');
 
+const injectLoopChecks = code => {
+    const check = `if(++__lc__>1e5)throw new Error('Possible infinite loop: exceeded 100,000 iterations');`;
+    return code
+        .replace(/\b(for|while)\s*\([\s\S]*?\)\s*\{/g, m => m + check)
+        .replace(/\bdo\s*\{/g, m => m + check);
+};
+
 const makeDoc = (code, originalCode, isJsx) => {
     const instrumented = instrumentExpressions(stripExports(code), originalCode);
-    const catchBlock = `catch(e){var m=e instanceof Error?e.name+': '+e.message:String(e);if(e&&e.stack){var s=e.stack.match(/:(\\d+):(\\d+)/);if(s)m+=' (line '+s[1]+')';}console.error(m);}`;
+    const guarded = injectLoopChecks(instrumented);
+    const catchBlock = `catch(e){var m=e instanceof Error?e.name+': '+e.message:String(e);var ln=null;if(e&&e.stack){var s=e.stack.match(/:(\\d+):(\\d+)/);if(s)ln=parseInt(s[1]);}window.parent.postMessage({type:'bins:console',method:'error',args:[m],line:ln},'*');}`;
+    const doneBlock = `finally{window.parent.postMessage({type:'bins:done'},'*');}`;
     return `<!DOCTYPE html><html><body>
 <script>${CONSOLE_SHIM}${isJsx ? REACT_SHIM : ''}</script>
-<script>try{${instrumented}}${catchBlock}</script>
+<script>try{var __lc__=0;${guarded}}${catchBlock}${doneBlock}</script>
 </body></html>`;
 };
 
@@ -119,28 +129,36 @@ const LEVELS = {
     error: { prefix: '✕', className: 'text-destructive' },
 };
 
-const ConsoleEntry = ({ entry }) => {
+const ConsoleEntry = ({ entry, onLineClick }) => {
     const { prefix, className } = LEVELS[entry.method] ?? LEVELS.log;
     return (
-        <div
-            className={cn(
-                'flex gap-2 border-b border-border px-3 py-1.5 font-mono text-xs last:border-b-0',
-                className,
+        <div className={cn('flex gap-2 border-b border-border font-mono items-start text-xs last:border-b-0', className)}>
+            {entry.line ? (
+                <button
+                    className='shrink-0 w-12 text-right pl-4 pr-2 py-1.5 select-none text-muted-foreground hover:text-foreground transition-colors'
+                    onClick={() => onLineClick(entry.line)}
+                >
+                    {entry.line}
+                </button>
+            ) : (
+                <span className='shrink-0 w-12 pl-4 pr-2 py-1.5' />
             )}
-        >
-            <span className='shrink-0 select-none text-muted-foreground'>{prefix}</span>
-            <span className='min-w-0 whitespace-pre-wrap break-all'>{entry.args.join(' ')}</span>
+            <span className='shrink-0 select-none text-muted-foreground py-1.5'>{prefix}</span>
+            <span className='min-w-0 whitespace-pre-wrap break-all py-1.5'>{entry.args.join(' ')}</span>
         </div>
     );
 };
 
 const isJsonObject = v => v !== null && typeof v === 'object';
 
-const ResultEntry = ({ entry }) => (
-    <div className='flex gap-2 border-b border-border font-mono last:border-b-0'>
-        <span className='shrink-0 pl-4 pr-2 py-2.5 text-sm select-none text-muted-foreground'>
+const ResultEntry = ({ entry, onLineClick }) => (
+    <div className='flex gap-2 border-b border-border font-mono items-start last:border-b-0'>
+        <button
+            className='shrink-0 w-12 text-right pl-4 pr-2 py-2.5 text-sm select-none text-muted-foreground cursor-pointer hover:text-foreground transition-colors'
+            onClick={() => onLineClick(entry.line)}
+        >
             {entry.line}
-        </span>
+        </button>
         <div className='min-w-0'>
             {entry.isJson && isJsonObject(entry.value) ? (
                 <ThemedJsonView
@@ -172,9 +190,62 @@ const EmptyState = () => (
     </div>
 );
 
+const SKELETON_ENTRIES = [
+    { type: 'result', line: 1,  value: '42',                     valueType: 'number'  },
+    { type: 'result', line: 2,  value: '"hello world"',          valueType: 'string'  },
+    { type: 'log',    text: 'Rendering component tree'                                 },
+    { type: 'result', line: 5,  value: 'true',                   valueType: 'boolean' },
+    { type: 'result', line: 7,  value: '{ id: 1, label: "x" }', valueType: 'object'  },
+    { type: 'result', line: 9,  value: '[1, 2, 3]',              valueType: 'array'   },
+    { type: 'warn',   text: 'Deprecated API called'                                    },
+    { type: 'result', line: 12, value: '"process complete"',     valueType: 'string'  },
+];
+
+const VALUE_CLASS = {
+    number:  'text-warning',
+    string:  'text-success',
+    boolean: 'text-brand',
+    object:  'text-foreground',
+    array:   'text-foreground',
+};
+
+const RunnerSkeleton = () => (
+    <div className='relative h-full overflow-hidden'>
+        {SKELETON_ENTRIES.map((entry, i) => {
+            const isResult = entry.type === 'result';
+            const { prefix, className: lvlClass } = LEVELS[entry.type] ?? LEVELS.log;
+            return (
+                <div key={i} className='flex gap-2 border-b border-border font-mono items-start last:border-b-0'>
+                    <span className={cn('shrink-0 w-12 text-right pl-4 pr-2 select-none text-muted-foreground', isResult ? 'py-2.5 text-sm' : 'py-1.5 text-xs')}>
+                        {entry.line ?? ''}
+                    </span>
+                    {isResult ? (
+                        <span className='inline-flex items-baseline gap-1.5 font-mono text-xs py-3'>
+                            <span className={VALUE_CLASS[entry.valueType] ?? 'text-foreground'}>
+                                <ScrambleText>{entry.value}</ScrambleText>
+                            </span>
+                            <span className='text-[10px] text-muted-foreground'>{entry.valueType}</span>
+                        </span>
+                    ) : (
+                        <>
+                            <span className={cn('shrink-0 select-none py-1.5 text-xs', lvlClass)}>{prefix}</span>
+                            <span className={cn('min-w-0 py-1.5 text-xs', lvlClass)}>
+                                <ScrambleText>{entry.text}</ScrambleText>
+                            </span>
+                        </>
+                    )}
+                </div>
+            );
+        })}
+        <div className='pointer-events-none absolute bottom-0 left-0 right-0 h-24 bg-linear-to-t from-background to-transparent' />
+    </div>
+);
+
 export const JsRunner = ({ content, language }) => {
+    const { emit } = useEvents();
     const [entries, setEntries] = useState([]);
     const [runKey, setRunKey] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
 
     const { code, error } = useMemo(
         () => transpile(content ?? '', language ?? 'javascript'),
@@ -188,20 +259,19 @@ export const JsRunner = ({ content, language }) => {
 
     useEffect(() => {
         setEntries([]);
+        setIsLoading(Boolean(srcDoc));
         setRunKey(k => k + 1);
     }, [srcDoc]);
 
     useEffect(() => {
-        if (srcDoc) setRunKey(k => k + 1);
-    }, []);
-
-    useEffect(() => {
         const handler = e => {
+            if (e.data?.type === 'bins:done') {
+                setIsLoading(false);
+                return;
+            }
             if (e.data?.type === 'bins:console') {
-                setEntries(prev => [
-                    ...prev,
-                    { type: 'console', method: e.data.method, args: e.data.args },
-                ]);
+                const { method, args, line } = e.data;
+                setEntries(prev => [...prev, { type: 'console', method, args, line: line ?? null }]);
             }
             if (e.data?.type === 'bins:result') {
                 const value = e.data.isJson ? JSON.parse(e.data.value) : e.data.value;
@@ -226,15 +296,25 @@ export const JsRunner = ({ content, language }) => {
     return (
         <div className='flex h-full flex-col select-text'>
             <iframe key={runKey} className='hidden' sandbox='allow-scripts' srcDoc={srcDoc} />
-            {entries.length === 0 ? (
+            {isLoading && entries.length === 0 ? (
+                <RunnerSkeleton />
+            ) : entries.length === 0 ? (
                 <EmptyState />
             ) : (
                 <div className='min-h-0 flex-1 overflow-y-auto'>
                     {entries.map((entry, i) =>
                         entry.type === 'result' ? (
-                            <ResultEntry key={i} entry={entry} />
+                            <ResultEntry
+                                key={i}
+                                entry={entry}
+                                onLineClick={line => emit('editor:goto-line', { line })}
+                            />
                         ) : (
-                            <ConsoleEntry key={i} entry={entry} />
+                            <ConsoleEntry
+                                key={i}
+                                entry={entry}
+                                onLineClick={line => emit('editor:goto-line', { line })}
+                            />
                         ),
                     )}
                 </div>

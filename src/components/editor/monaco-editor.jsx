@@ -374,5 +374,15 @@ export const MonacoEditor = ({
         }, []),
     );
 
+    useListener(
+        'editor:goto-line',
+        useCallback(({ line }) => {
+            if (!$editor.current) return;
+            $editor.current.revealLineInCenter(line);
+            $editor.current.setPosition({ lineNumber: line, column: 1 });
+            $editor.current.focus();
+        }, []),
+    );
+
     return <div ref={$container} className='h-full w-full min-w-0 overflow-hidden select-text' />;
 };

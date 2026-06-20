@@ -1,9 +1,11 @@
-import { Eye, Table, MessageCircle, Globe, Terminal } from 'lucide-react';
+import { Eye, Table, MessageCircle, Globe, Terminal, Braces } from 'lucide-react';
 import { MarkdownRunner } from '@/components/runners/markdown-runner';
 import { HtmlRunner } from '@/components/runners/html-runner';
 import { CsvRunner } from '@/components/runners/csv-runner';
 import { WhatsAppRunner } from '@/components/runners/whatsapp-runner';
 import { JsRunner } from '@/components/runners/js-runner';
+import { JsonRunner } from '@/components/runners/json-runner';
+import { SvgRunner } from '@/components/runners/svg-runner';
 
 const RUNNERS = [
     {
@@ -40,6 +42,20 @@ const RUNNERS = [
         icon: Terminal,
         component: JsRunner,
         languages: ['javascript', 'typescript', 'jsx', 'tsx'],
+    },
+    {
+        id: 'json',
+        label: 'Preview',
+        icon: Braces,
+        component: JsonRunner,
+        languages: ['json'],
+    },
+    {
+        id: 'svg',
+        label: 'Preview',
+        icon: Eye,
+        component: SvgRunner,
+        languages: ['svg'],
     },
 ];
 

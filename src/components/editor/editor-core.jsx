@@ -174,15 +174,6 @@ const [isDragging, setIsDragging] = useState(false);
             ) : (
                 <EditorSkeleton />
             )}
-            <AnimatePresence>
-                {isDragging && yContext && !readOnly && (
-                    <FileDropOverlay
-                        yContext={yContext}
-                        onCreateFile={onCreateFile}
-                        onDismiss={() => setIsDragging(false)}
-                    />
-                )}
-            </AnimatePresence>
         </div>
     );
 
@@ -203,7 +194,7 @@ const [isDragging, setIsDragging] = useState(false);
                 setIsDragging(false);
             }}
         >
-            <div className='min-h-0 flex-1 overflow-hidden'>
+            <div className='relative min-h-0 flex-1 overflow-hidden'>
                 {isMobile ? (
                     <>
                         <div className='h-full'>{editorPane}</div>
@@ -232,6 +223,15 @@ const [isDragging, setIsDragging] = useState(false);
                         )}
                     </ResizablePanelGroup>
                 )}
+                <AnimatePresence>
+                    {isDragging && yContext && !readOnly && (
+                        <FileDropOverlay
+                            yContext={yContext}
+                            onCreateFile={onCreateFile}
+                            onDismiss={() => setIsDragging(false)}
+                        />
+                    )}
+                </AnimatePresence>
             </div>
             <StatusBar
                 language={file.language}

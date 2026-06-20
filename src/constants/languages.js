@@ -191,6 +191,14 @@ export const LANGUAGES = {
         icon: 'devicon-xml-plain',
         color: '#fb8c00',
     },
+    svg: {
+        id: 'svg',
+        monacoId: 'xml',
+        label: 'SVG',
+        extensions: ['.svg'],
+        icon: null,
+        color: '#ffb13b',
+    },
     c: {
         id: 'c',
         monacoId: 'c',

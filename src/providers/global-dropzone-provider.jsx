@@ -13,8 +13,11 @@ import { getLanguageByFilename } from '@/constants/languages';
 
 const MAX_FILE_SIZE = 500 * 1024;
 const BLOCKED_TYPES = ['image/', 'video/', 'audio/'];
+const ALLOWED_TYPES = ['image/svg+xml'];
 
-const isBlocked = file => BLOCKED_TYPES.some(prefix => file.type.startsWith(prefix));
+const isBlocked = file =>
+    BLOCKED_TYPES.some(prefix => file.type.startsWith(prefix)) &&
+    !ALLOWED_TYPES.includes(file.type);
 
 const readAsText = file =>
     new Promise((resolve, reject) => {
