@@ -247,6 +247,14 @@ export const LANGUAGES = {
         icon: null,
         color: '#ff6b35',
     },
+    mermaid: {
+        id: 'mermaid',
+        monacoId: 'mermaid',
+        label: 'Mermaid',
+        extensions: ['.mmd', '.mermaid'],
+        icon: null,
+        color: '#ff3670',
+    },
     plaintext: {
         id: 'plaintext',
         monacoId: 'plaintext',

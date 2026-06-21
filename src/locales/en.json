@@ -429,6 +429,9 @@
                 "search": "Filter requests…",
                 "empty": "No requests found",
                 "no_proxy": "VITE_PROXY_URL is not configured. Add it to your .env file to send requests."
+            },
+            "mermaid": {
+                "error": "Invalid diagram"
             }
         }
     },

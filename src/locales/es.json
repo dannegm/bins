@@ -429,6 +429,9 @@
                 "search": "Filtrar peticiones…",
                 "empty": "No se encontraron peticiones",
                 "no_proxy": "VITE_PROXY_URL no está configurado. Agrégalo a tu archivo .env para enviar peticiones."
+            },
+            "mermaid": {
+                "error": "Diagrama inválido"
             }
         }
     },

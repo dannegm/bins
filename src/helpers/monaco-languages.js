@@ -2,8 +2,9 @@ import * as monaco from 'monaco-editor';
 import * as csv from '@/helpers/languages/csv';
 import * as whatsapp from '@/helpers/languages/whatsapp';
 import * as http from '@/helpers/languages/http';
+import * as mermaid from '@/helpers/languages/mermaid';
 
-const CUSTOM_LANGUAGES = [csv, whatsapp, http];
+const CUSTOM_LANGUAGES = [csv, whatsapp, http, mermaid];
 
 const HTTP_VERB_RULES_DARK = [
     { token: 'http.verb.get',     foreground: '60a5fa', fontStyle: 'bold' },

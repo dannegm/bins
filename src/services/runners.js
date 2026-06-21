@@ -1,4 +1,4 @@
-import { Eye, Table, MessageCircle, Globe, Terminal, Braces, Network } from 'lucide-react';
+import { Eye, Table, MessageCircle, Globe, Terminal, Braces, Network, GitBranch } from 'lucide-react';
 import { MarkdownRunner } from '@/components/runners/markdown-runner';
 import { HtmlRunner } from '@/components/runners/html-runner';
 import { CsvRunner } from '@/components/runners/csv-runner';
@@ -7,6 +7,7 @@ import { JsRunner } from '@/components/runners/js-runner';
 import { JsonRunner } from '@/components/runners/json-runner';
 import { SvgRunner } from '@/components/runners/svg-runner';
 import { HttpRunner } from '@/components/runners/http-runner';
+import { MermaidRunner } from '@/components/runners/mermaid-runner';
 
 const RUNNERS = [
     {
@@ -64,6 +65,13 @@ const RUNNERS = [
         icon: Network,
         component: HttpRunner,
         languages: ['http'],
+    },
+    {
+        id: 'mermaid',
+        label: 'Diagram',
+        icon: GitBranch,
+        component: MermaidRunner,
+        languages: ['mermaid'],
     },
 ];
 
