@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Check, Copy, Link2, LogIn } from 'lucide-react';
 import { useCopyToClipboard } from '@uidotdev/usehooks';
 import { settings } from '@/services/settings';
+import { supabase } from '@/services/supabase';
 import { signJWT } from '@/helpers/jwt';
 import { Input } from '@/ui/input';
 import { Button } from '@/ui/button';
@@ -111,7 +112,8 @@ const ExportSessionCard = ({ t }) => {
 
     const generate = async () => {
         const user = settings.get('user');
-        const token = await signJWT({ user }, { expiresIn: '15m' });
+        const { data: { session } } = await supabase().auth.getSession();
+        const token = await signJWT({ user, refreshToken: session.refresh_token }, { expiresIn: '15m' });
         const url = `${window.location.origin}/login?token=${token}`;
         setLink(url);
         copy(url);
