@@ -32,6 +32,7 @@ export const EditorCore = ({
     onSelectionChange,
     onCreateFile,
     onContentSaved,
+    onSaveStatusChange,
     runner = null,
     showRunner = false,
     onCloseRunner,
@@ -100,6 +101,10 @@ const [isDragging, setIsDragging] = useState(false);
         },
         [file.id, onFirstSave],
     );
+
+    useEffect(() => {
+        onSaveStatusChange?.(saveStatus);
+    }, [saveStatus]);
 
     useEffect(() => {
         if (!yContext) return;

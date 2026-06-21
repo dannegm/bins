@@ -2,15 +2,7 @@
 
 ## TL;DR
 
-Fase 2 ~95% completa (solo falta regex runner). Fase 3 ~70%.
-
----
-
-## Runner pendiente
-
-| Runner | Lenguajes | Descripción |
-|---|---|---|
-| **Regex** | `regex` | Railroad diagrams via regexper |
+Fase 2 completa. Fase 3 ~70%.
 
 ---
 
@@ -29,7 +21,6 @@ Fase 2 ~95% completa (solo falta regex runner). Fase 3 ~70%.
 
 ## Próximos pasos recomendados
 
-1. **Regex runner** — cierra la Fase 2. Usa regexper embebido o su API; Railroad diagrams para patrones regex
-2. **Favicon + document.title** — se nota mucho en uso diario, bajo esfuerzo
-3. **Search widget** — drag+snap, mejora navegación entre bins
-4. **Paquetes npm modal** — permite que el JS runner cargue dependencias externas
+1. **Favicon + document.title** — se nota mucho en uso diario, bajo esfuerzo
+2. **Search widget** — drag+snap, mejora navegación entre bins
+3. **Paquetes npm modal** — permite que el JS runner cargue dependencias externas

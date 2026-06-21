@@ -16,6 +16,8 @@ import { getFiles, createFile, updateFile, deleteFile } from '@/services/bin-fil
 import { supabase } from '@/services/supabase';
 import { useIdentity } from '@/hooks/use-identity';
 import { useAdmin } from '@/hooks/use-admin';
+import { useFavicon } from '@/hooks/use-favicon';
+import { useDocumentTitle } from '@/hooks/use-document-title';
 import { useListener, useEvents } from '@/providers/bus-provider';
 import { getLanguageByFilename } from '@/constants/languages';
 import { getRunner } from '@/services/runners';
@@ -57,6 +59,8 @@ export const EditorPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [peers, setPeers] = useState({});
     const [pendingReveal, setPendingReveal] = useState(null);
+
+    const [saveStatus, setSaveStatus] = useState('idle');
 
     const $undoManager = useRef(null);
     const $hasBeenSaved = useRef(false);
@@ -373,6 +377,10 @@ export const EditorPage = () => {
     const isGuestReadonly = !isAuthor && !isAdmin && (bin?.is_readonly ?? true);
     const runner = activeFile ? getRunner(activeFile.language) : null;
 
+    const hasUnsaved = saveStatus === 'unsaved';
+    useFavicon({ hasUnsaved });
+    useDocumentTitle({ binTitle: bin?.title, fileName: activeFile?.name, hasUnsaved });
+
     const broadcast = (event, payload) => {
         $binChannel.current?.send({ type: 'broadcast', event, payload });
     };
@@ -515,6 +523,7 @@ export const EditorPage = () => {
                         onRevealed={() => setPendingReveal(null)}
                         onUndoManagerReady={handleUndoManagerReady}
                         onFirstSave={handleFirstSave}
+                        onSaveStatusChange={setSaveStatus}
                         onCursorChange={handleEditorCursorChange}
                         onSelectionChange={handleEditorSelectionChange}
                         onLanguageChange={handleLanguageChange}
