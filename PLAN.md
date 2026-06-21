@@ -1703,7 +1703,7 @@ curl -X POST 'https://endpoints.hckr.mx/proxys/custom' \
 - [ ] HTML runner + import resolver (`helpers/import-resolver.js`)
 - [ ] JS/TS/JSX/TSX REPL (sucrase) + resolución de imports entre archivos
 - [ ] Regex playground (regexp-tree + railroad diagrams)
-- [ ] HTTP runner + proxy (`VITE_HTTP_PROXY_URL`)
+- [ ] HTTP runner + proxy (`VITE_PROXY_URL`)
 
 ### Fase 3 — Polish
 

@@ -153,7 +153,7 @@ Yjs CRDT sync (actual document content) runs over a third channel per file:
 VITE_SUPABASE_URL=
 VITE_SUPABASE_PUBLISHABLE_KEY=
 VITE_ADMIN_KEY=          # stored in localStorage to unlock admin mode
-VITE_HTTP_PROXY_URL=     # e.g. https://endpoints.hckr.mx/proxys/custom — for HTTP runner
+VITE_PROXY_URL=     # e.g. https://endpoints.hckr.mx/proxys/custom — for HTTP runner
 VITE_SESSION_SECRET=     # secret for signing session transfer JWTs (jose)
 ```
 
@@ -173,10 +173,10 @@ VITE_SESSION_SECRET=     # secret for signing session transfer JWTs (jose)
 
 ## HTTP proxy
 
-The HTTP runner sends requests through a proxy to avoid CORS. The proxy endpoint is `VITE_HTTP_PROXY_URL` and expects the full target URL in the `x-proxy-target` header:
+The HTTP runner sends requests through a proxy to avoid CORS. The proxy endpoint is `VITE_PROXY_URL` and expects the full target URL in the `x-proxy-target` header:
 
 ```
-GET  {VITE_HTTP_PROXY_URL}
+GET  {VITE_PROXY_URL}
 x-proxy-target: https://api.example.com/endpoint?foo=bar
 ```
 

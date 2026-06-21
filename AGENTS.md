@@ -181,7 +181,7 @@ These will be handed off before implementation — do not stub or recreate:
 ```
 VITE_SUPABASE_URL=
 VITE_SUPABASE_PUBLISHABLE_KEY=
-VITE_HTTP_PROXY_URL=        # For HTTP runner
+VITE_PROXY_URL=        # For HTTP runner
 ```
 
 ## Documentation Files to Keep in Sync

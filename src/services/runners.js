@@ -1,4 +1,4 @@
-import { Eye, Table, MessageCircle, Globe, Terminal, Braces } from 'lucide-react';
+import { Eye, Table, MessageCircle, Globe, Terminal, Braces, Network } from 'lucide-react';
 import { MarkdownRunner } from '@/components/runners/markdown-runner';
 import { HtmlRunner } from '@/components/runners/html-runner';
 import { CsvRunner } from '@/components/runners/csv-runner';
@@ -6,6 +6,7 @@ import { WhatsAppRunner } from '@/components/runners/whatsapp-runner';
 import { JsRunner } from '@/components/runners/js-runner';
 import { JsonRunner } from '@/components/runners/json-runner';
 import { SvgRunner } from '@/components/runners/svg-runner';
+import { HttpRunner } from '@/components/runners/http-runner';
 
 const RUNNERS = [
     {
@@ -56,6 +57,13 @@ const RUNNERS = [
         icon: Eye,
         component: SvgRunner,
         languages: ['svg'],
+    },
+    {
+        id: 'http',
+        label: 'Requests',
+        icon: Network,
+        component: HttpRunner,
+        languages: ['http'],
     },
 ];
 

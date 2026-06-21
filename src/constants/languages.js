@@ -239,6 +239,14 @@ export const LANGUAGES = {
         icon: null,
         color: '#25d366',
     },
+    http: {
+        id: 'http',
+        monacoId: 'http',
+        label: 'HTTP',
+        extensions: ['.http', '.rest', '.api'],
+        icon: null,
+        color: '#ff6b35',
+    },
     plaintext: {
         id: 'plaintext',
         monacoId: 'plaintext',

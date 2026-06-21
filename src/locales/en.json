@@ -419,6 +419,14 @@
             },
             "html": {
                 "untitled": "Untitled"
+            },
+            "http": {
+                "run": "Run",
+                "env_vars": "Variables",
+                "env_placeholder": "Value…",
+                "headers": "Headers",
+                "empty": "No requests found",
+                "no_proxy": "VITE_PROXY_URL is not configured. Add it to your .env file to send requests."
             }
         }
     },

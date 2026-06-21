@@ -1,8 +1,9 @@
 import * as monaco from 'monaco-editor';
 import * as csv from '@/helpers/languages/csv';
 import * as whatsapp from '@/helpers/languages/whatsapp';
+import * as http from '@/helpers/languages/http';
 
-const CUSTOM_LANGUAGES = [csv, whatsapp];
+const CUSTOM_LANGUAGES = [csv, whatsapp, http];
 
 // Singleton state — all custom languages here are stateless (column/token
 // counts reset per line), so one shared IState object is enough.
