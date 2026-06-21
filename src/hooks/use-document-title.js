@@ -2,23 +2,24 @@ import { useEffect, useState, useCallback } from 'react';
 import { useListener } from '@/providers/bus-provider';
 
 export const useDocumentTitle = ({ binTitle, fileName, hasUnsaved }) => {
-    const [isVisible, setIsVisible] = useState(!document.hidden);
+    const [isVisible, setIsVisible] = useState(document.hasFocus());
     const [hasNudge, setHasNudge] = useState(false);
 
     useEffect(() => {
-        const handleVisibility = () => {
-            const visible = !document.hidden;
-            setIsVisible(visible);
-            if (visible) setHasNudge(false);
+        const handleFocus = () => { setIsVisible(true); setHasNudge(false); };
+        const handleBlur = () => setIsVisible(false);
+        window.addEventListener('focus', handleFocus);
+        window.addEventListener('blur', handleBlur);
+        return () => {
+            window.removeEventListener('focus', handleFocus);
+            window.removeEventListener('blur', handleBlur);
         };
-        document.addEventListener('visibilitychange', handleVisibility);
-        return () => document.removeEventListener('visibilitychange', handleVisibility);
     }, []);
 
     useListener(
         'peer:nudge:received',
         useCallback(() => {
-            if (document.hidden) setHasNudge(true);
+            if (!document.hasFocus()) setHasNudge(true);
         }, []),
     );
 

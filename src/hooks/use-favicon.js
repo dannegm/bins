@@ -2,12 +2,12 @@ import { useEffect, useState, useCallback } from 'react';
 import { useTheme } from '@/providers/theme-provider';
 import { useListener } from '@/providers/bus-provider';
 
-const DOT_RADIUS = 5;
+const DOT_RADIUS = 6;
 
 const DOT_COLOR = {
-    offline: '#ff5555',
-    nudge: '#f1fa8c',
-    unsaved: '#8be9fd',
+    offline: '#FF0052',
+    nudge: '#FFD400',
+    unsaved: '#0055DA',
 };
 
 const drawFavicon = (img, dotColor) => {
@@ -17,8 +17,8 @@ const drawFavicon = (img, dotColor) => {
     const ctx = canvas.getContext('2d');
     ctx.drawImage(img, 0, 0, 32, 32);
     if (dotColor) {
-        const cx = 32 - DOT_RADIUS - 2;
-        const cy = 32 - DOT_RADIUS - 2;
+        const cx = 32 - DOT_RADIUS;
+        const cy = DOT_RADIUS;
         ctx.beginPath();
         ctx.arc(cx, cy, DOT_RADIUS, 0, Math.PI * 2);
         ctx.fillStyle = dotColor;
@@ -41,7 +41,7 @@ export const useFavicon = ({ hasUnsaved }) => {
     const { isDark } = useTheme();
     const [img, setImg] = useState(null);
     const [isOnline, setIsOnline] = useState(navigator.onLine);
-    const [isVisible, setIsVisible] = useState(!document.hidden);
+    const [isVisible, setIsVisible] = useState(document.hasFocus());
     const [hasNudge, setHasNudge] = useState(false);
 
     useEffect(() => {
@@ -62,19 +62,20 @@ export const useFavicon = ({ hasUnsaved }) => {
     }, []);
 
     useEffect(() => {
-        const handleVisibility = () => {
-            const visible = !document.hidden;
-            setIsVisible(visible);
-            if (visible) setHasNudge(false);
+        const handleFocus = () => { setIsVisible(true); setHasNudge(false); };
+        const handleBlur = () => setIsVisible(false);
+        window.addEventListener('focus', handleFocus);
+        window.addEventListener('blur', handleBlur);
+        return () => {
+            window.removeEventListener('focus', handleFocus);
+            window.removeEventListener('blur', handleBlur);
         };
-        document.addEventListener('visibilitychange', handleVisibility);
-        return () => document.removeEventListener('visibilitychange', handleVisibility);
     }, []);
 
     useListener(
         'peer:nudge:received',
         useCallback(() => {
-            if (document.hidden) setHasNudge(true);
+            if (!document.hasFocus()) setHasNudge(true);
         }, []),
     );
 
