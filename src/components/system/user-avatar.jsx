@@ -5,19 +5,19 @@ import { getProfile } from '@/services/profiles';
 import { useIdentity } from '@/hooks/use-identity';
 import { useTheme } from '@/providers/theme-provider';
 
-export const UserAvatar = ({ className, profileId }) => {
+export const UserAvatar = ({ className, profileId, profile: profileProp }) => {
     const { user } = useIdentity();
     const { isDark } = useTheme();
 
-    const { data: profile } = useQuery({
+    const { data: fetched } = useQuery({
         queryKey: ['profile', profileId],
         queryFn: () => getProfile(profileId),
-        enabled: !!profileId,
+        enabled: !!profileId && !profileProp,
     });
 
-    const source = profileId ? profile : user;
-    const seed = source ? source.name + source.uuid : null;
-    const color = isDark ? source?.colorDark : source?.colorLight;
+    const source = profileProp ?? (profileId ? fetched : user);
+    const seed = source ? source.name + (source.uuid ?? source.id) : null;
+    const color = isDark ? (source?.colorDark ?? source?.color_dark) : (source?.colorLight ?? source?.color_light);
 
     return (
         <div

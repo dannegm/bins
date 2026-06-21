@@ -291,6 +291,7 @@
             "filter_bot": "Bots",
             "badge_bot": "Bot",
             "badge_human": "Humano",
+            "badge_admin": "Admin",
             "mark_as_bot": "Marcar como bot",
             "mark_as_human": "Marcar como humano",
             "scheduled_deletion": "Programado para eliminarse el {{date}}",

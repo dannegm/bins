@@ -30,9 +30,8 @@ import {
     RefreshCw,
 } from 'lucide-react';
 import { supabase } from '@/services/supabase';
-import { getAvatarUrl } from '@/helpers/avatar';
 import { parseUA, nextBotDeletion } from '@/helpers/ua-parser';
-import { useTheme } from '@/providers/theme-provider';
+import { UserAvatar } from '@/components/system/user-avatar';
 import { useIdentity } from '@/hooks/use-identity';
 import { cn } from '@/helpers/utils';
 import { Input } from '@/ui/input';
@@ -97,7 +96,7 @@ const useAdminUsers = ({ page, perPage, filter, sortBy, sortDir, search }) =>
             let query = supabase()
                 .from('profiles')
                 .select(
-                    'uuid, name, color_light, color_dark, country, city, user_agent, ip_hash, is_bot, created_at, bins(count)',
+                    'uuid, name, color_light, color_dark, country, city, user_agent, ip_hash, is_bot, is_admin, created_at, bins(count)',
                     { count: 'exact' },
                 );
 
@@ -163,6 +162,13 @@ const TypeBadge = ({ isBot, t }) => (
     >
         {isBot ? <Bot className='size-4 shrink-0' /> : <User className='size-4 shrink-0' />}
         {isBot ? t('admin.users.badge_bot') : t('admin.users.badge_human')}
+    </span>
+);
+
+const AdminBadge = ({ t }) => (
+    <span className='inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold bg-brand/10 text-brand'>
+        <ShieldCheck className='size-3 shrink-0' />
+        {t('admin.users.badge_admin')}
     </span>
 );
 
@@ -465,9 +471,6 @@ const PerPageSelector = ({ perPage, onPerPage, t }) => (
 );
 
 const UserRow = ({ profile, t, formatDate, isMe, isMyIp, onToggleBot, isTogglingBot }) => {
-    const { isDark } = useTheme();
-    const color = isDark ? profile.color_dark : profile.color_light;
-    const seed = profile.name + profile.uuid;
     const binCount = parseInt(profile.bins?.[0]?.count ?? 0);
     const [copied, setCopied] = useState(false);
 
@@ -487,17 +490,13 @@ const UserRow = ({ profile, t, formatDate, isMe, isMyIp, onToggleBot, isToggling
                 <RouterLink
                     to='/user/$uuid'
                     params={{ uuid: profile.uuid }}
-                    className='flex items-center gap-3 hover:opacity-80 transition-opacity'
+                    className='flex items-center gap-2 hover:opacity-80 transition-opacity'
                 >
-                    <div
-                        className='size-5 shrink-0 overflow-hidden rounded-full bg-(--user-color)'
-                        style={{ '--user-color': color }}
-                    >
-                        <img src={getAvatarUrl(seed)} alt={profile.name} className='size-full' />
-                    </div>
+                    <UserAvatar profile={profile} className='size-5 shrink-0' />
                     <span className='text-sm font-medium text-foreground'>
                         {profile.name || t('admin.users.anonymous')}
                     </span>
+                    {profile.is_admin && <AdminBadge t={t} />}
                     {isMe && (
                         <span className='rounded-full bg-brand/10 px-1.5 py-0.5 text-[10px] font-medium text-brand'>
                             {t('profile.you')}

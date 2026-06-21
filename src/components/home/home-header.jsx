@@ -63,9 +63,17 @@ export const HomeHeader = ({ search, onSearchChange }) => {
 
             {user?.uuid && (
                 <div className='flex min-w-0 items-center gap-3 rounded-xl border border-border bg-card p-3 sm:order-first sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0'>
-                    <UserAvatar />
+                    <Link to='/user/$uuid' params={{ uuid: user.uuid }}>
+                        <UserAvatar className='transition-opacity hover:opacity-80' />
+                    </Link>
                     <div className='flex min-w-0 flex-col'>
-                        <span className='text-sm font-medium text-foreground'>{user.name}</span>
+                        <Link
+                            to='/user/$uuid'
+                            params={{ uuid: user.uuid }}
+                            className='text-sm font-medium text-foreground transition-opacity hover:opacity-80'
+                        >
+                            {user.name}
+                        </Link>
                         <CopyUUID
                             className='-ml-1'
                             uuid={user.uuid}

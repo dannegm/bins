@@ -2,17 +2,6 @@
 
 ---
 
-## 🔴 Seguridad
-
-### 2. `x-client-id` es spoofeable — la identidad anónima no es un modelo de seguridad
-Cualquier request puede enviar cualquier UUID como `x-client-id`. Las políticas RLS confían completamente en este header. Un usuario malicioso puede eliminar bins de otra persona si conoce su UUID, o impersonar a cualquier usuario cuyo UUID haya obtenido (aparece en `/user/:uuid`, en awareness, etc.).
-
-**Corto plazo:** Documentar que este es un modelo de "buena fe" — la app no pretende ser un sistema de autenticación real.
-
-**Largo plazo:** Migrar a Supabase Auth con usuarios anónimos (nativo desde 2024) — mantiene la UX sin registro pero con tokens firmados no falsificables.
-
----
-
 ## 🟡 Performance
 
 ### 6. Bundle de Monaco no optimizado
@@ -58,7 +47,6 @@ Si el usuario cambia el idioma en Settings, Monaco sigue en el idioma del bundle
 
 | Prioridad | Item | Esfuerzo |
 |-----------|------|----------|
-| 🔴 Crítico | x-client-id spoofeable (#2) | Alto |
 | 🟡 Perf | Monaco bundle optimizado (#6) | Medio |
 | 🔵 UX | Badge en embed (#8) | Muy bajo |
 | 🔵 UX | Historial de versiones (#9) | Alto |
