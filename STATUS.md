@@ -2,11 +2,11 @@
 
 ## TL;DR
 
-Fase 2 ~90% completa (falta regex runner). Fase 3 ~70%. El producto es funcional y desplegable.
+Fase 2 ~95% completa (solo falta regex runner). Fase 3 ~70%.
 
 ---
 
-## Runners pendientes
+## Runner pendiente
 
 | Runner | Lenguajes | Descripción |
 |---|---|---|
@@ -29,7 +29,7 @@ Fase 2 ~90% completa (falta regex runner). Fase 3 ~70%. El producto es funcional
 
 ## Próximos pasos recomendados
 
-1. **Regex runner** — rápido de implementar (regexper), valor alto para usuarios técnicos
-2. **HTTP runner** — el más complejo; depende del proxy `VITE_PROXY_URL`
-3. **Favicon + document.title** — pulido de calidad, se nota mucho en uso diario
-4. **Search widget** — mejora la UX de navegación entre bins
+1. **Regex runner** — cierra la Fase 2. Usa regexper embebido o su API; Railroad diagrams para patrones regex
+2. **Favicon + document.title** — se nota mucho en uso diario, bajo esfuerzo
+3. **Search widget** — drag+snap, mejora navegación entre bins
+4. **Paquetes npm modal** — permite que el JS runner cargue dependencias externas
