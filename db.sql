@@ -106,8 +106,7 @@ alter table bins.bin_collaborators enable row level security;
 create or replace function bins.requesting_user_is_admin()
 returns boolean as $$
   select coalesce(
-    (select is_admin from bins.profiles
-     where uuid::text = current_setting('request.headers', true)::json->>'x-client-id'),
+    (select is_admin from bins.profiles where uuid = auth.uid()),
     false
   );
 $$ language sql security definer stable;
@@ -115,21 +114,14 @@ $$ language sql security definer stable;
 -- RPC: check bin existence and access without RLS blocking private bins
 create or replace function bins.get_bin_access(p_bin_id text)
 returns table(bin_exists bool, can_access bool)
-security definer
-stable
-language sql
-as $$
-  with b as (
-    select visibility, author_id
-    from bins.bins
-    where id = p_bin_id
-  )
+security definer stable language sql as $$
+  with b as (select visibility, author_id from bins.bins where id = p_bin_id)
   select
     (exists (select 1 from b))::bool,
     (exists (
       select 1 from b
       where visibility != 'private'
-         or author_id::text = current_setting('request.headers', true)::json->>'x-client-id'
+         or author_id = auth.uid()
          or bins.requesting_user_is_admin()
     ))::bool;
 $$;
@@ -143,20 +135,18 @@ create policy "profiles: admin full access"
 create policy "profiles: anyone can select"
   on bins.profiles for select using (true);
 
-create policy "profiles: anyone can insert"
-  on bins.profiles for insert with check (true);
+create policy "profiles: owner can insert"
+  on bins.profiles for insert
+  with check (uuid = auth.uid());
 
 create policy "profiles: owner can update"
   on bins.profiles for update
-  using (uuid::text = current_setting('request.headers', true)::json->>'x-client-id')
-  with check (
-    uuid::text = current_setting('request.headers', true)::json->>'x-client-id'
-    and is_admin = false
-  );
+  using (uuid = auth.uid())
+  with check (uuid = auth.uid() and is_admin = false);
 
 create policy "profiles: owner can delete"
   on bins.profiles for delete
-  using (uuid::text = current_setting('request.headers', true)::json->>'x-client-id');
+  using (uuid = auth.uid());
 
 -- bins
 create policy "bins: admin full access"
@@ -168,26 +158,27 @@ create policy "bins: select by visibility"
   on bins.bins for select
   using (
     visibility in ('public', 'unlisted')
-    or author_id::text = current_setting('request.headers', true)::json->>'x-client-id'
+    or author_id = auth.uid()
   );
 
-create policy "bins: anyone can insert"
-  on bins.bins for insert with check (true);
+create policy "bins: owner can insert"
+  on bins.bins for insert
+  with check (author_id = auth.uid());
 
 create policy "bins: update when not readonly"
   on bins.bins for update
   using (
     is_readonly = false
-    or author_id::text = current_setting('request.headers', true)::json->>'x-client-id'
+    or author_id = auth.uid()
   )
   with check (
     is_readonly = false
-    or author_id::text = current_setting('request.headers', true)::json->>'x-client-id'
+    or author_id = auth.uid()
   );
 
 create policy "bins: owner can delete"
   on bins.bins for delete
-  using (author_id::text = current_setting('request.headers', true)::json->>'x-client-id');
+  using (author_id = auth.uid());
 
 -- bin_files
 create policy "bin_files: admin full access"
@@ -203,7 +194,7 @@ create policy "bin_files: select inherits bin visibility"
       where b.id = bin_id
       and (
         b.visibility in ('public', 'unlisted')
-        or b.author_id::text = current_setting('request.headers', true)::json->>'x-client-id'
+        or b.author_id = auth.uid()
       )
     )
   );
@@ -216,7 +207,7 @@ create policy "bin_files: insert inherits bin readonly"
       where b.id = bin_id
       and (
         b.is_readonly = false
-        or b.author_id::text = current_setting('request.headers', true)::json->>'x-client-id'
+        or b.author_id = auth.uid()
       )
     )
   );
@@ -229,7 +220,7 @@ create policy "bin_files: update inherits bin readonly"
       where b.id = bin_id
       and (
         b.is_readonly = false
-        or b.author_id::text = current_setting('request.headers', true)::json->>'x-client-id'
+        or b.author_id = auth.uid()
       )
     )
   );
@@ -240,7 +231,7 @@ create policy "bin_files: delete inherits bin owner"
     exists (
       select 1 from bins.bins b
       where b.id = bin_id
-      and b.author_id::text = current_setting('request.headers', true)::json->>'x-client-id'
+      and b.author_id = auth.uid()
     )
   );
 
@@ -259,11 +250,11 @@ create policy "bin_collaborators: anyone can insert"
 create policy "bin_collaborators: owner or self can delete"
   on bins.bin_collaborators for delete
   using (
-    user_id::text = current_setting('request.headers', true)::json->>'x-client-id'
+    user_id = auth.uid()
     or exists (
       select 1 from bins.bins b
       where b.id = bin_id
-      and b.author_id::text = current_setting('request.headers', true)::json->>'x-client-id'
+      and b.author_id = auth.uid()
     )
   );
 
@@ -280,13 +271,13 @@ create index if not exists idx_profiles_is_admin on bins.profiles (is_admin);
 -- Grants
 -- -----------------------------------------------------------------------------
 
-GRANT USAGE ON SCHEMA bins TO anon, authenticated, service_role;
-GRANT ALL ON ALL TABLES IN SCHEMA bins TO anon, authenticated, service_role;
-GRANT ALL ON ALL ROUTINES IN SCHEMA bins TO anon, authenticated, service_role;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA bins TO anon, authenticated, service_role;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA bins GRANT ALL ON TABLES TO anon, authenticated, service_role;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA bins GRANT ALL ON ROUTINES TO anon, authenticated, service_role;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA bins GRANT ALL ON SEQUENCES TO anon, authenticated, service_role;
+GRANT USAGE ON SCHEMA bins TO authenticated, service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA bins TO authenticated, service_role;
+GRANT ALL ON ALL ROUTINES IN SCHEMA bins TO authenticated, service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA bins TO authenticated, service_role;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA bins GRANT ALL ON TABLES TO authenticated, service_role;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA bins GRANT ALL ON ROUTINES TO authenticated, service_role;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA bins GRANT ALL ON SEQUENCES TO authenticated, service_role;
 
 
 -- -----------------------------------------------------------------------------
@@ -312,4 +303,33 @@ select cron.schedule(
 )
 where not exists (
   select 1 from cron.job where jobname = 'delete-bot-profiles'
+);
+
+-- Cada lunes a las 4am: borrar usuarios anónimos sin actividad en >30 días
+create or replace function bins.cleanup_inactive_anon_users()
+returns void
+language plpgsql
+security definer
+as $$
+begin
+  delete from bins.profiles
+  where uuid in (
+    select id from auth.users
+    where is_anonymous = true
+    and coalesce(last_sign_in_at, created_at) < now() - interval '30 days'
+  );
+
+  delete from auth.users
+  where is_anonymous = true
+  and coalesce(last_sign_in_at, created_at) < now() - interval '30 days';
+end;
+$$;
+
+select cron.schedule(
+  'cleanup-inactive-anon-users',
+  '0 4 * * 1',
+  $$select bins.cleanup_inactive_anon_users()$$
+)
+where not exists (
+  select 1 from cron.job where jobname = 'cleanup-inactive-anon-users'
 );
