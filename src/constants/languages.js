@@ -211,7 +211,7 @@ export const LANGUAGES = {
         id: 'cpp',
         monacoId: 'cpp',
         label: 'C++',
-        extensions: ['.cpp', '.cxx', '.cc', '.hpp'],
+        extensions: ['.cpp', '.cxx', '.cc', '.hpp', '.ino'],
         icon: 'devicon-cplusplus-plain',
         color: '#00599c',
     },
