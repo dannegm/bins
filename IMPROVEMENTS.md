@@ -13,13 +13,6 @@ Cualquier request puede enviar cualquier UUID como `x-client-id`. Las políticas
 
 ---
 
-### 3. `new Function` en el proveedor AI Custom Nivel 2
-El adapter JS personalizado ejecuta código arbitrario con `new Function`. Es un vector de XSS/data exfiltration si alguien comparte settings maliciosos via URL.
-
-**Solución:** Ejecutar el adapter en un Web Worker aislado, o mostrar advertencia explícita al importar settings con adapter JS personalizado.
-
----
-
 ## 🟡 Performance
 
 ### 6. Bundle de Monaco no optimizado
@@ -66,7 +59,6 @@ Si el usuario cambia el idioma en Settings, Monaco sigue en el idioma del bundle
 | Prioridad | Item | Esfuerzo |
 |-----------|------|----------|
 | 🔴 Crítico | x-client-id spoofeable (#2) | Alto |
-| 🔴 Crítico | `new Function` en AI Custom (#3) | Medio |
 | 🟡 Perf | Monaco bundle optimizado (#6) | Medio |
 | 🔵 UX | Badge en embed (#8) | Muy bajo |
 | 🔵 UX | Historial de versiones (#9) | Alto |
