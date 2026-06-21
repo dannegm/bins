@@ -444,5 +444,9 @@
         "error_expired": "This session link has expired.",
         "error_invalid": "This session link is invalid.",
         "go_home": "Go home"
+    },
+    "maintenance": {
+        "title": "We'll be right back",
+        "description": "We're doing some maintenance. Hang tight."
     }
 }

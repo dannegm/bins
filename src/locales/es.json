@@ -444,5 +444,9 @@
         "error_expired": "Este enlace de sesión ha expirado.",
         "error_invalid": "Este enlace de sesión no es válido.",
         "go_home": "Ir al inicio"
+    },
+    "maintenance": {
+        "title": "Volvemos pronto",
+        "description": "Estamos haciendo mantenimiento. Ya regresamos."
     }
 }

@@ -3,6 +3,7 @@ import '@/css/index.css';
 
 import { NuqsAdapter } from 'nuqs/adapters/tanstack-router';
 import { createProviders } from '@/helpers/providers';
+import { MaintenanceProvider } from './maintenance-provider';
 import { HeadlessGuard } from './headless-guard';
 import { QueryProvider } from './query-provider';
 import { BusProvider } from './bus-provider';
@@ -20,6 +21,8 @@ import { NyanCatProvider } from '@/components/system/nyan-cat';
 import { DeviceProvider } from '@/providers/device-provider';
 import { GlobalDropzoneProvider } from '@/providers/global-dropzone-provider';
 
+const MAINTENANCE_MODE = true;
+
 const CommandsBridge = ({ children }) => {
     useExternalCommands();
     useGlobalCommands();
@@ -28,6 +31,7 @@ const CommandsBridge = ({ children }) => {
 };
 
 export const Providers = createProviders([
+    [MaintenanceProvider, { enabled: MAINTENANCE_MODE }],
     [HeadlessGuard],
     [DeviceProvider],
     [ThemeProvider],
