@@ -61,6 +61,17 @@ const SaveIndicator = ({ status, t }) => {
     );
 };
 
+const SyncIndicator = ({ status, t }) => {
+    if (status === 'connected') return null;
+
+    return (
+        <span className='flex items-center gap-1.5'>
+            <span className='size-1.5 animate-pulse rounded-full bg-warning' />
+            <span>{t('editor.status_bar.reconnecting')}</span>
+        </span>
+    );
+};
+
 const LanguagePicker = ({ language, onLanguageChange }) => {
     const [open, setOpen] = useState(false);
     const lang = getLanguage(language);
@@ -224,6 +235,7 @@ export const StatusBar = ({
     lineCount = 1,
     isLoading = false,
     saveStatus,
+    syncStatus = 'connected',
     peers = [],
     onLanguageChange,
 }) => {
@@ -264,9 +276,10 @@ export const StatusBar = ({
             <Divider />
             <IndentationPicker t={t} />
 
-            {/* Save status */}
+            {/* Save / sync status */}
             <Divider />
             <SaveIndicator status={saveStatus} t={t} />
+            <SyncIndicator status={syncStatus} t={t} />
 
             <span className='flex-1' />
 

@@ -10,7 +10,7 @@ import { BinHeader } from '@/components/editor/bin-header';
 import { TabBar } from '@/components/editor/tab-bar';
 import { EditorCore } from '@/components/editor/editor-core';
 import { UserAvatar } from '@/components/system/user-avatar';
-import { ensureBin, permanentizeBin, updateBin, incrementViews } from '@/services/bins';
+import { getBinAccess, ensureBin, permanentizeBin, updateBin, incrementViews } from '@/services/bins';
 import { registerCollaborator, clearCollaborators } from '@/services/bin-collaborators';
 import { getFiles, createFile, updateFile, deleteFile } from '@/services/bin-files';
 import { supabase } from '@/services/supabase';
@@ -21,6 +21,7 @@ import { useDocumentTitle } from '@/hooks/use-document-title';
 import { useListener, useEvents } from '@/providers/bus-provider';
 import { getLanguageByFilename } from '@/constants/languages';
 import { getRunner } from '@/services/runners';
+import { destroyYDoc, destroyAllYDocs } from '@/services/yjs';
 import { FlickeringGrid } from '@/ui/flickering-grid';
 import CoffeeLoader from '@/components/system/coffee-loader';
 
@@ -250,16 +251,19 @@ export const EditorPage = () => {
 
         const init = async () => {
             try {
+                const { bin_exists, can_access } = await getBinAccess(binId);
+                if (!mounted) return;
+
+                if (bin_exists && !can_access) {
+                    navigate({ to: '/' });
+                    return;
+                }
+
                 const binData = await ensureBin(binId);
                 if (!mounted) return;
 
                 const clientId = user?.uuid;
                 const isAuthorNow = binData.author_id === clientId;
-
-                if (binData.visibility === VISIBILITY.PRIVATE && !isAuthorNow && !isAdmin) {
-                    navigate({ to: '/' });
-                    return;
-                }
 
                 setBin(binData);
 
@@ -346,6 +350,7 @@ export const EditorPage = () => {
             mounted = false;
             ch.unsubscribe();
             $binChannel.current = null;
+            destroyAllYDocs(binId);
         };
     }, [binId]);
 
@@ -413,6 +418,7 @@ export const EditorPage = () => {
             console.error('Failed to delete file:', err);
             return;
         }
+        destroyYDoc(binId, fileId);
         const remaining = files.filter(f => f.id !== fileId);
         setFiles(remaining);
         if (activeFileId === fileId) setActiveFileId(remaining[0]?.id ?? null);

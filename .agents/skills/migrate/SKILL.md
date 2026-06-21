@@ -3,7 +3,6 @@ name: migrate
 description: >
   Create a new incremental migration file in migrations/ AND update db.sql
   (the canonical schema — the single source of truth for recreating the DB from scratch).
-  Also keeps PLAN.md + context.md in sync.
   Invoke as: /migrate <description of what changes>
 ---
 
@@ -90,13 +89,9 @@ Apply the same logical change to `db.sql` so running it end-to-end produces the 
 
 Keep existing formatting and comment style. Do not reformat unrelated lines.
 
-## Step 5 — Update PLAN.md
-
-`PLAN.md` contains a canonical schema of the database in the `## Base de datos (Supabase)` section. Apply the same change there as in `db.sql` — same rules, same scope. It is a canonical schema, not a changelog.
-
-## Step 6 — Confirm
+## Step 5 — Confirm
 
 Report to the user:
 - Migration file created: `migrations/{NNN}_{slug}.sql`
-- What changed in `db.sql` and `PLAN.md`
+- What changed in `db.sql`
 - The exact SQL to run, so the user can paste it into Supabase SQL Editor without opening the file

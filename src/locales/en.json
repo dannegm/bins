@@ -392,7 +392,8 @@
             "nudge": "Nudge",
             "saving": "Saving…",
             "saved": "Saved",
-            "unsaved": "Unsaved changes"
+            "unsaved": "Unsaved changes",
+            "reconnecting": "Reconnecting…"
         },
         "peer_joined": "joined the session",
         "peer_left": "left the session",

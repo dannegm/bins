@@ -67,14 +67,17 @@ const [isDragging, setIsDragging] = useState(false);
         defaultLayout: [50, 50],
     });
 
+    const [channelStatus, setChannelStatus] = useState('connecting');
+
     useEffect(() => {
         const ctx = initYDoc(binId, file.id, file.content ?? '');
         onUndoManagerReady?.(ctx.undoManager);
         ctx.onReady(() => setYContext(ctx));
+        ctx.onChannelStatus(setChannelStatus);
 
         return () => {
             clearTimeout($saveTimer.current);
-            ctx.destroy();
+            ctx.onChannelStatus(null);
         };
     }, []);
 
@@ -245,6 +248,7 @@ const [isDragging, setIsDragging] = useState(false);
                 lineCount={lineCount}
                 isLoading={!yContext}
                 saveStatus={saveStatus}
+                syncStatus={channelStatus}
                 peers={binPeers}
                 onLanguageChange={lang => onLanguageChange(file.id, lang)}
             />

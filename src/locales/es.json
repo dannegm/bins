@@ -392,7 +392,8 @@
             "nudge": "Zumbido",
             "saving": "Guardando…",
             "saved": "Guardado",
-            "unsaved": "Cambios sin guardar"
+            "unsaved": "Cambios sin guardar",
+            "reconnecting": "Reconectando…"
         },
         "peer_joined": "se unió a la sesión",
         "peer_left": "abandonó la sesión",

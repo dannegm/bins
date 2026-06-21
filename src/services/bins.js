@@ -3,6 +3,12 @@ import { settings } from './settings';
 import { supabase } from './supabase';
 import { generateBinName } from '@/helpers/identity';
 
+export const getBinAccess = async binId => {
+    const { data, error } = await supabase().rpc('get_bin_access', { p_bin_id: binId });
+    if (error) return { bin_exists: false, can_access: true };
+    return data?.[0] ?? { bin_exists: false, can_access: true };
+};
+
 export const getBin = async binId => {
     const { data, error } = await supabase().from('bins').select('*').eq('id', binId).maybeSingle();
 
