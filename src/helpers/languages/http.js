@@ -46,11 +46,14 @@ export const tokenize = line => {
     }
 
     const spIdx = trimmed.indexOf(' ');
-    if (spIdx !== -1 && METHODS.has(trimmed.slice(0, spIdx).toUpperCase())) {
-        return [
-            { startIndex: indent, scopes: 'keyword' },
-            ...scanInterpolations(line, indent + spIdx + 1, 'string'),
-        ];
+    if (spIdx !== -1) {
+        const method = trimmed.slice(0, spIdx).toUpperCase();
+        if (METHODS.has(method)) {
+            return [
+                { startIndex: indent, scopes: `http.verb.${method.toLowerCase()}` },
+                ...scanInterpolations(line, indent + spIdx + 1, 'string'),
+            ];
+        }
     }
 
     const colonIdx = line.indexOf(':');

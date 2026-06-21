@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import * as monaco from 'monaco-editor';
 import { desaturate, parseToRgb } from 'polished';
-import { initMonacoWorkers, defineEditorThemes, registerCustomLanguages } from '@/helpers/monaco';
+import { initMonacoWorkers, defineEditorThemes, registerCustomLanguages, getHttpVerbRules } from '@/helpers/monaco';
 import { useSettings } from '@/hooks/use-settings';
 import { useIdentity } from '@/hooks/use-identity';
 import { useTheme } from '@/providers/theme-provider';
@@ -177,8 +177,10 @@ export const MonacoEditor = ({
         const selHex = toHex(desaturate(0.25, userColor));
 
         const themeId = `bins-${monacoTheme}-user`;
+        const httpVerbRules = getHttpVerbRules(baseTheme.isDark);
         monaco.editor.defineTheme(themeId, {
             ...baseTheme.definition,
+            rules: [...baseTheme.definition.rules, ...httpVerbRules],
             colors: {
                 ...baseTheme.definition.colors,
                 'editorCursor.foreground': hex,

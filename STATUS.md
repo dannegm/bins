@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-Fase 2 ~85% completa (faltan regex y HTTP runners). Fase 3 ~70%. El producto es funcional y desplegable.
+Fase 2 ~90% completa (falta regex runner). Fase 3 ~70%. El producto es funcional y desplegable.
 
 ---
 
@@ -11,7 +11,6 @@ Fase 2 ~85% completa (faltan regex y HTTP runners). Fase 3 ~70%. El producto es 
 | Runner | Lenguajes | Descripción |
 |---|---|---|
 | **Regex** | `regex` | Railroad diagrams via regexper |
-| **HTTP** | `http` | Cliente REST tipo Postman via `VITE_PROXY_URL` |
 
 ---
 

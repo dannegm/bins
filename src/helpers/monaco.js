@@ -5,7 +5,7 @@ import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker';
 import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker';
 import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
 import { MONACO_THEMES } from '@/constants/themes';
-import { registerCustomLanguages } from '@/helpers/monaco-languages';
+import { registerCustomLanguages, getHttpVerbRules } from '@/helpers/monaco-languages';
 
 export const defineEditorThemes = () => {
     for (const theme of MONACO_THEMES) {
@@ -13,7 +13,7 @@ export const defineEditorThemes = () => {
     }
 };
 
-export { registerCustomLanguages };
+export { registerCustomLanguages, getHttpVerbRules };
 
 export const initMonacoWorkers = () => {
     self.MonacoEnvironment = {
