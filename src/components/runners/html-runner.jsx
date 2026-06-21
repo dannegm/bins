@@ -2,6 +2,8 @@ import { useMemo, useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FileCode, ArrowLeft, ArrowRight, RotateCcw, House } from 'lucide-react';
 
+const CSP_META = `<meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">`;
+
 const INJECTED_SCRIPT = `<script>
 (function () {
     function notify() {
@@ -30,8 +32,11 @@ const INJECTED_SCRIPT = `<script>
 </script>`;
 
 const injectScript = html => {
-    if (html.includes('</head>')) return html.replace('</head>', INJECTED_SCRIPT + '</head>');
-    return INJECTED_SCRIPT + html;
+    const withCsp = html.includes('<head>')
+        ? html.replace('<head>', '<head>' + CSP_META)
+        : CSP_META + html;
+    if (withCsp.includes('</head>')) return withCsp.replace('</head>', INJECTED_SCRIPT + '</head>');
+    return withCsp + INJECTED_SCRIPT;
 };
 
 const parseHtmlMeta = html => {
@@ -68,6 +73,7 @@ export const HtmlRunner = ({ content }) => {
     useEffect(() => {
         const handler = e => {
             if (e.source !== $iframe.current?.contentWindow) return;
+            if (e.origin !== 'null') return;
             if (e.data?.type === 'bins:title') setLiveTitle(e.data.title || null);
         };
         window.addEventListener('message', handler);

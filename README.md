@@ -68,7 +68,7 @@ Create a `.env.local` at the root:
 VITE_SUPABASE_URL=
 VITE_SUPABASE_PUBLISHABLE_KEY=
 VITE_PROXY_URL=      # Optional — required for the HTTP runner
-VITE_ADMIN_KEY=           # Optional — your UUID, grants admin access
+VITE_ADMIN_CLAIM_URL=     # Optional — endpoint to verify admin password server-side (default: https://endpoints.hckr.mx/bins/admin/claim)
 ```
 
 ---
