@@ -51,7 +51,11 @@ import {
 const dateFnsLocales = { en: enUS, es };
 
 const SORT_KEYS = ['updated_at', 'title', 'author', 'views', 'status', 'files', 'languages'];
+const FILTER_KEYS = ['all', 'empty'];
 const PER_PAGE_OPTIONS = [10, 25, 50];
+
+const isBinEmpty = bin =>
+    !bin.bin_files?.length || bin.bin_files.every(f => !f.content?.trim());
 
 const useAdminBinsStats = () =>
     useQuery({
@@ -85,7 +89,7 @@ const useAdminBins = ({ page, perPage, sortBy, sortDir, search }) =>
             let query = supabase()
                 .from('bins')
                 .select(
-                    '*, profiles(uuid, name, color_light, color_dark), bin_files(language)',
+                    '*, profiles(uuid, name, color_light, color_dark), bin_files(language, content)',
                     { count: 'exact' },
                 );
 
@@ -108,6 +112,12 @@ const useAdminBins = ({ page, perPage, sortBy, sortDir, search }) =>
             return { rows: data ?? [], total: count ?? 0 };
         },
     });
+
+const EmptyBadge = ({ t }) => (
+    <span className='inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold bg-destructive/10 text-destructive'>
+        {t('admin.bins.badge_empty')}
+    </span>
+);
 
 const LangStack = ({ files }) => {
     const seen = new Set();
@@ -285,10 +295,13 @@ const BinRow = ({ bin, t, formatDate }) => {
             </TableCell>
 
             <TableCell className='text-right'>
-                <span className='flex items-center justify-end gap-1 text-xs text-muted-foreground [&>svg]:size-3'>
-                    <File />
-                    {bin.bin_files?.length ?? 0}
-                </span>
+                <div className='flex items-center justify-end gap-2'>
+                    {isBinEmpty(bin) && <EmptyBadge t={t} />}
+                    <span className='flex items-center gap-1 text-xs text-muted-foreground [&>svg]:size-3'>
+                        <File />
+                        {bin.bin_files?.length ?? 0}
+                    </span>
+                </div>
             </TableCell>
 
             <TableCell className='text-right'>
@@ -491,6 +504,10 @@ export const BinsTable = () => {
     const formatDate = iso => format(new Date(iso), t('formats.date.short_time'), { locale });
 
     const [search, setSearch] = useState('');
+    const [filter, setFilter] = useQueryState(
+        'filter',
+        parseAsStringLiteral(FILTER_KEYS).withDefault('all'),
+    );
     const [sortBy, setSortBy] = useQueryState(
         'sort',
         parseAsStringLiteral(SORT_KEYS).withDefault('updated_at'),
@@ -506,10 +523,12 @@ export const BinsTable = () => {
 
     const { data: stats, isFetching: isFetchingStats } = useAdminBinsStats();
     const {
-        data: { rows = [], total = 0 } = {},
+        data: { rows: allRows = [], total = 0 } = {},
         isLoading,
         isFetching,
     } = useAdminBins({ page, perPage, sortBy, sortDir, search });
+
+    const rows = filter === 'empty' ? allRows.filter(isBinEmpty) : allRows;
 
     const handleRefresh = () => {
         queryClient.invalidateQueries({ queryKey: ['admin-bins'] });
@@ -521,6 +540,10 @@ export const BinsTable = () => {
     const handleSort = col => {
         if (col === sortBy) setSortDir(prev => (prev === 'asc' ? 'desc' : 'asc'));
         else { setSortBy(col); setSortDir('desc'); }
+        setPage(1);
+    };
+    const handleFilter = val => {
+        setFilter(val);
         setPage(1);
     };
     const handleSearch = val => {
@@ -554,6 +577,22 @@ export const BinsTable = () => {
                         className='h-7 pl-8'
                     />
                 </div>
+
+                <div className='flex h-7 items-center gap-0.5 rounded-lg border border-border bg-surface px-1'>
+                    {FILTER_KEYS.map(key => (
+                        <button
+                            key={key}
+                            onClick={() => handleFilter(key)}
+                            className={cn('h-5 rounded px-3 text-xs font-medium transition-colors', {
+                                'bg-brand text-white': filter === key,
+                                'text-muted-foreground hover:text-foreground': filter !== key,
+                            })}
+                        >
+                            {t(`admin.bins.filter_${key}`)}
+                        </button>
+                    ))}
+                </div>
+
                 <span className='whitespace-nowrap rounded-full border border-border bg-surface px-2.5 py-0.5 text-xs text-muted-foreground'>
                     {t('admin.count_chip', { shown: rows.length, total })}
                 </span>

@@ -263,7 +263,10 @@
             "col_status": "Status",
             "col_visibility": "Visibility",
             "col_updated": "Updated",
-            "col_actions": "Actions"
+            "col_actions": "Actions",
+            "filter_all": "All",
+            "filter_empty": "Empty",
+            "badge_empty": "Empty"
         },
         "users": {
             "search_placeholder": "Search by name or ID…",

@@ -263,7 +263,10 @@
             "col_status": "Estado",
             "col_visibility": "Visibilidad",
             "col_updated": "Actualizado",
-            "col_actions": "Acciones"
+            "col_actions": "Acciones",
+            "filter_all": "Todos",
+            "filter_empty": "Vacíos",
+            "badge_empty": "Vacío"
         },
         "users": {
             "search_placeholder": "Buscar por nombre o ID…",

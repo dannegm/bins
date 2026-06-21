@@ -305,17 +305,6 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA bins GRANT ALL ON SEQUENCES
 -- Cron jobs de limpieza (requiere pg_cron)
 -- -----------------------------------------------------------------------------
 
--- Cada 5 minutos: borrar bins expirados
-select cron.schedule(
-  'cleanup-expired-bins',
-  '*/5 * * * *',
-  $$
-    delete from bins.bins
-    where expires_at is not null
-    and expires_at < now();
-  $$
-);
-
 -- Cada lunes a las 3am: borrar perfiles de bots (cascada a bins y archivos)
 select cron.schedule(
   'delete-bot-profiles',

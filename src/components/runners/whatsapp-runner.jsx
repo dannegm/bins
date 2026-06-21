@@ -211,9 +211,16 @@ const Note = ({ text, time, isMe }) => (
                 isMe ? 'rounded-tr-xs bg-brand/10' : 'rounded-tl-xs bg-surface-raised/50',
             )}
         >
-            <p className='text-sm italic text-muted-foreground'>{text}</p>
+            <p className='text-sm italic text-muted-foreground text-pretty'>{text}</p>
             {time && (
-                <div className='mt-1 text-right text-[10px] text-muted-foreground'>{time}</div>
+                <div
+                    className={cn(
+                        'text-[10px] text-muted-foreground',
+                        isMe ? 'text-right' : 'text-left',
+                    )}
+                >
+                    {time}
+                </div>
             )}
         </div>
     </div>
@@ -240,10 +247,17 @@ const Bubble = ({ message, isMe, showName, color }) => (
                     <span className='text-(--sender-color)'>{message.sender}</span>
                 </div>
             )}
-            <p className='whitespace-pre-wrap wrap-break-word text-sm leading-relaxed text-foreground'>
+            <p className='whitespace-pre-wrap wrap-break-word text-sm leading-relaxed text-foreground text-pretty'>
                 {renderText(message.text)}
             </p>
-            <div className='mt-1 text-right text-[10px] text-muted-foreground'>{message.time}</div>
+            <div
+                className={cn(
+                    'text-[10px] text-muted-foreground',
+                    isMe ? 'text-right' : 'text-left',
+                )}
+            >
+                {message.time}
+            </div>
         </div>
     </div>
 );
