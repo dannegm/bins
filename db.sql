@@ -260,6 +260,27 @@ create policy "bin_collaborators: owner or self can delete"
 
 
 -- -----------------------------------------------------------------------------
+-- Triggers
+-- -----------------------------------------------------------------------------
+
+create or replace function bins.delete_auth_user_on_profile_delete()
+returns trigger
+language plpgsql
+security definer
+as $$
+begin
+    delete from auth.users where id = OLD.uuid;
+    return OLD;
+end;
+$$;
+
+create trigger on_profile_deleted
+    after delete on bins.profiles
+    for each row
+    execute function bins.delete_auth_user_on_profile_delete();
+
+
+-- -----------------------------------------------------------------------------
 -- Índices
 -- -----------------------------------------------------------------------------
 
