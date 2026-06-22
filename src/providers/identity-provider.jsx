@@ -51,8 +51,16 @@ const _runInitIdentity = async () => {
         settings.set('migratedAt', MIGRATION_DATE.toISOString());
     }
 
-    const { data: sessionData } = await supabase().auth.getSession();
-    let session = sessionData?.session;
+    // INITIAL_SESSION fires after the client finishes async init + token refresh from localStorage,
+    // avoiding a race where getSession() returns null before the stored session is restored.
+    let session = await new Promise(resolve => {
+        const { data: { subscription } } = supabase().auth.onAuthStateChange((event, s) => {
+            if (event === 'INITIAL_SESSION') {
+                subscription.unsubscribe();
+                resolve(s);
+            }
+        });
+    });
 
     if (!session) {
         const { data: anonData, error: anonError } = await supabase().auth.signInAnonymously();
