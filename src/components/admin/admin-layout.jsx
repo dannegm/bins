@@ -2,11 +2,13 @@ import { useEffect } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { ShieldCheck, LayoutGrid, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import { useAdmin } from '@/hooks/use-admin';
+import { supabase } from '@/services/supabase';
 import { Layout } from '@/components/layout/layout';
 import { Footer } from '@/components/layout/footer';
 
-const NavTab = ({ to, icon: Icon, label }) => (
+const NavTab = ({ to, icon: Icon, label, count }) => (
     <Link
         to={to}
         activeOptions={{ exact: true }}
@@ -16,6 +18,11 @@ const NavTab = ({ to, icon: Icon, label }) => (
     >
         <Icon className='size-4' />
         {label}
+        {count != null && (
+            <span className='rounded-md bg-surface-raised px-1.5 py-0.5 text-xs tabular-nums text-muted-foreground'>
+                {count}
+            </span>
+        )}
     </Link>
 );
 
@@ -23,6 +30,24 @@ export const AdminLayout = ({ children }) => {
     const { t } = useTranslation();
     const { isAdmin } = useAdmin();
     const navigate = useNavigate();
+
+    const { data: usersCount } = useQuery({
+        queryKey: ['admin', 'count', 'users'],
+        queryFn: async () => {
+            const { count } = await supabase().from('profiles').select('*', { count: 'exact', head: true });
+            return count;
+        },
+        enabled: isAdmin,
+    });
+
+    const { data: binsCount } = useQuery({
+        queryKey: ['admin', 'count', 'bins'],
+        queryFn: async () => {
+            const { count } = await supabase().from('bins').select('*', { count: 'exact', head: true });
+            return count;
+        },
+        enabled: isAdmin,
+    });
 
     useEffect(() => {
         if (!isAdmin) navigate({ to: '/' });
@@ -41,8 +66,8 @@ export const AdminLayout = ({ children }) => {
                         </span>
                     </div>
                     <div className='mt-3 flex gap-1'>
-                        <NavTab to='/admin/users' icon={Users} label={t('admin.nav.users')} />
-                        <NavTab to='/admin/bins' icon={LayoutGrid} label={t('admin.nav.bins')} />
+                        <NavTab to='/admin/users' icon={Users} label={t('admin.nav.users')} count={usersCount} />
+                        <NavTab to='/admin/bins' icon={LayoutGrid} label={t('admin.nav.bins')} count={binsCount} />
                     </div>
                 </div>
                 <div className='flex flex-1 flex-col overflow-y-auto'>
