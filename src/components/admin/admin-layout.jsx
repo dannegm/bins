@@ -19,7 +19,7 @@ const NavTab = ({ to, icon: Icon, label, count }) => (
         <Icon className='size-4' />
         {label}
         {count != null && (
-            <span className='rounded-md bg-surface-raised px-1.5 py-0.5 text-xs tabular-nums text-muted-foreground'>
+            <span className='rounded-md bg-background px-1.5 py-0.5 text-xs tabular-nums text-muted-foreground'>
                 {count}
             </span>
         )}
