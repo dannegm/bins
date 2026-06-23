@@ -15,6 +15,9 @@ export const useIdentity = () => {
             color_light: merged.colorLight,
             color_dark: merged.colorDark,
         });
+        if (patch.name) {
+            supabase().auth.updateUser({ data: { display_name: merged.name } });
+        }
     };
 
     return { user, update };

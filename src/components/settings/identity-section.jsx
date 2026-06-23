@@ -41,17 +41,30 @@ export const IdentitySection = () => {
     const { t } = useTranslation();
     const { user, update } = useIdentity();
     const [name, setName] = useState(user?.name ?? '');
+    const [saved, setSaved] = useState(false);
 
-    const commitName = useDebouncedCallback(value => {
+    const handleSave = async value => {
         const trimmed = value.trim();
-        if (trimmed && trimmed !== user?.name) update({ name: trimmed });
-    }, 600);
+        if (!trimmed || trimmed === user?.name) return;
+        await update({ name: trimmed });
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+    };
+
+    const commitName = useDebouncedCallback(handleSave, 600);
 
     const [colorLight, setColorLight] = useState(user?.colorLight || '#6366f1');
     const [colorDark, setColorDark] = useState(user?.colorDark || '#6366f1');
+    const [savedColorLight, setSavedColorLight] = useState(false);
+    const [savedColorDark, setSavedColorDark] = useState(false);
 
-    useDebouncedEffect(() => update({ colorLight }), [colorLight], 400);
-    useDebouncedEffect(() => update({ colorDark }), [colorDark], 400);
+    const showSaved = setter => {
+        setter(true);
+        setTimeout(() => setter(false), 2000);
+    };
+
+    useDebouncedEffect(() => { update({ colorLight }); showSaved(setSavedColorLight); }, [colorLight], 400);
+    useDebouncedEffect(() => { update({ colorDark }); showSaved(setSavedColorDark); }, [colorDark], 400);
 
     return (
         <section id='settings-identity'>
@@ -63,23 +76,28 @@ export const IdentitySection = () => {
                 <SettingRow label={t('settings.identity.name_label')}>
                     <div className='flex items-center gap-2'>
                         {user?.uuid && <UserAvatar className='size-7 shrink-0' />}
-                        <Input
-                            value={name}
-                            onChange={e => {
-                                setName(e.target.value);
-                                commitName(e.target.value);
-                            }}
-                            onKeyDown={e => {
-                                if (e.key === 'Enter') {
-                                    commitName.cancel();
-                                    const trimmed = e.target.value.trim();
-                                    if (trimmed && trimmed !== user?.name)
-                                        update({ name: trimmed });
-                                }
-                            }}
-                            placeholder={t('settings.identity.name_placeholder')}
-                            className='w-40'
-                        />
+                        <div className='relative'>
+                            <Input
+                                value={name}
+                                onChange={e => {
+                                    setName(e.target.value);
+                                    commitName(e.target.value);
+                                }}
+                                onKeyDown={e => {
+                                    if (e.key === 'Enter') {
+                                        commitName.cancel();
+                                        handleSave(e.target.value);
+                                    }
+                                }}
+                                placeholder={t('settings.identity.name_placeholder')}
+                                className='w-40'
+                            />
+                            {saved && (
+                                <span className='absolute -right-1.5 -top-1.5 flex size-4 items-center justify-center rounded-full bg-success'>
+                                    <Check className='size-2.5 text-white' />
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </SettingRow>
                 <InfoCallout>{t('settings.identity.name_callout')}</InfoCallout>
@@ -89,33 +107,47 @@ export const IdentitySection = () => {
                 >
                     <div className='flex items-center gap-4'>
                         <div className='flex flex-col items-center gap-1.5'>
-                            <ColorPicker value={colorLight} onChange={setColorLight}>
-                                <button
-                                    type='button'
-                                    className='h-8 w-16 rounded-md border border-border bg-(--swatch-color) transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1'
-                                    style={{ '--swatch-color': colorLight }}
-                                    aria-label={t('settings.identity.color_light')}
-                                >
-                                    <span className='text-xs text-foreground mix-blend-difference'>
-                                        {t('settings.identity.color_light')}
+                            <div className='relative'>
+                                <ColorPicker value={colorLight} onChange={setColorLight}>
+                                    <button
+                                        type='button'
+                                        className='h-8 w-16 rounded-md border border-border bg-(--swatch-color) transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1'
+                                        style={{ '--swatch-color': colorLight }}
+                                        aria-label={t('settings.identity.color_light')}
+                                    >
+                                        <span className='text-xs text-foreground mix-blend-difference'>
+                                            {t('settings.identity.color_light')}
+                                        </span>
+                                    </button>
+                                </ColorPicker>
+                                {savedColorLight && (
+                                    <span className='absolute -right-1.5 -top-1.5 flex size-4 items-center justify-center rounded-full bg-success'>
+                                        <Check className='size-2.5 text-white' />
                                     </span>
-                                </button>
-                            </ColorPicker>
+                                )}
+                            </div>
                         </div>
 
                         <div className='flex flex-col items-center gap-1.5'>
-                            <ColorPicker value={colorDark} onChange={setColorDark}>
-                                <button
-                                    type='button'
-                                    className='h-8 w-16 rounded-md border border-border bg-(--swatch-color) transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1'
-                                    style={{ '--swatch-color': colorDark }}
-                                    aria-label={t('settings.identity.color_dark')}
-                                >
-                                    <span className='text-xs text-foreground mix-blend-difference'>
-                                        {t('settings.identity.color_dark')}
+                            <div className='relative'>
+                                <ColorPicker value={colorDark} onChange={setColorDark}>
+                                    <button
+                                        type='button'
+                                        className='h-8 w-16 rounded-md border border-border bg-(--swatch-color) transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1'
+                                        style={{ '--swatch-color': colorDark }}
+                                        aria-label={t('settings.identity.color_dark')}
+                                    >
+                                        <span className='text-xs text-foreground mix-blend-difference'>
+                                            {t('settings.identity.color_dark')}
+                                        </span>
+                                    </button>
+                                </ColorPicker>
+                                {savedColorDark && (
+                                    <span className='absolute -right-1.5 -top-1.5 flex size-4 items-center justify-center rounded-full bg-success'>
+                                        <Check className='size-2.5 text-white' />
                                     </span>
-                                </button>
-                            </ColorPicker>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </SettingRow>

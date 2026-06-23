@@ -26,16 +26,16 @@ const Separator = () => (
 );
 const Spacer = () => <div className='hidden sm:flex flex-1' />;
 
-const ProfileButton = ({ uuid, label }) => (
+const ProfileButton = ({ user, label }) => (
     <Button
-        render={<Link to={`/user/${uuid}`} />}
+        render={<Link to={`/user/${user.uuid}`} />}
         nativeButton={false}
         variant='ghost'
         size='icon'
         className='text-sidebar-foreground/50 [&.active]:bg-sidebar-accent [&.active]:text-sidebar-accent-foreground'
         title={label}
     >
-        <UserAvatar profileId={uuid} className='size-5' />
+        <UserAvatar profile={user} className='size-5' />
     </Button>
 );
 
@@ -70,7 +70,7 @@ export const Sidebar = () => {
 
             {isAdmin && <NavItem to='/admin/users' icon={ShieldCheck} label={t('sidebar.admin')} />}
             <NavItem to='/settings' icon={Settings} label={t('sidebar.settings')} />
-            {user?.uuid && <ProfileButton uuid={user.uuid} label={t('sidebar.profile')} />}
+            {user?.uuid && <ProfileButton user={user} label={t('sidebar.profile')} />}
         </aside>
     );
 };

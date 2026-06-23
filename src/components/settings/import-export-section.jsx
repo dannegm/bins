@@ -112,8 +112,7 @@ const ExportSessionCard = ({ t }) => {
 
     const generate = async () => {
         const user = settings.get('user');
-        const { data: { session } } = await supabase().auth.getSession();
-        const token = await signJWT({ user, refreshToken: session.refresh_token }, { expiresIn: '15m' });
+        const token = await signJWT({ user, uuid: user.uuid }, { expiresIn: '15m' });
         const url = `${window.location.origin}/login?token=${token}`;
         setLink(url);
         copy(url);

@@ -5,7 +5,7 @@ import { AlertCircle, Check, Monitor } from 'lucide-react';
 import { motion } from 'motion/react';
 import { verifyJWT } from '@/helpers/jwt';
 import { settings } from '@/services/settings';
-import { supabase } from '@/services/supabase';
+import { claimSession } from '@/services/profiles';
 import { delay } from '@/helpers/utils';
 import { getAvatarUrl } from '@/helpers/avatar';
 import { useTheme } from '@/providers/theme-provider';
@@ -119,7 +119,7 @@ export const LoginPage = () => {
                 const payload = await verifyJWT(token);
                 setImportedUser(payload.user);
                 await delay(1500);
-                await supabase().auth.refreshSession({ refresh_token: payload.refreshToken });
+                await claimSession(payload.uuid);
                 settings.set('user', payload.user);
                 setStatus('success');
                 setTimeout(() => navigate({ to: '/' }), 2000);

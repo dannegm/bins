@@ -21,7 +21,7 @@ import { NyanCatProvider } from '@/components/system/nyan-cat';
 import { DeviceProvider } from '@/providers/device-provider';
 import { GlobalDropzoneProvider } from '@/providers/global-dropzone-provider';
 
-const MAINTENANCE_MODE = true;
+const MAINTENANCE_MODE = false;
 
 const CommandsBridge = ({ children }) => {
     useExternalCommands();
@@ -35,10 +35,10 @@ export const Providers = createProviders([
     [HeadlessGuard],
     [DeviceProvider],
     [ThemeProvider],
+    [BusProvider],
     [NuqsAdapter],
     [ForgottenProvider],
     [IdentityProvider],
-    [BusProvider],
     [EditorEventsProvider],
     [NudgeProvider],
     [CommandsBridge],

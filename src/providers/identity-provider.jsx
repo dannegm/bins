@@ -1,11 +1,16 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { isBefore, parseISO } from 'date-fns';
+import { useRouterState } from '@tanstack/react-router';
 import { settings } from '@/services/settings';
 import { supabase } from '@/services/supabase';
+import { claimSession } from '@/services/profiles';
 import { generateName, generateColors } from '@/helpers/identity';
 import { parseUA } from '@/helpers/ua-parser';
+import { useEvents } from '@/providers/bus-provider';
+import CoffeeLoader from '@/components/system/coffee-loader';
+import { FlickeringGrid } from '@/ui/flickering-grid';
 
-const MIGRATION_DATE = parseISO('2026-06-20T22:00:00-05:00');
+const MIGRATION_DATE = parseISO('2026-06-22T00:00:00-05:00');
 
 const hashIP = ip =>
     ip.split('.').map(n => parseInt(n).toString(16).padStart(2, '0')).join('').toUpperCase();
@@ -40,8 +45,7 @@ const syncProfile = async ({ uuid, name, colorDark, colorLight }) => {
 
 // Module-level promise ensures a single initialization per page load.
 // React Strict Mode double-invokes effects — without this, two concurrent
-// signInAnonymously() calls create two different auth users, causing a
-// uuid/auth.uid() mismatch that breaks the RLS insert policy.
+// claimSession() calls could create duplicate users.
 let _initPromise = null;
 
 const _runInitIdentity = async () => {
@@ -63,12 +67,13 @@ const _runInitIdentity = async () => {
     });
 
     if (!session) {
-        const { data: anonData, error: anonError } = await supabase().auth.signInAnonymously();
-        if (anonError) {
-            console.error('[identity] signInAnonymously failed:', anonError);
+        const storedUuid = settings.get('user')?.uuid ?? null;
+        try {
+            session = await claimSession(storedUuid);
+        } catch (err) {
+            console.error('[identity] claimSession failed:', err);
             return;
         }
-        session = anonData.session;
     }
 
     const uuid = session.user.id;
@@ -91,9 +96,25 @@ const initIdentity = () => {
 };
 
 export const IdentityProvider = ({ children }) => {
+    const { location } = useRouterState();
+    const { emit } = useEvents();
+    const isLogin = location.pathname.startsWith('/login');
+    const [isReady, setIsReady] = useState(isLogin);
+
     useEffect(() => {
-        initIdentity();
+        if (isLogin) return;
+        initIdentity().then(() => {
+            emit('identity:ready');
+            setIsReady(true);
+        });
     }, []);
+
+    if (!isReady) return (
+        <div className='relative flex min-h-screen items-center justify-center bg-background'>
+            <FlickeringGrid className='absolute inset-0 z-0' />
+            <CoffeeLoader className='relative z-10' />
+        </div>
+    );
 
     return children;
 };
