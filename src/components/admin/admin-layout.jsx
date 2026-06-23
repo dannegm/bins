@@ -14,12 +14,12 @@ const NavTab = ({ to, icon: Icon, label, count }) => (
         activeOptions={{ exact: true }}
         activeProps={{ className: 'bg-surface-raised text-foreground' }}
         inactiveProps={{ className: 'text-muted-foreground' }}
-        className='flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors hover:bg-surface-raised hover:text-foreground'
+        className='group flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors hover:bg-surface-raised hover:text-foreground'
     >
         <Icon className='size-4' />
         {label}
         {count != null && (
-            <span className='rounded-md bg-background px-1.5 py-0.5 text-xs tabular-nums text-muted-foreground'>
+            <span className='rounded-md px-1.5 py-0.5 text-xs tabular-nums text-muted-foreground group-[&.active]:bg-background group-[&:not(.active)]:bg-surface-raised'>
                 {count}
             </span>
         )}
