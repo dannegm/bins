@@ -11,6 +11,13 @@ import { ColorPicker } from '@/ui/color-picker';
 import { UserAvatar } from '@/components/system/user-avatar';
 import { SectionHeading, SettingGroup, SettingRow } from './settings-ui';
 
+const contrastColor = hex => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.5 ? '#000' : '#fff';
+};
+
 const InfoCallout = ({ children }) => (
     <div className='flex gap-2.5 px-1 py-3 text-xs text-muted-foreground'>
         <Info className='mt-px size-3.5 shrink-0' />
@@ -115,7 +122,7 @@ export const IdentitySection = () => {
                                         style={{ '--swatch-color': colorLight }}
                                         aria-label={t('settings.identity.color_light')}
                                     >
-                                        <span className='text-xs text-foreground mix-blend-difference'>
+                                        <span className='text-xs text-(--contrast)' style={{ '--contrast': contrastColor(colorLight) }}>
                                             {t('settings.identity.color_light')}
                                         </span>
                                     </button>
@@ -137,7 +144,7 @@ export const IdentitySection = () => {
                                         style={{ '--swatch-color': colorDark }}
                                         aria-label={t('settings.identity.color_dark')}
                                     >
-                                        <span className='text-xs text-foreground mix-blend-difference'>
+                                        <span className='text-xs text-(--contrast)' style={{ '--contrast': contrastColor(colorDark) }}>
                                             {t('settings.identity.color_dark')}
                                         </span>
                                     </button>
