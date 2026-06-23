@@ -19,8 +19,8 @@ const NavTab = ({ to, icon: Icon, label, count }) => (
         <Icon className='size-4' />
         {label}
         {count != null && (
-            <span className='rounded-md px-1.5 py-0.5 text-xs tabular-nums text-muted-foreground group-[&.active]:bg-background group-[&:not(.active)]:bg-surface-raised'>
-                {count}
+            <span className='rounded-md px-1.5 py-0.5 text-xs tabular-nums text-muted-foreground bg-surface-raised group-data-[status=active]:bg-surface'>
+                {Intl.NumberFormat('en', { notation: 'compact' }).format(count)}
             </span>
         )}
     </Link>
