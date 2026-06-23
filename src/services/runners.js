@@ -7,6 +7,7 @@ import {
     Braces,
     Network,
     GitBranch,
+    Music2,
 } from 'lucide-react';
 import { MarkdownRunner } from '@/components/runners/markdown-runner';
 import { HtmlRunner } from '@/components/runners/html-runner';
@@ -20,6 +21,7 @@ import { SvgRunner } from '@/components/runners/svg-runner';
 import { HttpRunner } from '@/components/runners/http-runner';
 import { XmlRunner } from '@/components/runners/xml-runner';
 import { MermaidRunner } from '@/components/runners/mermaid-runner';
+import { StrudelRunner } from '@/components/runners/strudel-runner';
 
 const RUNNERS = [
     {
@@ -84,6 +86,13 @@ const RUNNERS = [
         icon: Braces,
         component: XmlRunner,
         languages: ['xml'],
+    },
+    {
+        id: 'strudel',
+        label: 'Live',
+        icon: Music2,
+        component: StrudelRunner,
+        languages: ['strudel'],
     },
     {
         id: 'svg',

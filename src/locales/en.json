@@ -437,6 +437,15 @@
             },
             "mermaid": {
                 "error": "Invalid diagram"
+            },
+            "strudel": {
+                "play": "Play",
+                "stop": "Stop",
+                "bpm": "BPM",
+                "cycle": "cycle",
+                "idle_title": "Strudel",
+                "idle_tagline": "Live coding music",
+                "idle_description": "Write rhythms and melodies as patterns.\nOne cycle at a time."
             }
         }
     },

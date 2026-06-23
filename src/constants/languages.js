@@ -255,6 +255,14 @@ export const LANGUAGES = {
         icon: null,
         color: '#ff3670',
     },
+    strudel: {
+        id: 'strudel',
+        monacoId: 'javascript',
+        label: 'Strudel',
+        extensions: ['.strudel'],
+        icon: null,
+        color: '#7c3aed',
+    },
     plaintext: {
         id: 'plaintext',
         monacoId: 'plaintext',
@@ -299,6 +307,7 @@ const MIME_TYPES = {
     csharp: 'text/x-csharp',
     csv: 'text/csv',
     whatsapp: 'text/x-whatsapp',
+    strudel: 'application/x-strudel',
     plaintext: 'text/plain',
 };
 

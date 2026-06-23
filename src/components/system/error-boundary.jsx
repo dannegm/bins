@@ -1,4 +1,5 @@
-import { Component, useMemo } from 'react';
+import { Component, useMemo, useState } from 'react';
+import { Copy, Check } from 'lucide-react';
 
 const STOP_CODES = [
     'YOUR_CODE_DID_THIS',
@@ -32,6 +33,7 @@ const NO_IDEA = [
 ];
 
 const BSODScreen = ({ error, errorInfo }) => {
+    const [copied, setCopied] = useState(false);
     const stopCode = useMemo(() => STOP_CODES[Math.floor(Math.random() * STOP_CODES.length)], []);
     const faultingSymbol = useMemo(() => {
         const match = errorInfo?.componentStack?.match(/^\s*at (\S+)/m);
@@ -66,24 +68,35 @@ const BSODScreen = ({ error, errorInfo }) => {
                     </a>
                 </div>
 
-                <div className='mt-2 space-y-1 font-mono text-sm' style={{ opacity: 0.6 }}>
+                <div className='mt-2 space-y-1 font-mono text-sm select-text opacity-60'>
                     <p>Stop code: {stopCode}</p>
                     {error?.message && <p>Error: {error.message}</p>}
                     <p>What failed: {faultingSymbol}</p>
                 </div>
 
                 {errorInfo?.componentStack && (
-                    <details className='mt-6'>
-                        <summary
-                            className='cursor-pointer font-mono text-sm hover:opacity-80'
-                            style={{ opacity: 0.5 }}
-                        >
-                            Component stack
+                    <details className='group mt-6'>
+                        <summary className='flex gap-2 items-center cursor-pointer font-mono text-sm opacity-50 hover:opacity-80 before:content-["▶"] group-open:before:content-["▼"]'>
+                            <span>Component stack</span>
+                            <button
+                                onClick={() => {
+                                    navigator.clipboard.writeText(
+                                        `${error?.message ?? ''}\n${errorInfo.componentStack}`,
+                                    );
+                                    setCopied(true);
+                                    setTimeout(() => setCopied(false), 2000);
+                                }}
+                                className='flex items-center gap-1.5 cursor-pointer bg-transparent border-0 p-0 font-mono text-xs text-inherit opacity-45 transition-opacity hover:opacity-100'
+                            >
+                                {copied ? (
+                                    <Check className='size-3' />
+                                ) : (
+                                    <Copy className='size-3' />
+                                )}
+                                {copied ? 'copied' : 'copy stack'}
+                            </button>
                         </summary>
-                        <pre
-                            className='mt-2 whitespace-pre-wrap break-all font-mono text-sm leading-relaxed'
-                            style={{ opacity: 0.45 }}
-                        >
+                        <pre className='mt-1 opacity-45 whitespace-pre-wrap break-all font-mono text-sm leading-relaxed'>
                             {errorInfo.componentStack}
                         </pre>
                     </details>
@@ -103,7 +116,7 @@ export class ErrorBoundary extends Component {
         return { error };
     }
 
-    componentDidCatch(error, errorInfo) {
+    componentDidCatch(_error, errorInfo) {
         this.setState({ errorInfo });
     }
 

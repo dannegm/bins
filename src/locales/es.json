@@ -437,6 +437,15 @@
             },
             "mermaid": {
                 "error": "Diagrama inválido"
+            },
+            "strudel": {
+                "play": "Play",
+                "stop": "Stop",
+                "bpm": "BPM",
+                "cycle": "ciclo",
+                "idle_title": "Strudel",
+                "idle_tagline": "Música en código vivo",
+                "idle_description": "Escribe ritmos y melodías como patrones.\nUn ciclo a la vez."
             }
         }
     },
