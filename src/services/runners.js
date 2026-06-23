@@ -14,8 +14,11 @@ import { CsvRunner } from '@/components/runners/csv-runner';
 import { WhatsAppRunner } from '@/components/runners/whatsapp-runner';
 import { JsRunner } from '@/components/runners/js-runner';
 import { JsonRunner } from '@/components/runners/json-runner';
+import { YamlRunner } from '@/components/runners/yaml-runner';
+import { TomlRunner } from '@/components/runners/toml-runner';
 import { SvgRunner } from '@/components/runners/svg-runner';
 import { HttpRunner } from '@/components/runners/http-runner';
+import { XmlRunner } from '@/components/runners/xml-runner';
 import { MermaidRunner } from '@/components/runners/mermaid-runner';
 
 const RUNNERS = [
@@ -60,6 +63,27 @@ const RUNNERS = [
         icon: Braces,
         component: JsonRunner,
         languages: ['json'],
+    },
+    {
+        id: 'yaml',
+        label: 'Preview',
+        icon: Braces,
+        component: YamlRunner,
+        languages: ['yaml'],
+    },
+    {
+        id: 'toml',
+        label: 'Preview',
+        icon: Braces,
+        component: TomlRunner,
+        languages: ['toml'],
+    },
+    {
+        id: 'xml',
+        label: 'Preview',
+        icon: Braces,
+        component: XmlRunner,
+        languages: ['xml'],
     },
     {
         id: 'svg',
