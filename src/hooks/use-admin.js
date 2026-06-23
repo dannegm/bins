@@ -14,10 +14,10 @@ const fetchIsAdmin = async uuid => {
 
 export const useAdmin = () => {
     const uuid = settings.get('user.uuid');
-    const { data: isAdmin = false } = useQuery({
+    const { data: isAdmin = false, isLoading } = useQuery({
         queryKey: ['admin', uuid],
         queryFn: () => fetchIsAdmin(uuid),
         staleTime: 1000 * 60 * 5,
     });
-    return { isAdmin };
+    return { isAdmin, isLoading };
 };

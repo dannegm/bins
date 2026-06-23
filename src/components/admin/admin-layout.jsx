@@ -28,7 +28,7 @@ const NavTab = ({ to, icon: Icon, label, count }) => (
 
 export const AdminLayout = ({ children }) => {
     const { t } = useTranslation();
-    const { isAdmin } = useAdmin();
+    const { isAdmin, isLoading } = useAdmin();
     const navigate = useNavigate();
 
     const { data: usersCount } = useQuery({
@@ -54,10 +54,10 @@ export const AdminLayout = ({ children }) => {
     });
 
     useEffect(() => {
-        if (!isAdmin) navigate({ to: '/' });
-    }, [isAdmin, navigate]);
+        if (!isLoading && !isAdmin) navigate({ to: '/' });
+    }, [isLoading, isAdmin, navigate]);
 
-    if (!isAdmin) return null;
+    if (isLoading || !isAdmin) return null;
 
     return (
         <Layout>
