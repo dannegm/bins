@@ -36,6 +36,7 @@ import { useIdentity } from '@/hooks/use-identity';
 import { cn } from '@/helpers/utils';
 import { Input } from '@/ui/input';
 import { Button } from '@/ui/button';
+import { Skeleton } from '@/ui/skeleton';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/ui/table';
 import {
     Popover,
@@ -480,6 +481,55 @@ const PerPageSelector = ({ perPage, onPerPage, t }) => (
     </div>
 );
 
+const UsersTableSkeleton = ({ rows = 5 }) =>
+    Array.from({ length: rows }).map((_, i) => (
+        <TableRow key={i} className='hover:bg-transparent'>
+            <TableCell>
+                <Skeleton className='h-5 w-14 rounded-full' />
+            </TableCell>
+            <TableCell>
+                <div className='flex items-center gap-2'>
+                    <Skeleton className='size-5 rounded-full' />
+                    <Skeleton className='h-3.5 w-28' />
+                </div>
+            </TableCell>
+            <TableCell>
+                <Skeleton className='h-3 w-64' />
+            </TableCell>
+            <TableCell>
+                <div className='flex items-center gap-1.5'>
+                    <Skeleton className='size-4 rounded-full' />
+                    <Skeleton className='h-3 w-16' />
+                </div>
+            </TableCell>
+            <TableCell>
+                <Skeleton className='h-3 w-16' />
+            </TableCell>
+            <TableCell>
+                <Skeleton className='size-4 rounded' />
+            </TableCell>
+            <TableCell>
+                <div className='flex items-center gap-2'>
+                    <Skeleton className='size-4 rounded-full' />
+                    <Skeleton className='h-3 w-20' />
+                </div>
+            </TableCell>
+            <TableCell className='text-right'>
+                <Skeleton className='ml-auto h-3 w-6' />
+            </TableCell>
+            <TableCell>
+                <Skeleton className='h-3 w-24' />
+            </TableCell>
+            <TableCell className='text-right'>
+                <div className='flex items-center justify-end gap-1'>
+                    <Skeleton className='size-5 rounded' />
+                    <Skeleton className='size-5 rounded' />
+                    <Skeleton className='size-5 rounded' />
+                </div>
+            </TableCell>
+        </TableRow>
+    ));
+
 const UserRow = ({ profile, t, formatDate, isMe, isMyIp, onToggleBot, isTogglingBot }) => {
     const binCount = parseInt(profile.bins?.[0]?.count ?? 0);
     const [copied, setCopied] = useState(false);
@@ -816,17 +866,8 @@ export const UsersTable = () => {
                             </TableHead>
                         </TableRow>
                     </TableHeader>
-                    <TableBody>
-                        {isLoading && (
-                            <TableRow>
-                                <TableCell
-                                    colSpan={colSpan}
-                                    className='h-32 text-center text-muted-foreground'
-                                >
-                                    {t('admin.loading')}
-                                </TableCell>
-                            </TableRow>
-                        )}
+                    <TableBody className={cn({ 'opacity-50 transition-opacity': isFetching && !isLoading })}>
+                        {isLoading && <UsersTableSkeleton />}
                         {!isLoading && rows.length === 0 && (
                             <TableRow>
                                 <TableCell

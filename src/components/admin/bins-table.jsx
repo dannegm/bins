@@ -37,6 +37,7 @@ import { cn } from '@/helpers/utils';
 import { Button } from '@/ui/button';
 import { Input } from '@/ui/input';
 import { Badge } from '@/ui/badge';
+import { Skeleton } from '@/ui/skeleton';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/ui/table';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/ui/tooltip';
 import {
@@ -267,6 +268,52 @@ const DeleteAction = ({ bin, t }) => {
         </Popover>
     );
 };
+
+const BinsTableSkeleton = ({ rows = 5 }) =>
+    Array.from({ length: rows }).map((_, i) => (
+        <TableRow key={i} className='hover:bg-transparent'>
+            <TableCell>
+                <div className='flex flex-col gap-1.5'>
+                    <Skeleton className='h-3.5 w-40' />
+                    <Skeleton className='h-2.5 w-24' />
+                </div>
+            </TableCell>
+            <TableCell>
+                <div className='flex items-center gap-2'>
+                    <Skeleton className='size-5 rounded-full' />
+                    <Skeleton className='h-3 w-20' />
+                </div>
+            </TableCell>
+            <TableCell>
+                <div className='flex items-center gap-0.5'>
+                    <Skeleton className='size-5 rounded-full' />
+                    <Skeleton className='size-5 rounded-full' />
+                </div>
+            </TableCell>
+            <TableCell className='text-right'>
+                <Skeleton className='ml-auto h-3 w-8' />
+            </TableCell>
+            <TableCell className='text-right'>
+                <Skeleton className='ml-auto h-3 w-8' />
+            </TableCell>
+            <TableCell>
+                <Skeleton className='h-5 w-16 rounded-full' />
+            </TableCell>
+            <TableCell>
+                <Skeleton className='h-5 w-16 rounded-full' />
+            </TableCell>
+            <TableCell>
+                <Skeleton className='h-3 w-24' />
+            </TableCell>
+            <TableCell className='text-right'>
+                <div className='flex items-center justify-end gap-1'>
+                    <Skeleton className='size-5 rounded' />
+                    <Skeleton className='size-5 rounded' />
+                    <Skeleton className='size-5 rounded' />
+                </div>
+            </TableCell>
+        </TableRow>
+    ));
 
 const BinRow = ({ bin, t, formatDate }) => {
     const copyLink = () => {
@@ -674,17 +721,8 @@ export const BinsTable = () => {
                             </TableHead>
                         </TableRow>
                     </TableHeader>
-                    <TableBody>
-                        {isLoading && (
-                            <TableRow>
-                                <TableCell
-                                    colSpan={9}
-                                    className='h-32 text-center text-muted-foreground'
-                                >
-                                    {t('admin.loading')}
-                                </TableCell>
-                            </TableRow>
-                        )}
+                    <TableBody className={cn({ 'opacity-50 transition-opacity': isFetching && !isLoading })}>
+                        {isLoading && <BinsTableSkeleton />}
                         {!isLoading && rows.length === 0 && (
                             <TableRow>
                                 <TableCell
