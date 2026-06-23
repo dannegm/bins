@@ -445,7 +445,11 @@
                 "cycle": "ciclo",
                 "idle_title": "Strudel",
                 "idle_tagline": "Música en código vivo",
-                "idle_description": "Escribe ritmos y melodías como patrones.\nUn ciclo a la vez."
+                "idle_description": "Escribe ritmos y melodías como patrones.\nUn ciclo a la vez.",
+                "overlay_hint": "Tu código tiene visualizadores",
+                "overlay_pianoroll": "Piano roll",
+                "overlay_scope": "Osciloscopio",
+                "overlay_fft": "FFT"
             }
         }
     },

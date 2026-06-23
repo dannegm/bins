@@ -445,7 +445,11 @@
                 "cycle": "cycle",
                 "idle_title": "Strudel",
                 "idle_tagline": "Live coding music",
-                "idle_description": "Write rhythms and melodies as patterns.\nOne cycle at a time."
+                "idle_description": "Write rhythms and melodies as patterns.\nOne cycle at a time.",
+                "overlay_hint": "Your code has visual overlays",
+                "overlay_pianoroll": "Piano roll",
+                "overlay_scope": "Scope",
+                "overlay_fft": "FFT"
             }
         }
     },

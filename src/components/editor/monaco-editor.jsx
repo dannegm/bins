@@ -55,6 +55,7 @@ export const MonacoEditor = ({
     const $editor = useRef(null);
     const $isApplyingRemote = useRef(false);
     const $decorations = useRef(null);
+    const $strudelDecorations = useRef(null);
     const $revealRef = useRef(revealPosition);
     $revealRef.current = revealPosition;
 
@@ -109,6 +110,7 @@ export const MonacoEditor = ({
 
         $editor.current = editor;
         $decorations.current = editor.createDecorationsCollection([]);
+        $strudelDecorations.current = editor.createDecorationsCollection([]);
         onEditorReady?.(editor);
 
         editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => onSave?.());
@@ -137,6 +139,7 @@ export const MonacoEditor = ({
             editor.dispose();
             $editor.current = null;
             $decorations.current = null;
+            $strudelDecorations.current = null;
         };
     }, []);
 
@@ -388,6 +391,25 @@ export const MonacoEditor = ({
             $editor.current.revealLineInCenter(line);
             $editor.current.setPosition({ lineNumber: line, column: 1 });
             $editor.current.focus();
+        }, []),
+    );
+
+    useListener(
+        'strudel:highlight',
+        useCallback(locations => {
+            const dec = $strudelDecorations.current;
+            const model = $editor.current?.getModel();
+            if (!dec || !model) return;
+            dec.set(
+                locations.map(({ start, end }) => {
+                    const s = model.getPositionAt(start);
+                    const e = model.getPositionAt(end);
+                    return {
+                        range: new monaco.Range(s.lineNumber, s.column, e.lineNumber, e.column),
+                        options: { inlineClassName: 'strudel-active' },
+                    };
+                }),
+            );
         }, []),
     );
 

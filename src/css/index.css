@@ -96,4 +96,9 @@
             left: 3.5rem !important; /* sidebar w-14 */
         }
     }
+
+    .strudel-active {
+        background-color: color-mix(in srgb, var(--color-brand) 30%, transparent);
+        border-radius: 2px;
+    }
 }
