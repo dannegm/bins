@@ -321,6 +321,17 @@ export const EditorPage = () => {
                     prev.map(f => (f.id === payload.file.id ? { ...f, ...payload.file } : f)),
                 );
             })
+            .on('broadcast', { event: 'file:reordered' }, ({ payload }) => {
+                setFiles(prev =>
+                    prev
+                        .map(f =>
+                            payload.positions[f.id] !== undefined
+                                ? { ...f, position: payload.positions[f.id] }
+                                : f,
+                        )
+                        .sort(sortByPosition),
+                );
+            })
             .on('broadcast', { event: 'file:deleted' }, ({ payload }) => {
                 setFiles(prev => {
                     const remaining = prev.filter(f => f.id !== payload.fileId);
@@ -431,6 +442,26 @@ export const EditorPage = () => {
         broadcast('file:deleted', { fileId });
     };
 
+    const handleReorderFiles = async (fileId, newIndex) => {
+        const fromIndex = files.findIndex(f => f.id === fileId);
+        if (fromIndex === -1 || fromIndex === newIndex) return;
+
+        const reordered = [...files];
+        const [moved] = reordered.splice(fromIndex, 1);
+        reordered.splice(newIndex, 0, moved);
+
+        const updated = reordered.map((f, i) => ({ ...f, position: i }));
+        setFiles(updated);
+
+        const posMap = new Map(files.map(f => [f.id, f.position]));
+        const toUpdate = updated.filter(f => posMap.get(f.id) !== f.position);
+        await Promise.all(toUpdate.map(f => updateFile(f.id, { position: f.position })));
+
+        broadcast('file:reordered', {
+            positions: Object.fromEntries(updated.map(f => [f.id, f.position])),
+        });
+    };
+
     const handleRenameFile = async (fileId, name) => {
         const lang = getLanguageByFilename(name);
         await updateFile(fileId, { name, language: lang.id });
@@ -518,6 +549,7 @@ export const EditorPage = () => {
                     onCreateFile={handleCreateFile}
                     onDeleteFile={handleDeleteFile}
                     onRenameFile={handleRenameFile}
+                    onReorderFiles={handleReorderFiles}
                     onUndo={() => $undoManager.current?.undo()}
                     onRedo={() => $undoManager.current?.redo()}
                     canUndo={undoState.canUndo}

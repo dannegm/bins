@@ -52,18 +52,16 @@ const HapBlock = ({ hap, progress }) => {
         <div
             className={cn(
                 'absolute top-0.5 bottom-0.5 rounded flex items-center justify-center overflow-hidden transition-all duration-75',
+                'bg-(--hap-bg) left-(--hap-left) w-(--hap-width)',
                 { 'ring-1 ring-white/30': isActive, 'opacity-50': !isActive },
             )}
             style={{
                 '--hap-bg': `hsl(${hapHue(hap)}, 62%, 50%)`,
                 '--hap-left': `${begin * 100}%`,
                 '--hap-width': `${width * 100}%`,
-                backgroundColor: 'var(--hap-bg)',
-                left: 'var(--hap-left)',
-                width: 'var(--hap-width)',
             }}
         >
-            <span className='truncate px-1 font-mono text-[9px] font-medium text-white/90 select-none'>
+            <span className='truncate px-1 font-mono text-[9px] font-medium text-white select-none'>
                 {hapLabel(hap)}
             </span>
         </div>
@@ -81,8 +79,8 @@ const PatternViz = ({ haps, progress }) => {
                         <HapBlock key={hi} hap={hap} progress={progress} />
                     ))}
                     <div
-                        className='pointer-events-none absolute inset-y-0 z-10 w-px bg-brand/80'
-                        style={{ left: `${progress * 100}%` }}
+                        className='pointer-events-none absolute inset-y-0 z-10 w-px bg-brand/80 left-(--progress)'
+                        style={{ '--progress': `${progress * 100}%` }}
                     />
                 </div>
             ))}
@@ -219,7 +217,7 @@ export const StrudelRunner = ({ content }) => {
         <div className='flex h-full flex-col'>
             {hasCanvas && [
                 createPortal(
-                    <button className='fixed bottom-16 right-4 z-100 flex items-center gap-2 rounded-full bg-destructive px-4 py-2 text-xs font-medium text-white shadow-lg shadow-black/30 transition-opacity hover:opacity-90 active:opacity-75 sm:bottom-6'>
+                    <button className='fixed bottom-16 right-4 z-300 flex items-center gap-2 rounded-full bg-destructive px-4 py-2 text-xs font-medium text-white shadow-lg shadow-black/30 transition-opacity hover:opacity-90 active:opacity-75 sm:bottom-6'>
                         <Square className='size-3 fill-current' />
                         {t('editor.runner_panel.strudel.stop')}
                     </button>,
@@ -229,7 +227,7 @@ export const StrudelRunner = ({ content }) => {
                     onClick={handleStop}
                     className='fixed bottom-16 right-4 z-max px-4 py-2 sm:bottom-6 opacity-0'
                 >
-                    <Square className='size-3 fill-current' />
+                    <Square className='size-3' />
                     {t('editor.runner_panel.strudel.stop')}
                 </button>,
             ]}

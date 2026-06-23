@@ -78,9 +78,10 @@
     html {
         @apply font-sans bg-background;
     }
+
     /* Strudel injects canvas directly into body with position:fixed and inline styles */
     body > canvas[id] {
-        z-index: 55;
+        z-index: 300;
         top: 5rem !important; /* bin-header h-10 + tab-bar h-10 */
         left: 0 !important;
         right: 0 !important;
@@ -91,7 +92,7 @@
 
     @media (min-width: 640px) {
         body > canvas[id] {
-            z-index: 20 !important;
+            z-index: 200 !important;
             left: 3.5rem !important; /* sidebar w-14 */
         }
     }

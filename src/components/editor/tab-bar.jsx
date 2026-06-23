@@ -41,6 +41,12 @@ const FileTab = ({
     onRename,
     deleteConfirmId,
     onDeleteConfirm,
+    isDragging,
+    dropIndicator,
+    onDragStart,
+    onDragOver,
+    onDrop,
+    onDragEnd,
 }) => {
     const { t } = useTranslation();
     const [isEditing, setIsEditing] = useState(false);
@@ -76,17 +82,29 @@ const FileTab = ({
         <div
             role='tab'
             aria-selected={isActive}
+            draggable={!isReadonly}
             onClick={() => onSelect(file.id)}
             onDoubleClick={handleDoubleClick}
+            onDragStart={e => onDragStart?.(e, file.id)}
+            onDragOver={e => onDragOver?.(e, file.id, e.currentTarget)}
+            onDrop={e => onDrop?.(e, file.id)}
+            onDragEnd={onDragEnd}
             className={cn(
                 'group relative flex h-full min-w-0 max-w-48 shrink-0 cursor-pointer items-center gap-1.5 border-r border-border px-3 text-sm font-light select-none',
                 {
                     'bg-background text-foreground': isActive,
                     'bg-surface text-muted-foreground hover:bg-background/50 hover:text-foreground':
                         !isActive,
+                    'opacity-40': isDragging,
                 },
             )}
         >
+            {dropIndicator === 'before' && (
+                <span className='pointer-events-none absolute -inset-y-1 left-0 w-0.5 rounded-full bg-brand' />
+            )}
+            {dropIndicator === 'after' && (
+                <span className='pointer-events-none absolute -inset-y-1 right-0 w-0.5 rounded-full bg-brand' />
+            )}
             {tabGradient && (
                 <span
                     className='absolute inset-x-0 top-0 h-0.5'
@@ -208,10 +226,14 @@ const TabStrip = ({
     deleteConfirmId,
     onDeleteConfirm,
     getTabGradient,
+    onReorderFiles,
 }) => {
     const { t } = useTranslation();
     const $scroll = useRef(null);
     const [overflow, setOverflow] = useState({ left: false, right: false });
+    const [dragId, setDragId] = useState(null);
+    const [dragOverId, setDragOverId] = useState(null);
+    const [dropPosition, setDropPosition] = useState(null);
 
     const checkOverflow = useCallback(() => {
         const el = $scroll.current;
@@ -244,6 +266,48 @@ const TabStrip = ({
 
     const scroll = delta => $scroll.current?.scrollBy({ left: delta, behavior: 'smooth' });
 
+    const handleDragStart = (e, fileId) => {
+        setDragId(fileId);
+        e.dataTransfer.effectAllowed = 'move';
+    };
+
+    const handleDragOver = (e, fileId, el) => {
+        e.preventDefault();
+        if (fileId === dragId) return;
+        const rect = el.getBoundingClientRect();
+        setDragOverId(fileId);
+        setDropPosition(e.clientX < rect.left + rect.width / 2 ? 'before' : 'after');
+    };
+
+    const handleDrop = (e, fileId) => {
+        e.preventDefault();
+        if (!dragId || !onReorderFiles) return;
+
+        const fromIdx = files.findIndex(f => f.id === dragId);
+        const toIdx = files.findIndex(f => f.id === fileId);
+
+        if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
+            let insertAt = dropPosition === 'after' ? toIdx + 1 : toIdx;
+            if (fromIdx < insertAt) insertAt -= 1;
+            if (insertAt !== fromIdx) onReorderFiles(dragId, insertAt);
+        }
+
+        setDragId(null);
+        setDragOverId(null);
+        setDropPosition(null);
+    };
+
+    const handleDragEnd = () => {
+        setDragId(null);
+        setDragOverId(null);
+        setDropPosition(null);
+    };
+
+    const getDropIndicator = fileId => {
+        if (!dragId || dragOverId !== fileId || dragId === fileId) return null;
+        return dropPosition;
+    };
+
     return (
         <div className='flex min-w-0 items-stretch overflow-hidden'>
             {overflow.left && (
@@ -258,6 +322,12 @@ const TabStrip = ({
             <div
                 ref={$scroll}
                 className='flex min-w-0 flex-1 items-stretch overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden'
+                onDragLeave={e => {
+                    if (!$scroll.current?.contains(e.relatedTarget)) {
+                        setDragOverId(null);
+                        setDropPosition(null);
+                    }
+                }}
             >
                 {files.map(file => (
                     <FileTab
@@ -271,6 +341,12 @@ const TabStrip = ({
                         onRename={onRenameFile}
                         deleteConfirmId={deleteConfirmId}
                         onDeleteConfirm={onDeleteConfirm}
+                        isDragging={dragId === file.id}
+                        dropIndicator={getDropIndicator(file.id)}
+                        onDragStart={!isReadonly ? handleDragStart : undefined}
+                        onDragOver={!isReadonly ? handleDragOver : undefined}
+                        onDrop={!isReadonly ? handleDrop : undefined}
+                        onDragEnd={!isReadonly ? handleDragEnd : undefined}
                     />
                 ))}
             </div>
@@ -323,6 +399,7 @@ export const TabBar = ({
     onCreateFile,
     onDeleteFile,
     onRenameFile,
+    onReorderFiles,
     onUndo,
     onRedo,
     canUndo,
@@ -368,6 +445,7 @@ export const TabBar = ({
                 deleteConfirmId={deleteConfirmId}
                 onDeleteConfirm={handleDeleteConfirm}
                 getTabGradient={getTabGradient}
+                onReorderFiles={onReorderFiles}
             />
             {!isReadonly && (
                 <TooltipProvider delay={1500}>

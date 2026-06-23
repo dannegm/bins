@@ -131,7 +131,7 @@ export const CommandPalette = () => {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.15 }}
-                    className='fixed inset-0 z-100 flex items-start justify-center pt-[20vh]'
+                    className='fixed inset-0 z-500 flex items-start justify-center pt-[20vh]'
                     onClick={handleClose}
                 >
                     <div className='absolute inset-0 bg-overlay backdrop-blur-xs' />
