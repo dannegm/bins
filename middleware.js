@@ -27,8 +27,8 @@ export default async function middleware(request) {
 
     try {
         const [binRes, filesRes] = await Promise.all([
-            dbFetch('bins', { 'id': `eq.${binId}`, select: 'title,author_id,visibility' }),
-            dbFetch('bin_files', { 'bin_id': `eq.${binId}`, select: 'language' }),
+            dbFetch('bins', { id: `eq.${binId}`, select: 'title,author_id,visibility' }),
+            dbFetch('bin_files', { bin_id: `eq.${binId}`, select: 'language' }),
         ]);
 
         const [bin] = await binRes.json();
@@ -37,7 +37,7 @@ export default async function middleware(request) {
         if (!bin || bin.visibility === 'private') return next();
 
         const profileRes = await dbFetch('profiles', {
-            'uuid': `eq.${bin.author_id}`,
+            uuid: `eq.${bin.author_id}`,
             select: 'name',
         });
         const [profile] = await profileRes.json();

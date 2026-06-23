@@ -1,8 +1,10 @@
 import { supabase } from './supabase';
 import { signJWT } from '@/helpers/jwt';
 
-const ADMIN_CLAIM_URL = import.meta.env.VITE_ADMIN_CLAIM_URL ?? 'https://endpoints.hckr.mx/bins/admin/claim';
-const AUTH_CLAIM_URL = import.meta.env.VITE_AUTH_CLAIM_URL ?? 'https://endpoints.hckr.mx/bins/auth/claim';
+const ADMIN_CLAIM_URL =
+    import.meta.env.VITE_ADMIN_CLAIM_URL ?? 'https://endpoints.hckr.mx/bins/admin/claim';
+const AUTH_CLAIM_URL =
+    import.meta.env.VITE_AUTH_CLAIM_URL ?? 'https://endpoints.hckr.mx/bins/auth/claim';
 
 export const claimSession = async (uuid = null) => {
     const headers = {};

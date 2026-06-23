@@ -17,7 +17,9 @@ export const UserAvatar = ({ className, profileId, profile: profileProp }) => {
 
     const source = profileProp ?? (profileId ? fetched : user);
     const seed = source ? source.name + (source.uuid ?? source.id) : null;
-    const color = isDark ? (source?.colorDark ?? source?.color_dark) : (source?.colorLight ?? source?.color_light);
+    const color = isDark
+        ? (source?.colorDark ?? source?.color_dark)
+        : (source?.colorLight ?? source?.color_light);
 
     return (
         <div

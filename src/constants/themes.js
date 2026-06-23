@@ -10,10 +10,26 @@ export const UI_THEMES = [
 export const THEME_ATTRIBUTIONS = {
     light: { nick: 'shadcn', license: 'MIT', url: 'https://github.com/shadcn-ui/ui' },
     dark: { nick: 'shadcn', license: 'MIT', url: 'https://github.com/shadcn-ui/ui' },
-    'rose-pine-dawn': { name: 'Rosé Pine', license: 'MIT', url: 'https://github.com/rose-pine/rose-pine-theme' },
-    dracula: { name: 'Dracula Theme', license: 'MIT', url: 'https://github.com/dracula/dracula-theme' },
-    'tlapalli-quartz': { nick: 'ackzell', license: 'MIT', url: 'https://github.com/ackzell/tlapalli-vscode-theme' },
-    'tlapalli-fire-opal': { nick: 'ackzell', license: 'MIT', url: 'https://github.com/ackzell/tlapalli-vscode-theme' },
+    'rose-pine-dawn': {
+        name: 'Rosé Pine',
+        license: 'MIT',
+        url: 'https://github.com/rose-pine/rose-pine-theme',
+    },
+    dracula: {
+        name: 'Dracula Theme',
+        license: 'MIT',
+        url: 'https://github.com/dracula/dracula-theme',
+    },
+    'tlapalli-quartz': {
+        nick: 'ackzell',
+        license: 'MIT',
+        url: 'https://github.com/ackzell/tlapalli-vscode-theme',
+    },
+    'tlapalli-fire-opal': {
+        nick: 'ackzell',
+        license: 'MIT',
+        url: 'https://github.com/ackzell/tlapalli-vscode-theme',
+    },
 };
 
 export const MONACO_THEMES = [

@@ -27,7 +27,9 @@ export const RunnerPanel = ({ runner, content, language, fileId, onClose }) => {
             </div>
             <div className='absolute inset-x-0 bottom-0 top-0 sm:top-8'>
                 <ScrollArea className='h-full'>
-                    {RunnerComponent && <RunnerComponent content={content} language={language} fileId={fileId} />}
+                    {RunnerComponent && (
+                        <RunnerComponent content={content} language={language} fileId={fileId} />
+                    )}
                 </ScrollArea>
             </div>
         </div>

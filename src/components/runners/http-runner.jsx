@@ -11,15 +11,25 @@ import { useTheme } from '@/providers/theme-provider';
 
 const PROXY_URL = import.meta.env.VITE_PROXY_URL;
 
-const METHODS = new Set(['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS', 'TRACE', 'CONNECT']);
+const METHODS = new Set([
+    'GET',
+    'POST',
+    'PUT',
+    'DELETE',
+    'PATCH',
+    'HEAD',
+    'OPTIONS',
+    'TRACE',
+    'CONNECT',
+]);
 
 const METHOD_COLORS = {
-    GET:     { dark: '#60a5fa', light: '#2563eb' },
-    POST:    { dark: '#4ade80', light: '#16a34a' },
-    PUT:     { dark: '#facc15', light: '#ca8a04' },
-    PATCH:   { dark: '#fb923c', light: '#ea580c' },
-    DELETE:  { dark: '#f87171', light: '#dc2626' },
-    HEAD:    { dark: '#c084fc', light: '#9333ea' },
+    GET: { dark: '#60a5fa', light: '#2563eb' },
+    POST: { dark: '#4ade80', light: '#16a34a' },
+    PUT: { dark: '#facc15', light: '#ca8a04' },
+    PATCH: { dark: '#fb923c', light: '#ea580c' },
+    DELETE: { dark: '#f87171', light: '#dc2626' },
+    HEAD: { dark: '#c084fc', light: '#9333ea' },
     OPTIONS: { dark: '#67e8f9', light: '#0891b2' },
 };
 
@@ -95,7 +105,10 @@ const parseHttpFile = content => {
         for (let i = 0; i < block.lines.length; i++) {
             const t = block.lines[i].trim();
             if (!t || t.startsWith('#') || t.startsWith('@')) continue;
-            if (METHODS.has(t.split(/\s+/)[0].toUpperCase())) { methodLineIdx = i; break; }
+            if (METHODS.has(t.split(/\s+/)[0].toUpperCase())) {
+                methodLineIdx = i;
+                break;
+            }
         }
 
         if (methodLineIdx === -1) {
@@ -128,7 +141,10 @@ const parseHttpFile = content => {
         let bodyStart = block.lines.length;
         for (let i = methodLineIdx + 1; i < block.lines.length; i++) {
             const t = block.lines[i].trim();
-            if (!t) { bodyStart = i + 1; break; }
+            if (!t) {
+                bodyStart = i + 1;
+                break;
+            }
             if (t.startsWith('#')) continue;
             const ci = t.indexOf(':');
             if (ci !== -1) rawHeaders[t.slice(0, ci).trim()] = t.slice(ci + 1).trim();
@@ -138,16 +154,33 @@ const parseHttpFile = content => {
         let inHeaders = true;
         for (let i = methodLineIdx + 1; i < block.lines.length; i++) {
             const t = block.lines[i].trim();
-            if (inHeaders && !t) { bodyStart = i + 1; inHeaders = false; break; }
+            if (inHeaders && !t) {
+                bodyStart = i + 1;
+                inHeaders = false;
+                break;
+            }
             if (!t.startsWith('#') && t) inHeaders = true;
         }
 
         const rawBody = block.lines.slice(bodyStart).join('\n').trim() || null;
 
-        const reqContent = [rawUrl, ...Object.entries(rawHeaders).map(([k, v]) => `${k}: ${v}`), rawBody ?? ''].join(' ');
+        const reqContent = [
+            rawUrl,
+            ...Object.entries(rawHeaders).map(([k, v]) => `${k}: ${v}`),
+            rawBody ?? '',
+        ].join(' ');
         const localVars = extractLocalVars(reqContent, variables, dotenvVarSet);
 
-        items.push({ type: 'request', id: reqId++, name: block.name || `${method} ${rawUrl}`, method, rawUrl, rawHeaders, rawBody, localVars });
+        items.push({
+            type: 'request',
+            id: reqId++,
+            name: block.name || `${method} ${rawUrl}`,
+            method,
+            rawUrl,
+            rawHeaders,
+            rawBody,
+            localVars,
+        });
     }
 
     return { variables, dotenvVars, header, items };
@@ -158,7 +191,10 @@ const parseHttpFile = content => {
 const executeRequest = async (request, variables, envValues) => {
     const url = resolveVars(request.rawUrl, variables, envValues);
     const headers = Object.fromEntries(
-        Object.entries(request.rawHeaders).map(([k, v]) => [k, resolveVars(v, variables, envValues)]),
+        Object.entries(request.rawHeaders).map(([k, v]) => [
+            k,
+            resolveVars(v, variables, envValues),
+        ]),
     );
     const body = request.rawBody ? resolveVars(request.rawBody, variables, envValues) : undefined;
 
@@ -176,8 +212,13 @@ const executeRequest = async (request, variables, envValues) => {
     let responseBody, bodyType;
     if (contentType.includes('application/json')) {
         const text = await res.text();
-        try { responseBody = JSON.parse(text); bodyType = 'json'; }
-        catch { responseBody = text; bodyType = 'text'; }
+        try {
+            responseBody = JSON.parse(text);
+            bodyType = 'json';
+        } catch {
+            responseBody = text;
+            bodyType = 'text';
+        }
     } else if (contentType.startsWith('text/html')) {
         responseBody = await res.text();
         bodyType = 'html';
@@ -192,7 +233,15 @@ const executeRequest = async (request, variables, envValues) => {
         bodyType = 'blob';
     }
 
-    return { status: res.status, statusText: res.statusText, elapsed, headers: responseHeaders, contentType, body: responseBody, bodyType };
+    return {
+        status: res.status,
+        statusText: res.statusText,
+        elapsed,
+        headers: responseHeaders,
+        contentType,
+        body: responseBody,
+        bodyType,
+    };
 };
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -274,7 +323,11 @@ const ResponseBody = ({ result }) => {
 
     if (result.bodyType === 'html') {
         return (
-            <iframe className='w-full min-h-48 bg-white' sandbox='allow-scripts' srcDoc={result.body} />
+            <iframe
+                className='w-full min-h-48 bg-white'
+                sandbox='allow-scripts'
+                srcDoc={result.body}
+            />
         );
     }
 
@@ -291,7 +344,9 @@ const ResponseHeaders = ({ headers, t }) => {
     return (
         <Collapsible open={open} onOpenChange={setOpen}>
             <CollapsibleTrigger className='flex w-full items-center gap-1.5 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors border-b border-border'>
-                <ChevronDown className={cn('size-3 transition-transform', { 'rotate-180': open })} />
+                <ChevronDown
+                    className={cn('size-3 transition-transform', { 'rotate-180': open })}
+                />
                 {t('editor.runner_panel.http.headers')} ({entries.length})
             </CollapsibleTrigger>
             <CollapsibleContent>
@@ -311,7 +366,9 @@ const ResponseHeaders = ({ headers, t }) => {
 const SectionSeparator = ({ label }) => (
     <div className='flex items-center gap-3 px-3 py-2.5'>
         <div className='h-px flex-1 bg-border' />
-        <span className='text-[10px] font-semibold tracking-widest text-muted-foreground uppercase'>{label}</span>
+        <span className='text-[10px] font-semibold tracking-widest text-muted-foreground uppercase'>
+            {label}
+        </span>
         <div className='h-px flex-1 bg-border' />
     </div>
 );
@@ -326,7 +383,9 @@ const LocalVarsPanel = ({ localVars, values, onChange, t }) => {
             <div className='flex flex-col gap-1'>
                 {localVars.map(varName => (
                     <div key={varName} className='flex items-center gap-2'>
-                        <span className='w-32 shrink-0 truncate font-mono text-xs text-muted-foreground'>{varName}</span>
+                        <span className='w-32 shrink-0 truncate font-mono text-xs text-muted-foreground'>
+                            {varName}
+                        </span>
                         <Input
                             className='h-6 text-xs font-mono'
                             placeholder={t('editor.runner_panel.http.env_placeholder')}
@@ -347,7 +406,12 @@ const RequestCard = ({ request, result, loading, localVarValues, onLocalVarChang
         <Collapsible open={open} onOpenChange={setOpen} className='border-b border-border'>
             <div className='flex items-center gap-2 px-3 py-2'>
                 <CollapsibleTrigger className='flex min-w-0 flex-1 items-center gap-2 text-left'>
-                    <ChevronDown className={cn('size-3 shrink-0 text-muted-foreground transition-transform', { 'rotate-180': open })} />
+                    <ChevronDown
+                        className={cn(
+                            'size-3 shrink-0 text-muted-foreground transition-transform',
+                            { 'rotate-180': open },
+                        )}
+                    />
                     <MethodBadge method={request.method} />
                     <span className='min-w-0 truncate text-xs text-foreground'>{request.name}</span>
                 </CollapsibleTrigger>
@@ -356,7 +420,11 @@ const RequestCard = ({ request, result, loading, localVarValues, onLocalVarChang
                     disabled={loading}
                     className='shrink-0 flex items-center gap-1 rounded px-2 py-0.5 text-xs text-muted-foreground hover:text-foreground hover:bg-surface-raised transition-colors disabled:opacity-50'
                 >
-                    {loading ? <Loader2 className='size-3 animate-spin' /> : <Play className='size-3' />}
+                    {loading ? (
+                        <Loader2 className='size-3 animate-spin' />
+                    ) : (
+                        <Play className='size-3' />
+                    )}
                     {t('editor.runner_panel.http.run')}
                 </button>
             </div>
@@ -383,7 +451,11 @@ const RequestCard = ({ request, result, loading, localVarValues, onLocalVarChang
 
                     {result && !result.error && (
                         <>
-                            <StatusBadge status={result.status} statusText={result.statusText} elapsed={result.elapsed} />
+                            <StatusBadge
+                                status={result.status}
+                                statusText={result.statusText}
+                                elapsed={result.elapsed}
+                            />
                             <ResponseHeaders headers={result.headers} t={t} />
                             <ResponseBody result={result} />
                         </>
@@ -401,7 +473,11 @@ const EnvPanel = ({ dotenvVars, envValues, onChange, t }) => {
     return (
         <Collapsible open={open} onOpenChange={setOpen} className='border-b border-border'>
             <CollapsibleTrigger className='flex w-full items-center gap-2 px-3 py-2 text-xs hover:bg-surface-raised/30 transition-colors'>
-                <ChevronDown className={cn('size-3 shrink-0 text-muted-foreground transition-transform', { 'rotate-180': open })} />
+                <ChevronDown
+                    className={cn('size-3 shrink-0 text-muted-foreground transition-transform', {
+                        'rotate-180': open,
+                    })}
+                />
                 <span className='flex-1 text-left font-medium text-foreground'>
                     {t('editor.runner_panel.http.env_vars')}
                 </span>
@@ -423,7 +499,9 @@ const EnvPanel = ({ dotenvVars, envValues, onChange, t }) => {
                                     className='h-6 text-xs font-mono'
                                     placeholder={t('editor.runner_panel.http.env_placeholder')}
                                     value={envValues[varName] ?? ''}
-                                    onChange={e => onChange(prev => ({ ...prev, [varName]: e.target.value }))}
+                                    onChange={e =>
+                                        onChange(prev => ({ ...prev, [varName]: e.target.value }))
+                                    }
                                 />
                             </div>
                         ))}
@@ -440,7 +518,9 @@ const FileHeader = ({ header }) => {
         <div className='flex items-baseline gap-2 border-b border-border px-3 py-2.5'>
             <span className='font-semibold text-sm text-foreground'>{header.title}</span>
             {header.baseUrl && (
-                <span className='font-mono text-xs text-muted-foreground truncate'>{header.baseUrl}</span>
+                <span className='font-mono text-xs text-muted-foreground truncate'>
+                    {header.baseUrl}
+                </span>
             )}
         </div>
     );
@@ -474,13 +554,19 @@ const FilterBar = ({ requests, query, onQueryChange, methodFilter, onMethodFilte
                         onClick={() => onMethodFilter(null)}
                         className={cn(
                             'rounded px-1.5 py-0.5 font-mono text-[10px] transition-colors',
-                            { 'bg-surface-raised text-foreground': !methodFilter, 'text-muted-foreground hover:text-foreground': methodFilter },
+                            {
+                                'bg-surface-raised text-foreground': !methodFilter,
+                                'text-muted-foreground hover:text-foreground': methodFilter,
+                            },
                         )}
                     >
                         ALL
                     </button>
                     {methods.map(method => {
-                        const colors = METHOD_COLORS[method] ?? { dark: '#94a3b8', light: '#64748b' };
+                        const colors = METHOD_COLORS[method] ?? {
+                            dark: '#94a3b8',
+                            light: '#64748b',
+                        };
                         const active = methodFilter === method;
                         return (
                             <button
@@ -490,12 +576,17 @@ const FilterBar = ({ requests, query, onQueryChange, methodFilter, onMethodFilte
                                     'rounded px-1.5 py-0.5 font-mono font-bold text-[10px] transition-colors',
                                     { 'text-white': active },
                                 )}
-                                style={active
-                                    ? { backgroundColor: colors.dark }
-                                    : { '--mc-dark': colors.dark, '--mc-light': colors.light }
+                                style={
+                                    active
+                                        ? { backgroundColor: colors.dark }
+                                        : { '--mc-dark': colors.dark, '--mc-light': colors.light }
                                 }
                             >
-                                <span className={cn({ 'text-(--mc-light) dark:text-(--mc-dark)': !active })}>
+                                <span
+                                    className={cn({
+                                        'text-(--mc-light) dark:text-(--mc-dark)': !active,
+                                    })}
+                                >
                                     {method}
                                 </span>
                             </button>
@@ -574,7 +665,12 @@ export const HttpRunner = ({ content, fileId }) => {
             <FileHeader header={header} />
 
             {dotenvVars.length > 0 && (
-                <EnvPanel dotenvVars={dotenvVars} envValues={envValues} onChange={setEnvValues} t={t} />
+                <EnvPanel
+                    dotenvVars={dotenvVars}
+                    envValues={envValues}
+                    onChange={setEnvValues}
+                    t={t}
+                />
             )}
 
             <FilterBar

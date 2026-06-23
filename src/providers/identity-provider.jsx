@@ -13,7 +13,11 @@ import { FlickeringGrid } from '@/ui/flickering-grid';
 const MIGRATION_DATE = parseISO('2026-06-22T00:00:00-05:00');
 
 const hashIP = ip =>
-    ip.split('.').map(n => parseInt(n).toString(16).padStart(2, '0')).join('').toUpperCase();
+    ip
+        .split('.')
+        .map(n => parseInt(n).toString(16).padStart(2, '0'))
+        .join('')
+        .toUpperCase();
 
 const fetchGeoData = async () => {
     try {
@@ -31,15 +35,17 @@ const syncProfile = async ({ uuid, name, colorDark, colorLight }) => {
     const is_bot = navigator.webdriver === true || parseUA(ua).bot !== null;
     const geo = await fetchGeoData();
 
-    const { error } = await supabase().from('profiles').upsert({
-        uuid,
-        name,
-        color_light: colorLight,
-        color_dark: colorDark,
-        user_agent: ua,
-        is_bot,
-        ...geo,
-    });
+    const { error } = await supabase()
+        .from('profiles')
+        .upsert({
+            uuid,
+            name,
+            color_light: colorLight,
+            color_dark: colorDark,
+            user_agent: ua,
+            is_bot,
+            ...geo,
+        });
     if (error) console.error('[identity] syncProfile failed:', error);
 };
 
@@ -58,7 +64,9 @@ const _runInitIdentity = async () => {
     // INITIAL_SESSION fires after the client finishes async init + token refresh from localStorage,
     // avoiding a race where getSession() returns null before the stored session is restored.
     let session = await new Promise(resolve => {
-        const { data: { subscription } } = supabase().auth.onAuthStateChange((event, s) => {
+        const {
+            data: { subscription },
+        } = supabase().auth.onAuthStateChange((event, s) => {
             if (event === 'INITIAL_SESSION') {
                 subscription.unsubscribe();
                 resolve(s);
@@ -109,12 +117,13 @@ export const IdentityProvider = ({ children }) => {
         });
     }, []);
 
-    if (!isReady) return (
-        <div className='relative flex min-h-screen items-center justify-center bg-background'>
-            <FlickeringGrid className='absolute inset-0 z-0' />
-            <CoffeeLoader className='relative z-10' />
-        </div>
-    );
+    if (!isReady)
+        return (
+            <div className='relative flex min-h-screen items-center justify-center bg-background'>
+                <FlickeringGrid className='absolute inset-0 z-0' />
+                <CoffeeLoader className='absolute-center z-1 size-64' />
+            </div>
+        );
 
     return children;
 };

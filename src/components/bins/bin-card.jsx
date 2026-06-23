@@ -155,9 +155,13 @@ const AccessBadge = ({ bin, t, canDelete, canUnlink, userId }) => {
 
     const icon = canDelete ? <Trash2 className='size-3.5' /> : <LogOut className='size-3.5' />;
     const triggerTitle = canDelete ? t('bins.card.delete_title') : t('bins.card.unlink_title');
-    const triggerDesc = canDelete ? t('bins.card.delete_description') : t('bins.card.unlink_description');
+    const triggerDesc = canDelete
+        ? t('bins.card.delete_description')
+        : t('bins.card.unlink_description');
     const triggerCancel = canDelete ? t('bins.card.delete_cancel') : t('bins.card.unlink_cancel');
-    const triggerConfirm = canDelete ? t('bins.card.delete_confirm') : t('bins.card.unlink_confirm');
+    const triggerConfirm = canDelete
+        ? t('bins.card.delete_confirm')
+        : t('bins.card.unlink_confirm');
     const onConfirm = canDelete ? remove : unlink;
     const isPendingAction = canDelete ? isPending : isUnlinking;
 
@@ -252,7 +256,13 @@ export const BinCard = ({ bin, canUnlink = false }) => {
                     <span className='truncate text-sm font-medium text-card-foreground'>
                         {bin.title || t('bins.card.untitled')}
                     </span>
-                    <AccessBadge bin={bin} t={t} canDelete={canDelete} canUnlink={!canDelete && canUnlink} userId={user?.uuid} />
+                    <AccessBadge
+                        bin={bin}
+                        t={t}
+                        canDelete={canDelete}
+                        canUnlink={!canDelete && canUnlink}
+                        userId={user?.uuid}
+                    />
                 </div>
 
                 <div className='flex items-center gap-3 text-xs text-muted-foreground'>
@@ -358,7 +368,10 @@ const RowUnlinkButton = ({ bin, userId, t }) => {
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger
                 className='flex size-5 items-center justify-center rounded text-muted-foreground transition-colors hover:text-destructive [&>svg]:size-3.5'
-                onClick={e => { e.preventDefault(); e.stopPropagation(); }}
+                onClick={e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }}
             >
                 <LogOut />
             </PopoverTrigger>
@@ -366,14 +379,22 @@ const RowUnlinkButton = ({ bin, userId, t }) => {
                 side='bottom'
                 align='end'
                 className='w-60'
-                onClick={e => { e.preventDefault(); e.stopPropagation(); }}
+                onClick={e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }}
             >
                 <PopoverHeader>
                     <PopoverTitle>{t('bins.card.unlink_title')}</PopoverTitle>
                     <PopoverDescription>{t('bins.card.unlink_description')}</PopoverDescription>
                 </PopoverHeader>
                 <div className='flex gap-2 pt-1'>
-                    <Button variant='outline' size='sm' className='flex-1' onClick={() => setOpen(false)}>
+                    <Button
+                        variant='outline'
+                        size='sm'
+                        className='flex-1'
+                        onClick={() => setOpen(false)}
+                    >
                         {t('bins.card.unlink_cancel')}
                     </Button>
                     <Button
@@ -381,7 +402,11 @@ const RowUnlinkButton = ({ bin, userId, t }) => {
                         size='sm'
                         className='flex-1'
                         disabled={isPending}
-                        onClick={e => { e.preventDefault(); e.stopPropagation(); unlink(); }}
+                        onClick={e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            unlink();
+                        }}
                     >
                         {t('bins.card.unlink_confirm')}
                     </Button>

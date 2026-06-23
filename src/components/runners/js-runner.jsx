@@ -132,7 +132,12 @@ const LEVELS = {
 const ConsoleEntry = ({ entry, onLineClick }) => {
     const { prefix, className } = LEVELS[entry.method] ?? LEVELS.log;
     return (
-        <div className={cn('flex gap-2 border-b border-border font-mono items-start text-xs last:border-b-0', className)}>
+        <div
+            className={cn(
+                'flex gap-2 border-b border-border font-mono items-start text-xs last:border-b-0',
+                className,
+            )}
+        >
             {entry.line ? (
                 <button
                     className='shrink-0 w-12 text-right pl-4 pr-2 py-1.5 select-none text-muted-foreground hover:text-foreground transition-colors'
@@ -144,7 +149,9 @@ const ConsoleEntry = ({ entry, onLineClick }) => {
                 <span className='shrink-0 w-12 pl-4 pr-2 py-1.5' />
             )}
             <span className='shrink-0 select-none text-muted-foreground py-1.5'>{prefix}</span>
-            <span className='min-w-0 whitespace-pre-wrap break-all py-1.5'>{entry.args.join(' ')}</span>
+            <span className='min-w-0 whitespace-pre-wrap break-all py-1.5'>
+                {entry.args.join(' ')}
+            </span>
         </div>
     );
 };
@@ -191,22 +198,22 @@ const EmptyState = () => (
 );
 
 const SKELETON_ENTRIES = [
-    { type: 'result', line: 1,  value: '42',                     valueType: 'number'  },
-    { type: 'result', line: 2,  value: '"hello world"',          valueType: 'string'  },
-    { type: 'log',    text: 'Rendering component tree'                                 },
-    { type: 'result', line: 5,  value: 'true',                   valueType: 'boolean' },
-    { type: 'result', line: 7,  value: '{ id: 1, label: "x" }', valueType: 'object'  },
-    { type: 'result', line: 9,  value: '[1, 2, 3]',              valueType: 'array'   },
-    { type: 'warn',   text: 'Deprecated API called'                                    },
-    { type: 'result', line: 12, value: '"process complete"',     valueType: 'string'  },
+    { type: 'result', line: 1, value: '42', valueType: 'number' },
+    { type: 'result', line: 2, value: '"hello world"', valueType: 'string' },
+    { type: 'log', text: 'Rendering component tree' },
+    { type: 'result', line: 5, value: 'true', valueType: 'boolean' },
+    { type: 'result', line: 7, value: '{ id: 1, label: "x" }', valueType: 'object' },
+    { type: 'result', line: 9, value: '[1, 2, 3]', valueType: 'array' },
+    { type: 'warn', text: 'Deprecated API called' },
+    { type: 'result', line: 12, value: '"process complete"', valueType: 'string' },
 ];
 
 const VALUE_CLASS = {
-    number:  'text-warning',
-    string:  'text-success',
+    number: 'text-warning',
+    string: 'text-success',
     boolean: 'text-brand',
-    object:  'text-foreground',
-    array:   'text-foreground',
+    object: 'text-foreground',
+    array: 'text-foreground',
 };
 
 const RunnerSkeleton = () => (
@@ -215,8 +222,16 @@ const RunnerSkeleton = () => (
             const isResult = entry.type === 'result';
             const { prefix, className: lvlClass } = LEVELS[entry.type] ?? LEVELS.log;
             return (
-                <div key={i} className='flex gap-2 border-b border-border font-mono items-start last:border-b-0'>
-                    <span className={cn('shrink-0 w-12 text-right pl-4 pr-2 select-none text-muted-foreground', isResult ? 'py-2.5 text-sm' : 'py-1.5 text-xs')}>
+                <div
+                    key={i}
+                    className='flex gap-2 border-b border-border font-mono items-start last:border-b-0'
+                >
+                    <span
+                        className={cn(
+                            'shrink-0 w-12 text-right pl-4 pr-2 select-none text-muted-foreground',
+                            isResult ? 'py-2.5 text-sm' : 'py-1.5 text-xs',
+                        )}
+                    >
                         {entry.line ?? ''}
                     </span>
                     {isResult ? (
@@ -224,11 +239,15 @@ const RunnerSkeleton = () => (
                             <span className={VALUE_CLASS[entry.valueType] ?? 'text-foreground'}>
                                 <ScrambleText>{entry.value}</ScrambleText>
                             </span>
-                            <span className='text-[10px] text-muted-foreground'>{entry.valueType}</span>
+                            <span className='text-[10px] text-muted-foreground'>
+                                {entry.valueType}
+                            </span>
                         </span>
                     ) : (
                         <>
-                            <span className={cn('shrink-0 select-none py-1.5 text-xs', lvlClass)}>{prefix}</span>
+                            <span className={cn('shrink-0 select-none py-1.5 text-xs', lvlClass)}>
+                                {prefix}
+                            </span>
                             <span className={cn('min-w-0 py-1.5 text-xs', lvlClass)}>
                                 <ScrambleText>{entry.text}</ScrambleText>
                             </span>
@@ -273,7 +292,10 @@ export const JsRunner = ({ content, language }) => {
             }
             if (e.data?.type === 'bins:console') {
                 const { method, args, line } = e.data;
-                setEntries(prev => [...prev, { type: 'console', method, args, line: line ?? null }]);
+                setEntries(prev => [
+                    ...prev,
+                    { type: 'console', method, args, line: line ?? null },
+                ]);
             }
             if (e.data?.type === 'bins:result') {
                 const value = e.data.isJson ? JSON.parse(e.data.value) : e.data.value;
@@ -297,7 +319,13 @@ export const JsRunner = ({ content, language }) => {
 
     return (
         <div className='flex h-full flex-col select-text'>
-            <iframe ref={$iframe} key={runKey} className='hidden' sandbox='allow-scripts' srcDoc={srcDoc} />
+            <iframe
+                ref={$iframe}
+                key={runKey}
+                className='hidden'
+                sandbox='allow-scripts'
+                srcDoc={srcDoc}
+            />
             {isLoading && entries.length === 0 ? (
                 <RunnerSkeleton />
             ) : entries.length === 0 ? (

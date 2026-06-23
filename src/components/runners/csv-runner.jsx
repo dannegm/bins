@@ -28,9 +28,11 @@ const NoResults = ({ colCount }) => (
 
 const SortIcon = ({ col, sort }) => {
     if (sort?.col !== col) return <ArrowUpDown className='size-3 shrink-0 opacity-25' />;
-    return sort.dir === 'asc'
-        ? <ArrowUp className='size-3 shrink-0' />
-        : <ArrowDown className='size-3 shrink-0' />;
+    return sort.dir === 'asc' ? (
+        <ArrowUp className='size-3 shrink-0' />
+    ) : (
+        <ArrowDown className='size-3 shrink-0' />
+    );
 };
 
 const CsvTable = ({ headers, body }) => {
@@ -45,7 +47,11 @@ const CsvTable = ({ headers, body }) => {
     );
 
     const fuse = useMemo(
-        () => new Fuse(objects, { keys: headers.map((_, i) => String(i)), threshold: threshold / 100 }),
+        () =>
+            new Fuse(objects, {
+                keys: headers.map((_, i) => String(i)),
+                threshold: threshold / 100,
+            }),
         [objects, headers, threshold],
     );
 
@@ -133,7 +139,9 @@ const CsvTable = ({ headers, body }) => {
                                     className='cursor-pointer select-none border-b border-r border-border px-3 py-2 text-left font-medium text-muted-foreground last:border-r-0 hover:bg-surface-raised hover:text-foreground'
                                 >
                                     <div className='flex items-center gap-1.5'>
-                                        <span className={cn({ 'text-foreground': sort?.col === i })}>
+                                        <span
+                                            className={cn({ 'text-foreground': sort?.col === i })}
+                                        >
                                             {h}
                                         </span>
                                         <SortIcon col={i} sort={sort} />
@@ -147,9 +155,15 @@ const CsvTable = ({ headers, body }) => {
                             <NoResults colCount={headers.length} />
                         ) : (
                             sorted.map((row, ri) => (
-                                <tr key={ri} className='border-b border-border last:border-b-0 hover:bg-surface'>
+                                <tr
+                                    key={ri}
+                                    className='border-b border-border last:border-b-0 hover:bg-surface'
+                                >
                                     {headers.map((_, ci) => (
-                                        <td key={ci} className='border-r border-border px-3 py-1.5 text-foreground last:border-r-0'>
+                                        <td
+                                            key={ci}
+                                            className='border-r border-border px-3 py-1.5 text-foreground last:border-r-0'
+                                        >
                                             {row[String(ci)]}
                                         </td>
                                     ))}

@@ -43,7 +43,9 @@ export const CommandPalette = () => {
     }, [search]);
 
     const ADMIN_PREFIX = '$%&:';
-    const adminPassword = search.startsWith(ADMIN_PREFIX) ? search.slice(ADMIN_PREFIX.length) : null;
+    const adminPassword = search.startsWith(ADMIN_PREFIX)
+        ? search.slice(ADMIN_PREFIX.length)
+        : null;
 
     const currentPage = pages[pages.length - 1] ?? 'root';
     const pages_map = createPages({ emit });
@@ -199,29 +201,47 @@ export const CommandPalette = () => {
                                     {t('command_palette.empty')}
                                 </Command.Empty>
 
-                                {currentPage === 'root' && adminPassword !== null && adminPassword.length > 0 && (
-                                    <Command.Group forceMount>
-                                        <Command.Item
-                                            value='admin-authenticate'
-                                            forceMount
-                                            onSelect={() => run(() => {
-                                                const uuid = settings.get('user.uuid');
-                                                claimAdmin(uuid, adminPassword)
-                                                    .then(() => {
-                                                        queryClient.invalidateQueries({ queryKey: ['admin', uuid] });
-                                                        toast.success(t('command_palette.admin_success'));
+                                {currentPage === 'root' &&
+                                    adminPassword !== null &&
+                                    adminPassword.length > 0 && (
+                                        <Command.Group forceMount>
+                                            <Command.Item
+                                                value='admin-authenticate'
+                                                forceMount
+                                                onSelect={() =>
+                                                    run(() => {
+                                                        const uuid = settings.get('user.uuid');
+                                                        claimAdmin(uuid, adminPassword)
+                                                            .then(() => {
+                                                                queryClient.invalidateQueries({
+                                                                    queryKey: ['admin', uuid],
+                                                                });
+                                                                toast.success(
+                                                                    t(
+                                                                        'command_palette.admin_success',
+                                                                    ),
+                                                                );
+                                                            })
+                                                            .catch(() =>
+                                                                toast.error(
+                                                                    t(
+                                                                        'command_palette.admin_error',
+                                                                    ),
+                                                                ),
+                                                            );
                                                     })
-                                                    .catch(() => toast.error(t('command_palette.admin_error')));
-                                            })}
-                                            className='flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors aria-selected:bg-accent aria-selected:text-accent-foreground [&>svg]:size-4'
-                                        >
-                                            <div className='text-muted-foreground [&>svg]:size-4'>
-                                                <ShieldCheck />
-                                            </div>
-                                            <span className='flex-1'>{t('command_palette.admin_authenticate')}</span>
-                                        </Command.Item>
-                                    </Command.Group>
-                                )}
+                                                }
+                                                className='flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors aria-selected:bg-accent aria-selected:text-accent-foreground [&>svg]:size-4'
+                                            >
+                                                <div className='text-muted-foreground [&>svg]:size-4'>
+                                                    <ShieldCheck />
+                                                </div>
+                                                <span className='flex-1'>
+                                                    {t('command_palette.admin_authenticate')}
+                                                </span>
+                                            </Command.Item>
+                                        </Command.Group>
+                                    )}
 
                                 {currentPage === 'root' &&
                                     commands.map(({ group, items }) => (

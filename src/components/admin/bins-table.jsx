@@ -54,8 +54,7 @@ const SORT_KEYS = ['updated_at', 'title', 'author', 'views', 'status', 'files', 
 const FILTER_KEYS = ['all', 'empty'];
 const PER_PAGE_OPTIONS = [10, 25, 50];
 
-const isBinEmpty = bin =>
-    !bin.bin_files?.length || bin.bin_files.every(f => !f.content?.trim());
+const isBinEmpty = bin => !bin.bin_files?.length || bin.bin_files.every(f => !f.content?.trim());
 
 const useAdminBinsStats = () =>
     useQuery({
@@ -68,7 +67,10 @@ const useAdminBinsStats = () =>
                 { data: viewData },
             ] = await Promise.all([
                 supabase().from('bins').select('*', { count: 'exact', head: true }),
-                supabase().from('bins').select('*', { count: 'exact', head: true }).eq('is_readonly', true),
+                supabase()
+                    .from('bins')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('is_readonly', true),
                 supabase().from('bin_files').select('*', { count: 'exact', head: true }),
                 supabase().from('bins').select('views'),
             ]);
@@ -203,11 +205,13 @@ const VisibilityBadge = ({ visibility, t }) => {
     const Icon = VISIBILITY_ICON_MAP[v] ?? Globe;
 
     return (
-        <Badge className={cn({
-            'border-success/40 bg-success/10 text-success': v === VISIBILITY.PUBLIC,
-            'border-warning/40 bg-warning/10 text-warning': v === VISIBILITY.UNLISTED,
-            'border-border bg-surface text-muted-foreground': v === VISIBILITY.PRIVATE,
-        })}>
+        <Badge
+            className={cn({
+                'border-success/40 bg-success/10 text-success': v === VISIBILITY.PUBLIC,
+                'border-warning/40 bg-warning/10 text-warning': v === VISIBILITY.UNLISTED,
+                'border-border bg-surface text-muted-foreground': v === VISIBILITY.PRIVATE,
+            })}
+        >
             <Icon className='size-2.5' />
             {t(`bins.card.visibility_${v}`)}
         </Badge>
@@ -539,7 +543,10 @@ export const BinsTable = () => {
 
     const handleSort = col => {
         if (col === sortBy) setSortDir(prev => (prev === 'asc' ? 'desc' : 'asc'));
-        else { setSortBy(col); setSortDir('desc'); }
+        else {
+            setSortBy(col);
+            setSortDir('desc');
+        }
         setPage(1);
     };
     const handleFilter = val => {
@@ -583,10 +590,13 @@ export const BinsTable = () => {
                         <button
                             key={key}
                             onClick={() => handleFilter(key)}
-                            className={cn('h-5 rounded px-3 text-xs font-medium transition-colors', {
-                                'bg-brand text-white': filter === key,
-                                'text-muted-foreground hover:text-foreground': filter !== key,
-                            })}
+                            className={cn(
+                                'h-5 rounded px-3 text-xs font-medium transition-colors',
+                                {
+                                    'bg-brand text-white': filter === key,
+                                    'text-muted-foreground hover:text-foreground': filter !== key,
+                                },
+                            )}
                         >
                             {t(`admin.bins.filter_${key}`)}
                         </button>
@@ -605,14 +615,60 @@ export const BinsTable = () => {
                 <Table>
                     <TableHeader>
                         <TableRow className='hover:bg-transparent'>
-                            <SortableHead column='title' label={t('admin.bins.col_bin')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} />
-                            <SortableHead column='author' label={t('admin.bins.col_author')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} />
-                            <SortableHead column='languages' label={t('admin.bins.col_languages')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} />
-                            <SortableHead column='files' label={t('admin.bins.col_files')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} align='end' />
-                            <SortableHead column='views' label={t('admin.bins.col_views')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} align='end' />
-                            <SortableHead column='status' label={t('admin.bins.col_status')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} />
-                            <TableHead className='text-xs text-muted-foreground'>{t('admin.bins.col_visibility')}</TableHead>
-                            <SortableHead column='updated_at' label={t('admin.bins.col_updated')} sortBy={sortBy} sortDir={sortDir} onSort={handleSort} />
+                            <SortableHead
+                                column='title'
+                                label={t('admin.bins.col_bin')}
+                                sortBy={sortBy}
+                                sortDir={sortDir}
+                                onSort={handleSort}
+                            />
+                            <SortableHead
+                                column='author'
+                                label={t('admin.bins.col_author')}
+                                sortBy={sortBy}
+                                sortDir={sortDir}
+                                onSort={handleSort}
+                            />
+                            <SortableHead
+                                column='languages'
+                                label={t('admin.bins.col_languages')}
+                                sortBy={sortBy}
+                                sortDir={sortDir}
+                                onSort={handleSort}
+                            />
+                            <SortableHead
+                                column='files'
+                                label={t('admin.bins.col_files')}
+                                sortBy={sortBy}
+                                sortDir={sortDir}
+                                onSort={handleSort}
+                                align='end'
+                            />
+                            <SortableHead
+                                column='views'
+                                label={t('admin.bins.col_views')}
+                                sortBy={sortBy}
+                                sortDir={sortDir}
+                                onSort={handleSort}
+                                align='end'
+                            />
+                            <SortableHead
+                                column='status'
+                                label={t('admin.bins.col_status')}
+                                sortBy={sortBy}
+                                sortDir={sortDir}
+                                onSort={handleSort}
+                            />
+                            <TableHead className='text-xs text-muted-foreground'>
+                                {t('admin.bins.col_visibility')}
+                            </TableHead>
+                            <SortableHead
+                                column='updated_at'
+                                label={t('admin.bins.col_updated')}
+                                sortBy={sortBy}
+                                sortDir={sortDir}
+                                onSort={handleSort}
+                            />
                             <TableHead className='text-right'>
                                 {t('admin.bins.col_actions')}
                             </TableHead>
@@ -621,14 +677,20 @@ export const BinsTable = () => {
                     <TableBody>
                         {isLoading && (
                             <TableRow>
-                                <TableCell colSpan={9} className='h-32 text-center text-muted-foreground'>
+                                <TableCell
+                                    colSpan={9}
+                                    className='h-32 text-center text-muted-foreground'
+                                >
                                     {t('admin.loading')}
                                 </TableCell>
                             </TableRow>
                         )}
                         {!isLoading && rows.length === 0 && (
                             <TableRow>
-                                <TableCell colSpan={9} className='h-32 text-center text-muted-foreground'>
+                                <TableCell
+                                    colSpan={9}
+                                    className='h-32 text-center text-muted-foreground'
+                                >
                                     {t('admin.bins.empty')}
                                 </TableCell>
                             </TableRow>

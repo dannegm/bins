@@ -56,7 +56,9 @@ export const UserPage = () => {
     const { data: bins = [], isLoading: binsLoading } = useProfileBins(uuid);
     const { data: sharedBins = [] } = useSharedWithMe(user?.uuid, uuid);
     const [profileBinsView, setProfileBinsView] = useSettings('binView.profileBins');
-    const [profileSharedBinsView, setProfileSharedBinsView] = useSettings('binView.profileSharedBins');
+    const [profileSharedBinsView, setProfileSharedBinsView] = useSettings(
+        'binView.profileSharedBins',
+    );
 
     const isOwnProfile = user?.uuid === uuid;
     const displayBins = isOwnProfile ? bins : bins.filter(b => b.visibility === VISIBILITY.PUBLIC);
@@ -65,10 +67,23 @@ export const UserPage = () => {
         <Layout>
             <div className='flex h-full flex-col'>
                 <div className='flex flex-1 flex-col overflow-y-auto'>
-                    <ProfileHeader profile={profile} bins={displayBins} isLoading={profileLoading} />
+                    <ProfileHeader
+                        profile={profile}
+                        bins={displayBins}
+                        isLoading={profileLoading}
+                    />
                     <div className='flex flex-col gap-8 p-8'>
-                        <ProfileBins bins={displayBins} isLoading={binsLoading} view={profileBinsView} onViewChange={setProfileBinsView} />
-                        <ProfileSharedBins bins={sharedBins} view={profileSharedBinsView} onViewChange={setProfileSharedBinsView} />
+                        <ProfileBins
+                            bins={displayBins}
+                            isLoading={binsLoading}
+                            view={profileBinsView}
+                            onViewChange={setProfileBinsView}
+                        />
+                        <ProfileSharedBins
+                            bins={sharedBins}
+                            view={profileSharedBinsView}
+                            onViewChange={setProfileSharedBinsView}
+                        />
                     </div>
                     <Footer />
                 </div>

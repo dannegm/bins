@@ -31,21 +31,15 @@ const NO_IDEA = [
     'undefined (ironic)',
 ];
 
-
 const BSODScreen = ({ error, errorInfo }) => {
-    const stopCode = useMemo(
-        () => STOP_CODES[Math.floor(Math.random() * STOP_CODES.length)],
-        [],
-    );
+    const stopCode = useMemo(() => STOP_CODES[Math.floor(Math.random() * STOP_CODES.length)], []);
     const faultingSymbol = useMemo(() => {
         const match = errorInfo?.componentStack?.match(/^\s*at (\S+)/m);
         return match?.[1] ?? NO_IDEA[Math.floor(Math.random() * NO_IDEA.length)];
     }, [errorInfo]);
 
     return (
-        <div
-            className='@container absolute inset-0 z-9999 overflow-y-auto px-8 pt-[20vh] pb-8 @sm:px-16 @sm:pb-16 font-mono bg-background text-foreground'
-        >
+        <div className='@container absolute inset-0 z-9999 overflow-y-auto px-8 pt-[20vh] pb-8 @sm:px-16 @sm:pb-16 font-mono bg-background text-foreground'>
             <div className='mx-auto w-full @sm:max-w-[75ch]'>
                 <p className='mb-6 text-9xl font-thin font-sans'>:(</p>
 
@@ -115,12 +109,7 @@ export class ErrorBoundary extends Component {
 
     render() {
         if (this.state.error) {
-            return (
-                <BSODScreen
-                    error={this.state.error}
-                    errorInfo={this.state.errorInfo}
-                />
-            );
+            return <BSODScreen error={this.state.error} errorInfo={this.state.errorInfo} />;
         }
         return this.props.children;
     }

@@ -49,7 +49,17 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/ui/t
 
 const FLAG_URL = cc => `https://flagicons.lipis.dev/flags/1x1/${cc.toLowerCase()}.svg`;
 
-const SORT_KEYS = ['created_at', 'name', 'country', 'is_bot', 'uuid', 'browser', 'os', 'device', 'bins_count'];
+const SORT_KEYS = [
+    'created_at',
+    'name',
+    'country',
+    'is_bot',
+    'uuid',
+    'browser',
+    'os',
+    'device',
+    'bins_count',
+];
 const FILTER_KEYS = ['all', 'human', 'bot'];
 const PER_PAGE_OPTIONS = [10, 25, 50];
 

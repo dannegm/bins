@@ -41,32 +41,32 @@
 
 ## Stack tecnológico
 
-| Capa | Herramienta |
-|---|---|
-| Framework | Vite + React |
-| Estilos | Tailwind CSS v4 |
-| Componentes | shadcn/ui con **Base UI** (`@base-ui-components/react`) — no Radix |
-| Editor | Monaco Editor (`vite-plugin-monaco-editor`) |
-| CRDT / Sync | Yjs + Supabase Realtime (Broadcast) |
-| Base de datos | Supabase (PostgreSQL, schema `bins`) |
-| Server state | TanStack Query |
-| Estado URL | nuqs |
-| Routing | TanStack Router (file-based) |
-| Hotkeys | `useHotkeys` |
-| Command palette | `cmdk` (shadcn) |
-| Drag / gestos | `@use-gesture/react` |
-| Paneles | `react-resizable-panels` (shadcn Resizable) |
-| TS/JSX transpile | sucrase (browser REPL) |
-| Formatter | Prettier |
-| Validación | Zod |
-| IDs cortos | nanoid |
-| ZIP | fflate |
-| Avatares | DiceBear `rings`, seed = UUID |
-| Iconos de lenguajes | Devicon |
-| i18n | `react-i18next` (en, es) |
-| JWT | `jose` |
-| Pub/sub | ntfy |
-| AI Completions | Claude / OpenAI / Gemini / OpenRouter / Ollama |
+| Capa                | Herramienta                                                        |
+| ------------------- | ------------------------------------------------------------------ |
+| Framework           | Vite + React                                                       |
+| Estilos             | Tailwind CSS v4                                                    |
+| Componentes         | shadcn/ui con **Base UI** (`@base-ui-components/react`) — no Radix |
+| Editor              | Monaco Editor (`vite-plugin-monaco-editor`)                        |
+| CRDT / Sync         | Yjs + Supabase Realtime (Broadcast)                                |
+| Base de datos       | Supabase (PostgreSQL, schema `bins`)                               |
+| Server state        | TanStack Query                                                     |
+| Estado URL          | nuqs                                                               |
+| Routing             | TanStack Router (file-based)                                       |
+| Hotkeys             | `useHotkeys`                                                       |
+| Command palette     | `cmdk` (shadcn)                                                    |
+| Drag / gestos       | `@use-gesture/react`                                               |
+| Paneles             | `react-resizable-panels` (shadcn Resizable)                        |
+| TS/JSX transpile    | sucrase (browser REPL)                                             |
+| Formatter           | Prettier                                                           |
+| Validación          | Zod                                                                |
+| IDs cortos          | nanoid                                                             |
+| ZIP                 | fflate                                                             |
+| Avatares            | DiceBear `rings`, seed = UUID                                      |
+| Iconos de lenguajes | Devicon                                                            |
+| i18n                | `react-i18next` (en, es)                                           |
+| JWT                 | `jose`                                                             |
+| Pub/sub             | ntfy                                                               |
+| AI Completions      | Claude / OpenAI / Gemini / OpenRouter / Ollama                     |
 
 ---
 
@@ -74,18 +74,19 @@
 
 > Schema completo en **`db.sql`**. Migraciones incrementales en `migrations/`.
 
-| Tabla | Descripción |
-|---|---|
-| `bins.profiles` | Perfiles anónimos — UUID, nombre, colores, fingerprint, flags |
-| `bins.bins` | Bins — título, autor, visibilidad, expiración, paquetes npm |
-| `bins.bin_files` | Archivos — contenido texto + `ydoc_state` bytea para Yjs |
-| `bins.bin_collaborators` | Registro de quién ha abierto cada bin |
+| Tabla                    | Descripción                                                   |
+| ------------------------ | ------------------------------------------------------------- |
+| `bins.profiles`          | Perfiles anónimos — UUID, nombre, colores, fingerprint, flags |
+| `bins.bins`              | Bins — título, autor, visibilidad, expiración, paquetes npm   |
+| `bins.bin_files`         | Archivos — contenido texto + `ydoc_state` bytea para Yjs      |
+| `bins.bin_collaborators` | Registro de quién ha abierto cada bin                         |
 
 Límites: 500 KB por archivo, 10 archivos por bin (enforced via constraint + trigger).
 
 El cliente Supabase envía el UUID del usuario en `x-client-id`. RLS usa `current_setting('request.headers')::json->>'x-client-id'` para identificar al caller.
 
 **Notas clave:**
+
 - `is_readonly = true` por default — solo el autor puede editar
 - El admin (`is_admin = true` en DB) se activa via command palette (`$%&:<password>`) → `VITE_ADMIN_CLAIM_URL`
 - `bins.profiles` se puebla via upsert silencioso al arrancar la app; el `uuid` **nunca cambia**
@@ -120,6 +121,7 @@ Settings compartibles via URL: `/settings?config=...` — banner de confirmació
 **Temas:** `dark`, `light`, `dracula`, `rose-pine-dawn`, `tlapalli-quartz`, `tlapalli-fire-opal`
 
 **Cómo agregar un tema:**
+
 1. Crear `src/css/themes/<id>.css` con los tokens en `@theme`
 2. Importar en `src/css/themes/index.css`
 3. Registrar en `src/constants/themes.js` como `{ id, label, isDark }` — **siempre al final** de ambos arrays `UI_THEMES` y `MONACO_THEMES`, en el mismo orden
@@ -128,45 +130,48 @@ Settings compartibles via URL: `/settings?config=...` — banner de confirmació
 
 ## Rutas
 
-| Ruta | Descripción |
-|---|---|
-| `/` | Home |
-| `/new` | Crea bin nuevo → redirige al editor |
-| `/editor/:bin-id` | Editor colaborativo |
-| `/embed/:bin-id` | Vista embed, readonly |
-| `/settings` | Configuración completa |
-| `/login` | Importar sesión via JWT (`?token=...`) |
-| `/user/:uuid` | Perfil público |
-| `/admin/bins` | Admin: todos los bins |
-| `/admin/users` | Admin: todos los usuarios |
-| `/fork/:bin-id` | Animación de fork |
+| Ruta              | Descripción                            |
+| ----------------- | -------------------------------------- |
+| `/`               | Home                                   |
+| `/new`            | Crea bin nuevo → redirige al editor    |
+| `/editor/:bin-id` | Editor colaborativo                    |
+| `/embed/:bin-id`  | Vista embed, readonly                  |
+| `/settings`       | Configuración completa                 |
+| `/login`          | Importar sesión via JWT (`?token=...`) |
+| `/user/:uuid`     | Perfil público                         |
+| `/admin/bins`     | Admin: todos los bins                  |
+| `/admin/users`    | Admin: todos los usuarios              |
+| `/fork/:bin-id`   | Animación de fork                      |
 
 ---
 
 ## Permisos
 
-| Acción | Autor | Otros | Admin |
-|---|---|---|---|
-| Editar bin | ✅ | ✅ si `is_readonly=false` | ✅ siempre |
-| Cambiar `is_readonly` | ✅ | ❌ | ✅ |
-| Cambiar `visibility` | ✅ | ❌ | ✅ |
-| Eliminar bin | ✅ | ❌ | ✅ |
+| Acción                | Autor | Otros                     | Admin      |
+| --------------------- | ----- | ------------------------- | ---------- |
+| Editar bin            | ✅    | ✅ si `is_readonly=false` | ✅ siempre |
+| Cambiar `is_readonly` | ✅    | ❌                        | ✅         |
+| Cambiar `visibility`  | ✅    | ❌                        | ✅         |
+| Eliminar bin          | ✅    | ❌                        | ✅         |
 
 ---
 
 ## Yjs — reglas críticas
 
 **Prohibido después de la inicialización:**
+
 - `model.setValue()` — rompe el CRDT
 - Manipulación directa del DOM del editor
 
 **Obligatorio para cambios programáticos** (Prettier, AI, etc.):
+
 ```js
-editor.executeEdits('source-id', [{ range, text }]);  // ✅
-model.setValue(newContent);                            // ❌
+editor.executeEdits('source-id', [{ range, text }]); // ✅
+model.setValue(newContent); // ❌
 ```
 
 **Loop prevention:**
+
 ```js
 let isApplyingRemoteChange = false;
 ydoc.on('update', () => {
@@ -201,12 +206,12 @@ El color del cursor usa `colorDark` o `colorLight` según `isDark` del tema acti
 
 Implementar con Monarch tokenizer en `src/helpers/monaco-languages.js`:
 
-| Lenguaje | Extensión | Descripción |
-|---|---|---|
-| Arduino | `.ino` | Subset de C++ con keywords de Arduino |
-| Minecraft | `.mcfunction` | Comandos de Minecraft |
-| `.env` | `.env` | Claves y valores con color |
-| Logs | `.log` | Niveles por color (ERROR, WARN, INFO, DEBUG) |
+| Lenguaje  | Extensión     | Descripción                                  |
+| --------- | ------------- | -------------------------------------------- |
+| Arduino   | `.ino`        | Subset de C++ con keywords de Arduino        |
+| Minecraft | `.mcfunction` | Comandos de Minecraft                        |
+| `.env`    | `.env`        | Claves y valores con color                   |
+| Logs      | `.log`        | Niveles por color (ERROR, WARN, INFO, DEBUG) |
 
 Registrar en `src/constants/languages.js` con `{ id, label, extensions, runner, icon }`.
 
@@ -237,9 +242,11 @@ Runners implementados: `markdown`, `html`, `js/ts/jsx/tsx`, `regex`, `http`, `cs
 CDN: **`esm.sh`** — ES modules en browser. Los paquetes se guardan en `bins.bins.packages` como JSONB.
 
 ### Detección automática
+
 Monaco detecta `import ... from 'pkg'` y `require('pkg')`, filtra relativos y built-ins. Los no instalados se resaltan con decoración + lightbulb "Agregar al bin".
 
 ### Modal (`components/system/packages-modal.jsx`) — por implementar
+
 - Búsqueda via npm registry API
 - Selector de versión
 - Lista de instalados con opción de eliminar
@@ -250,20 +257,21 @@ Monaco detecta `import ... from 'pkg'` y `require('pkg')`, filtra relativos y bu
 
 ### Globales (`useHotkeys`)
 
-| Shortcut | Acción |
-|---|---|
-| `cmd+k` | Command palette |
-| `cmd+,` | Settings |
-| `cmd+n` | Nuevo bin |
-| `cmd+shift+n` | Nuevo archivo |
-| `cmd+shift+[` / `]` | Tab anterior / siguiente |
-| `cmd+shift+c` | Copiar link del bin |
-| `opt+shift+r` | Toggle runner |
-| `opt+shift+f` | Formatear código |
-| `opt+shift+w` | Toggle word wrap |
-| `cmd+w` | Interceptado — evita cerrar pestaña |
+| Shortcut            | Acción                              |
+| ------------------- | ----------------------------------- |
+| `cmd+k`             | Command palette                     |
+| `cmd+,`             | Settings                            |
+| `cmd+n`             | Nuevo bin                           |
+| `cmd+shift+n`       | Nuevo archivo                       |
+| `cmd+shift+[` / `]` | Tab anterior / siguiente            |
+| `cmd+shift+c`       | Copiar link del bin                 |
+| `opt+shift+r`       | Toggle runner                       |
+| `opt+shift+f`       | Formatear código                    |
+| `opt+shift+w`       | Toggle word wrap                    |
+| `cmd+w`             | Interceptado — evita cerrar pestaña |
 
 ### Monaco (nativos — no reimplementar)
+
 `undo`, `redo`, `opt+up/down`, `cmd+d`, `cmd+f`, `cmd+h`, `cmd+/`, `alt+click`, selección múltiple
 
 ---
@@ -271,6 +279,7 @@ Monaco detecta `import ... from 'pkg'` y `require('pkg')`, filtra relativos y bu
 ## Sistema de comandos (ntfy)
 
 Formato del mensaje ntfy:
+
 ```
 command:<nombre>
 command:<nombre>(valor)
@@ -279,6 +288,7 @@ command:<nombre>(params)|to[uuid,uuid]
 ```
 
 API en `services/commands.js`:
+
 - `sendCommand(name, params?)`
 - `sendCommandTo(uuids, name, params?)`
 - `onCommand(name, handler)`
@@ -287,15 +297,15 @@ API en `services/commands.js`:
 
 ## AI Completions
 
-| Proveedor | Modelo default |
-|---|---|
-| Claude | `claude-sonnet-4-6` |
-| OpenAI | `gpt-4o-mini` |
-| Gemini | `gemini-2.0-flash` |
-| OpenRouter | configurable |
-| Ollama | configurable |
+| Proveedor   | Modelo default                             |
+| ----------- | ------------------------------------------ |
+| Claude      | `claude-sonnet-4-6`                        |
+| OpenAI      | `gpt-4o-mini`                              |
+| Gemini      | `gemini-2.0-flash`                         |
+| OpenRouter  | configurable                               |
+| Ollama      | configurable                               |
 | Custom JSON | schema Zod en `ai-completions-section.jsx` |
-| Custom JS | `new Function` — ejecuta código arbitrario |
+| Custom JS   | `new Function` — ejecuta código arbitrario |
 
 Todos los settings de AI viven en localStorage — las keys nunca salen del dispositivo.
 
@@ -316,6 +326,7 @@ VITE_ADMIN_CLAIM_URL=        # default: https://endpoints.hckr.mx/bins/admin/cla
 ## Tareas pendientes
 
 ### Vercel
+
 - [ ] Crear proyecto conectado al repo
 - [ ] Configurar variables de entorno
 - [ ] Crear `vercel.json` con rewrites

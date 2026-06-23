@@ -74,7 +74,9 @@ const LoadingState = ({ importedUser, success, t }) => {
                             <Check className='size-3.5 text-success' />
                         </div>
                         <p className='text-sm font-medium text-foreground'>{t('login.success')}</p>
-                        <p className='text-xs text-muted-foreground'>{t('login.success_redirect')}</p>
+                        <p className='text-xs text-muted-foreground'>
+                            {t('login.success_redirect')}
+                        </p>
                     </>
                 ) : (
                     <p className='text-sm font-medium text-foreground'>{t('login.loading')}</p>
@@ -138,7 +140,11 @@ export const LoginPage = () => {
                 {status === 'error' ? (
                     <ErrorState errorKey={errorKey} t={t} />
                 ) : (
-                    <LoadingState importedUser={importedUser} success={status === 'success'} t={t} />
+                    <LoadingState
+                        importedUser={importedUser}
+                        success={status === 'success'}
+                        t={t}
+                    />
                 )}
             </div>
         </div>

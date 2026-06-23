@@ -17,7 +17,10 @@ const ProfileBinsLoading = ({ view }) => (
         ) : (
             <div className='overflow-hidden rounded-xl border border-border'>
                 {Array.from({ length: 4 }).map((_, i) => (
-                    <Skeleton key={i} className='h-11 rounded-none border-b border-border last:border-0' />
+                    <Skeleton
+                        key={i}
+                        className='h-11 rounded-none border-b border-border last:border-0'
+                    />
                 ))}
             </div>
         )}

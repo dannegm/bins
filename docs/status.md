@@ -8,12 +8,12 @@ Fase 2 completa. Fase 3 ~70%.
 
 ## Polish pendiente (Fase 3)
 
-| Feature | Archivo | Notas |
-|---|---|---|
-| Search widget drag+snap | `components/system/search-widget.jsx` | No existe aún |
-| Paquetes npm modal | `components/system/packages-modal.jsx` | No existe aún |
-| Tips widget en editor | — | `tips-carousel.jsx` existe; falta icono 💡 en status bar + widget flotante |
-| Lenguajes custom | — | Arduino, `.env`, logs, Minecraft |
+| Feature                 | Archivo                                | Notas                                                                      |
+| ----------------------- | -------------------------------------- | -------------------------------------------------------------------------- |
+| Search widget drag+snap | `components/system/search-widget.jsx`  | No existe aún                                                              |
+| Paquetes npm modal      | `components/system/packages-modal.jsx` | No existe aún                                                              |
+| Tips widget en editor   | —                                      | `tips-carousel.jsx` existe; falta icono 💡 en status bar + widget flotante |
+| Lenguajes custom        | —                                      | Arduino, `.env`, logs, Minecraft                                           |
 
 ---
 

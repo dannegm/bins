@@ -10,7 +10,13 @@ import { BinHeader } from '@/components/editor/bin-header';
 import { TabBar } from '@/components/editor/tab-bar';
 import { EditorCore } from '@/components/editor/editor-core';
 import { UserAvatar } from '@/components/system/user-avatar';
-import { getBinAccess, ensureBin, permanentizeBin, updateBin, incrementViews } from '@/services/bins';
+import {
+    getBinAccess,
+    ensureBin,
+    permanentizeBin,
+    updateBin,
+    incrementViews,
+} from '@/services/bins';
 import { registerCollaborator, clearCollaborators } from '@/services/bin-collaborators';
 import { getFiles, createFile, updateFile, deleteFile } from '@/services/bin-files';
 import { supabase } from '@/services/supabase';

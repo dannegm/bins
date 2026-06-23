@@ -70,8 +70,22 @@ export const IdentitySection = () => {
         setTimeout(() => setter(false), 2000);
     };
 
-    useDebouncedEffect(() => { update({ colorLight }); showSaved(setSavedColorLight); }, [colorLight], 400);
-    useDebouncedEffect(() => { update({ colorDark }); showSaved(setSavedColorDark); }, [colorDark], 400);
+    useDebouncedEffect(
+        () => {
+            update({ colorLight });
+            showSaved(setSavedColorLight);
+        },
+        [colorLight],
+        400,
+    );
+    useDebouncedEffect(
+        () => {
+            update({ colorDark });
+            showSaved(setSavedColorDark);
+        },
+        [colorDark],
+        400,
+    );
 
     return (
         <section id='settings-identity'>
@@ -122,7 +136,10 @@ export const IdentitySection = () => {
                                         style={{ '--swatch-color': colorLight }}
                                         aria-label={t('settings.identity.color_light')}
                                     >
-                                        <span className='text-xs text-(--contrast)' style={{ '--contrast': contrastColor(colorLight) }}>
+                                        <span
+                                            className='text-xs text-(--contrast)'
+                                            style={{ '--contrast': contrastColor(colorLight) }}
+                                        >
                                             {t('settings.identity.color_light')}
                                         </span>
                                     </button>
@@ -144,7 +161,10 @@ export const IdentitySection = () => {
                                         style={{ '--swatch-color': colorDark }}
                                         aria-label={t('settings.identity.color_dark')}
                                     >
-                                        <span className='text-xs text-(--contrast)' style={{ '--contrast': contrastColor(colorDark) }}>
+                                        <span
+                                            className='text-xs text-(--contrast)'
+                                            style={{ '--contrast': contrastColor(colorDark) }}
+                                        >
                                             {t('settings.identity.color_dark')}
                                         </span>
                                     </button>

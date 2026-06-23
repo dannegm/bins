@@ -1,4 +1,14 @@
-const METHODS = new Set(['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS', 'TRACE', 'CONNECT']);
+const METHODS = new Set([
+    'GET',
+    'POST',
+    'PUT',
+    'DELETE',
+    'PATCH',
+    'HEAD',
+    'OPTIONS',
+    'TRACE',
+    'CONNECT',
+]);
 
 export const id = 'http';
 export const extensions = ['.http', '.rest', '.api'];

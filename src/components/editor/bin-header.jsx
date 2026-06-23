@@ -111,7 +111,9 @@ const ForkedFromChip = ({ parentId, t }) => {
             className='flex shrink-0 items-center gap-1.5 rounded-md border border-border bg-surface px-2 py-1 transition-colors hover:border-brand hover:bg-surface-raised'
         >
             <GitFork className='size-3 text-foreground/60' />
-            <span className='font-sans text-[12px] text-foreground/60'>{t('editor.bin_header.forked_from')}</span>
+            <span className='font-sans text-[12px] text-foreground/60'>
+                {t('editor.bin_header.forked_from')}
+            </span>
             {parentBin?.title && (
                 <span className='max-w-28 truncate font-mono text-[12px] text-foreground/80'>
                     {parentBin.title}
@@ -154,7 +156,10 @@ const VisibilitySelector = ({ bin, isOwner, t, onVisibilityChange, compact = fal
                     return (
                         <button
                             key={opt.value}
-                            onClick={() => { onVisibilityChange(opt.value); setOpen(false); }}
+                            onClick={() => {
+                                onVisibilityChange(opt.value);
+                                setOpen(false);
+                            }}
                             className={cn(
                                 'flex w-full items-start gap-2.5 rounded-md px-2 py-2 text-left text-xs transition-colors hover:bg-muted',
                                 { 'bg-muted': opt.value === visibility },
@@ -177,7 +182,18 @@ const VisibilitySelector = ({ bin, isOwner, t, onVisibilityChange, compact = fal
     );
 };
 
-export const BinHeader = ({ bin, activeFile, files = [], isAuthor, isAdmin, isOwner, onTitleChange, onReadonlyToggle, onVisibilityChange, onShare }) => {
+export const BinHeader = ({
+    bin,
+    activeFile,
+    files = [],
+    isAuthor,
+    isAdmin,
+    isOwner,
+    onTitleChange,
+    onReadonlyToggle,
+    onVisibilityChange,
+    onShare,
+}) => {
     const { t } = useTranslation();
     const [isEditing, setIsEditing] = useState(false);
     const [draft, setDraft] = useState('');
@@ -443,14 +459,18 @@ export const BinHeader = ({ bin, activeFile, files = [], isAuthor, isAdmin, isOw
                             className='flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left text-xs transition-colors hover:bg-muted'
                         >
                             <FileDown className='size-3.5 shrink-0 text-muted-foreground' />
-                            <span className='text-foreground'>{t('editor.bin_header.download_file')}</span>
+                            <span className='text-foreground'>
+                                {t('editor.bin_header.download_file')}
+                            </span>
                         </button>
                         <button
                             onClick={handleDownloadZip}
                             className='flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left text-xs transition-colors hover:bg-muted'
                         >
                             <Download className='size-3.5 shrink-0 text-muted-foreground' />
-                            <span className='text-foreground'>{t('editor.bin_header.download_zip')}</span>
+                            <span className='text-foreground'>
+                                {t('editor.bin_header.download_zip')}
+                            </span>
                         </button>
                     </PopoverContent>
                 </Popover>
@@ -512,8 +532,8 @@ export const BinHeader = ({ bin, activeFile, files = [], isAuthor, isAdmin, isOw
                         <MoreHorizontal className='size-4' />
                     </PopoverTrigger>
                     <PopoverContent side='bottom' align='end' className='w-fit px-1.5 py-3'>
-                        {canFork && (
-                            mobileForkConfirm ? (
+                        {canFork &&
+                            (mobileForkConfirm ? (
                                 <div className='flex flex-col gap-2 rounded-md bg-muted px-2 py-2'>
                                     <p className='text-pretty text-xs text-muted-foreground'>
                                         {t('editor.bin_header.fork_description')}
@@ -544,8 +564,7 @@ export const BinHeader = ({ bin, activeFile, files = [], isAuthor, isAdmin, isOw
                                         {t('editor.bin_header.fork')}
                                     </span>
                                 </button>
-                            )
-                        )}
+                            ))}
 
                         {canShare && (
                             <button
@@ -562,14 +581,18 @@ export const BinHeader = ({ bin, activeFile, files = [], isAuthor, isAdmin, isOw
                             className='flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left text-xs transition-colors hover:bg-muted'
                         >
                             <FileDown className='size-3.5 shrink-0 text-muted-foreground' />
-                            <span className='text-foreground'>{t('editor.bin_header.download_file')}</span>
+                            <span className='text-foreground'>
+                                {t('editor.bin_header.download_file')}
+                            </span>
                         </button>
                         <button
                             onClick={handleMobileDownloadZip}
                             className='flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left text-xs transition-colors hover:bg-muted'
                         >
                             <Download className='size-3.5 shrink-0 text-muted-foreground' />
-                            <span className='text-foreground'>{t('editor.bin_header.download_zip')}</span>
+                            <span className='text-foreground'>
+                                {t('editor.bin_header.download_zip')}
+                            </span>
                         </button>
 
                         <div className='h-px bg-border/50' />

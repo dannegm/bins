@@ -1,5 +1,15 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Undo2, Redo2, Plus, Trash2, X, FileText, ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import {
+    Undo2,
+    Redo2,
+    Plus,
+    Trash2,
+    X,
+    FileText,
+    ChevronLeft,
+    ChevronRight,
+    Play,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/helpers/utils';
 import { getLanguage } from '@/constants/languages';
@@ -101,7 +111,9 @@ const FileTab = ({
                         <TooltipTrigger render={<span />} className='min-w-0 flex-1 truncate'>
                             {file.name}
                         </TooltipTrigger>
-                        <TooltipContent side='bottom' align='start'>{file.name}</TooltipContent>
+                        <TooltipContent side='bottom' align='start'>
+                            {file.name}
+                        </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
             )}
@@ -110,7 +122,9 @@ const FileTab = ({
                 <TooltipProvider>
                     <Tooltip
                         open={tooltipOpen}
-                        onOpenChange={o => { if (!isConfirming) setTooltipOpen(o); }}
+                        onOpenChange={o => {
+                            if (!isConfirming) setTooltipOpen(o);
+                        }}
                     >
                         <TooltipTrigger
                             onClick={e => {
@@ -119,16 +133,19 @@ const FileTab = ({
                                 onDeleteConfirm(file.id);
                             }}
                             onDoubleClick={e => e.stopPropagation()}
-                            className={cn(
-                                'ml-0.5 shrink-0 rounded p-0.5 transition-colors',
-                                {
-                                    'text-destructive': isConfirming,
-                                    'text-muted-foreground hover:text-foreground': canDelete && !isConfirming,
-                                    'text-muted-foreground opacity-35 cursor-default': !canDelete && !isConfirming,
-                                },
-                            )}
+                            className={cn('ml-0.5 shrink-0 rounded p-0.5 transition-colors', {
+                                'text-destructive': isConfirming,
+                                'text-muted-foreground hover:text-foreground':
+                                    canDelete && !isConfirming,
+                                'text-muted-foreground opacity-35 cursor-default':
+                                    !canDelete && !isConfirming,
+                            })}
                         >
-                            {isConfirming ? <Trash2 className='size-3' /> : <X className='size-3' />}
+                            {isConfirming ? (
+                                <Trash2 className='size-3' />
+                            ) : (
+                                <X className='size-3' />
+                            )}
                         </TooltipTrigger>
                         <TooltipContent side='bottom' align='end'>
                             {isConfirming
@@ -279,7 +296,8 @@ const RunnerToggle = ({ isActive, onToggle, t }) => (
                     'flex size-10 shrink-0 items-center justify-center border-l border-border transition-all',
                     {
                         'text-brand bg-brand/10 hover:bg-brand/20': isActive,
-                        'text-muted-foreground hover:bg-surface-raised hover:text-foreground': !isActive,
+                        'text-muted-foreground hover:bg-surface-raised hover:text-foreground':
+                            !isActive,
                     },
                 )}
             >

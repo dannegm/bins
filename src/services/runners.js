@@ -1,4 +1,13 @@
-import { Eye, Table, MessageCircle, Globe, Terminal, Braces, Network, GitBranch } from 'lucide-react';
+import {
+    Eye,
+    Table,
+    MessageCircle,
+    Globe,
+    Terminal,
+    Braces,
+    Network,
+    GitBranch,
+} from 'lucide-react';
 import { MarkdownRunner } from '@/components/runners/markdown-runner';
 import { HtmlRunner } from '@/components/runners/html-runner';
 import { CsvRunner } from '@/components/runners/csv-runner';
@@ -75,7 +84,6 @@ const RUNNERS = [
     },
 ];
 
-export const getRunner = language =>
-    RUNNERS.find(r => r.languages.includes(language)) ?? null;
+export const getRunner = language => RUNNERS.find(r => r.languages.includes(language)) ?? null;
 
 export const hasRunner = language => getRunner(language) !== null;

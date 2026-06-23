@@ -34,7 +34,9 @@ export const AdminLayout = ({ children }) => {
     const { data: usersCount } = useQuery({
         queryKey: ['admin', 'count', 'users'],
         queryFn: async () => {
-            const { count } = await supabase().from('profiles').select('*', { count: 'exact', head: true });
+            const { count } = await supabase()
+                .from('profiles')
+                .select('*', { count: 'exact', head: true });
             return count;
         },
         enabled: isAdmin,
@@ -43,7 +45,9 @@ export const AdminLayout = ({ children }) => {
     const { data: binsCount } = useQuery({
         queryKey: ['admin', 'count', 'bins'],
         queryFn: async () => {
-            const { count } = await supabase().from('bins').select('*', { count: 'exact', head: true });
+            const { count } = await supabase()
+                .from('bins')
+                .select('*', { count: 'exact', head: true });
             return count;
         },
         enabled: isAdmin,
@@ -66,8 +70,18 @@ export const AdminLayout = ({ children }) => {
                         </span>
                     </div>
                     <div className='mt-3 flex gap-1'>
-                        <NavTab to='/admin/users' icon={Users} label={t('admin.nav.users')} count={usersCount} />
-                        <NavTab to='/admin/bins' icon={LayoutGrid} label={t('admin.nav.bins')} count={binsCount} />
+                        <NavTab
+                            to='/admin/users'
+                            icon={Users}
+                            label={t('admin.nav.users')}
+                            count={usersCount}
+                        />
+                        <NavTab
+                            to='/admin/bins'
+                            icon={LayoutGrid}
+                            label={t('admin.nav.bins')}
+                            count={binsCount}
+                        />
                     </div>
                 </div>
                 <div className='flex flex-1 flex-col overflow-y-auto'>

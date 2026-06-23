@@ -14,7 +14,10 @@ export const DeviceProvider = ({ children }) => {
 
     useEffect(() => {
         const { browser, os, device } = parseUA(navigator.userAgent);
-        document.documentElement.setAttribute('data-browser', browser ? toSlug(browser.name) : 'unknown');
+        document.documentElement.setAttribute(
+            'data-browser',
+            browser ? toSlug(browser.name) : 'unknown',
+        );
         document.documentElement.setAttribute('data-os', os ? toSlug(os.name) : 'unknown');
         document.documentElement.setAttribute('data-device', device);
     }, []);

@@ -44,7 +44,8 @@ const parseHtmlMeta = html => {
         const doc = new DOMParser().parseFromString(html, 'text/html');
         const title = doc.querySelector('title')?.textContent?.trim() || null;
         const iconHref = doc.querySelector('link[rel~="icon"]')?.getAttribute('href') || null;
-        const favicon = iconHref?.startsWith('data:') || iconHref?.startsWith('http') ? iconHref : null;
+        const favicon =
+            iconHref?.startsWith('data:') || iconHref?.startsWith('http') ? iconHref : null;
         return { title, favicon };
     } catch {
         return { title: null, favicon: null };
@@ -68,7 +69,9 @@ export const HtmlRunner = ({ content }) => {
     const { title, favicon } = useMemo(() => parseHtmlMeta(content ?? ''), [content]);
     const srcDoc = useMemo(() => injectScript(content ?? ''), [content]);
 
-    useEffect(() => { setLiveTitle(null); }, [content]);
+    useEffect(() => {
+        setLiveTitle(null);
+    }, [content]);
 
     useEffect(() => {
         const handler = e => {
@@ -88,13 +91,19 @@ export const HtmlRunner = ({ content }) => {
         <div className='flex h-full flex-col'>
             <div className='flex h-10 shrink-0 items-center gap-1.5 border-b border-border px-3'>
                 <NavButton onClick={() => post('bins:back')}>
-                    <span className='[&>svg]:size-3.5'><ArrowLeft /></span>
+                    <span className='[&>svg]:size-3.5'>
+                        <ArrowLeft />
+                    </span>
                 </NavButton>
                 <NavButton onClick={() => post('bins:forward')}>
-                    <span className='[&>svg]:size-3.5'><ArrowRight /></span>
+                    <span className='[&>svg]:size-3.5'>
+                        <ArrowRight />
+                    </span>
                 </NavButton>
                 <NavButton onClick={() => setReloadKey(k => k + 1)}>
-                    <span className='[&>svg]:size-3.5'><House /></span>
+                    <span className='[&>svg]:size-3.5'>
+                        <House />
+                    </span>
                 </NavButton>
 
                 <div className='flex min-w-0 flex-1 justify-center'>
@@ -113,7 +122,9 @@ export const HtmlRunner = ({ content }) => {
                 </div>
 
                 <NavButton onClick={() => post('bins:reload')}>
-                    <span className='[&>svg]:size-3.5'><RotateCcw /></span>
+                    <span className='[&>svg]:size-3.5'>
+                        <RotateCcw />
+                    </span>
                 </NavButton>
             </div>
             <iframe

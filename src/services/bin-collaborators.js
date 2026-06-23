@@ -22,10 +22,7 @@ export const removeCollaborator = async (binId, userId) => {
 };
 
 export const clearCollaborators = async binId => {
-    const { error } = await supabase()
-        .from('bin_collaborators')
-        .delete()
-        .eq('bin_id', binId);
+    const { error } = await supabase().from('bin_collaborators').delete().eq('bin_id', binId);
 
     if (error) throw error;
 };

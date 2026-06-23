@@ -84,7 +84,11 @@ export const initYDoc = (binId, fileId, initialContent = '') => {
                         }
                         markReady();
                     }, 300);
-                } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+                } else if (
+                    status === 'CHANNEL_ERROR' ||
+                    status === 'TIMED_OUT' ||
+                    status === 'CLOSED'
+                ) {
                     notifyChannelStatus('reconnecting');
                     clearTimeout(reconnectTimer);
                     reconnectTimer = setTimeout(() => {

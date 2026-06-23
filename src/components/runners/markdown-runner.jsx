@@ -61,7 +61,9 @@ const components = {
             <table className='w-full border-collapse text-sm'>{children}</table>
         </div>
     ),
-    thead: ({ children }) => <thead className='border-b border-border bg-surface'>{children}</thead>,
+    thead: ({ children }) => (
+        <thead className='border-b border-border bg-surface'>{children}</thead>
+    ),
     tbody: ({ children }) => <tbody className='divide-y divide-border'>{children}</tbody>,
     tr: ({ children }) => (
         <tr className='transition-colors hover:bg-surface-raised/50'>{children}</tr>
@@ -87,9 +89,7 @@ const components = {
     em: ({ children }) => <em className='italic'>{children}</em>,
     del: ({ children }) => <del className='line-through text-muted-foreground'>{children}</del>,
     hr: () => <hr className='my-6 border-border' />,
-    img: ({ src, alt }) => (
-        <img src={src} alt={alt ?? ''} className='my-4 max-w-full rounded-lg' />
-    ),
+    img: ({ src, alt }) => <img src={src} alt={alt ?? ''} className='my-4 max-w-full rounded-lg' />,
 };
 
 export const MarkdownRunner = ({ content }) => (

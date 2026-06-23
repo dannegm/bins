@@ -20,7 +20,11 @@ export const HomePage = () => {
                         <HomeHeader search={search} onSearchChange={setSearch} />
                         <TipsCarousel />
                         <MyBins view={myBinsView} onViewChange={setMyBinsView} search={search} />
-                        <SharedBins view={sharedBinsView} onViewChange={setSharedBinsView} search={search} />
+                        <SharedBins
+                            view={sharedBinsView}
+                            onViewChange={setSharedBinsView}
+                            search={search}
+                        />
                     </div>
                     <Footer />
                 </div>

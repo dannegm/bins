@@ -299,9 +299,7 @@ export const KeybindingsSection = () => {
             <SettingGroup>
                 {KEYBINDING_GROUPS.map(({ group, type, items }) => (
                     <Fragment key={group}>
-                        <GroupLabel
-                            label={t(`settings.keybindings.group_${group}`)}
-                        />
+                        <GroupLabel label={t(`settings.keybindings.group_${group}`)} />
                         {items.map(id => {
                             const current = getKb(type)[id] ?? getDefaults(type)[id];
                             const custom = isCustom(type, id);

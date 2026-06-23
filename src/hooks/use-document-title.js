@@ -6,7 +6,10 @@ export const useDocumentTitle = ({ binTitle, fileName, hasUnsaved }) => {
     const [hasNudge, setHasNudge] = useState(false);
 
     useEffect(() => {
-        const handleFocus = () => { setIsVisible(true); setHasNudge(false); };
+        const handleFocus = () => {
+            setIsVisible(true);
+            setHasNudge(false);
+        };
         const handleBlur = () => setIsVisible(false);
         window.addEventListener('focus', handleFocus);
         window.addEventListener('blur', handleBlur);

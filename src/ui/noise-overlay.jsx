@@ -37,7 +37,10 @@ export const NoiseOverlay = ({ resolution = 300, className }) => {
             ref={$canvas}
             width={resolution}
             height={resolution}
-            className={cn('pointer-events-none absolute inset-0 h-full w-full opacity-5', className)}
+            className={cn(
+                'pointer-events-none absolute inset-0 h-full w-full opacity-5',
+                className,
+            )}
             style={{ imageRendering: 'pixelated' }}
         />
     );

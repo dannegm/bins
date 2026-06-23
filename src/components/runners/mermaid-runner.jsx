@@ -92,7 +92,10 @@ export const MermaidRunner = ({ content }) => {
                 $container.current.innerHTML = svg;
                 setError(null);
                 const el = $container.current.querySelector('svg');
-                if (el) { el.style.width = '100%'; el.style.height = 'auto'; }
+                if (el) {
+                    el.style.width = '100%';
+                    el.style.height = 'auto';
+                }
             }
         } catch (err) {
             if ($container.current) $container.current.innerHTML = '';
@@ -100,10 +103,18 @@ export const MermaidRunner = ({ content }) => {
         }
     };
 
-    useDebouncedEffect(() => { render(); }, [content, isDark], 300);
+    useDebouncedEffect(
+        () => {
+            render();
+        },
+        [content, isDark],
+        300,
+    );
 
     // Render immediately on mount
-    useEffect(() => { render(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    useEffect(() => {
+        render();
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     if (error) return <ErrorState message={error} t={t} />;
 

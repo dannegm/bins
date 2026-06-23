@@ -4,7 +4,10 @@ import { cn } from '@/helpers/utils';
 
 export const ResizablePanelGroup = ({ className, ...props }) => (
     <Group
-        className={cn('flex h-full w-full data-[panel-group-direction=vertical]:flex-col', className)}
+        className={cn(
+            'flex h-full w-full data-[panel-group-direction=vertical]:flex-col',
+            className,
+        )}
         {...props}
     />
 );

@@ -66,13 +66,10 @@ const VisibilityFilter = ({ filter, onChange, t }) => {
                 <button
                     key={opt.value}
                     onClick={() => onChange(opt.value)}
-                    className={cn(
-                        'rounded px-1.5 py-0.5 text-xs transition-colors',
-                        {
-                            'bg-surface text-foreground': filter === opt.value,
-                            'text-muted-foreground hover:text-foreground': filter !== opt.value,
-                        },
-                    )}
+                    className={cn('rounded px-1.5 py-0.5 text-xs transition-colors', {
+                        'bg-surface text-foreground': filter === opt.value,
+                        'text-muted-foreground hover:text-foreground': filter !== opt.value,
+                    })}
                 >
                     {opt.label}
                 </button>
@@ -129,7 +126,13 @@ const MyBinsLayout = ({ t, view, onViewChange, filter, onFilterChange, count, ch
 );
 
 const MyBinsLoading = ({ t, view, onViewChange, filter, onFilterChange }) => (
-    <MyBinsLayout t={t} view={view} onViewChange={onViewChange} filter={filter} onFilterChange={onFilterChange}>
+    <MyBinsLayout
+        t={t}
+        view={view}
+        onViewChange={onViewChange}
+        filter={filter}
+        onFilterChange={onFilterChange}
+    >
         {view === 'grid' ? (
             <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4'>
                 {Array.from({ length: 4 }).map((_, i) => (
@@ -139,7 +142,10 @@ const MyBinsLoading = ({ t, view, onViewChange, filter, onFilterChange }) => (
         ) : (
             <div className='overflow-hidden rounded-xl border border-border'>
                 {Array.from({ length: 4 }).map((_, i) => (
-                    <Skeleton key={i} className='h-11 rounded-none border-b border-border last:border-0' />
+                    <Skeleton
+                        key={i}
+                        className='h-11 rounded-none border-b border-border last:border-0'
+                    />
                 ))}
             </div>
         )}
@@ -147,7 +153,13 @@ const MyBinsLoading = ({ t, view, onViewChange, filter, onFilterChange }) => (
 );
 
 const MyBinsEmpty = ({ t, view, onViewChange, filter, onFilterChange }) => (
-    <MyBinsLayout t={t} view={view} onViewChange={onViewChange} filter={filter} onFilterChange={onFilterChange}>
+    <MyBinsLayout
+        t={t}
+        view={view}
+        onViewChange={onViewChange}
+        filter={filter}
+        onFilterChange={onFilterChange}
+    >
         <Empty className='border py-16'>
             <EmptyHeader>
                 <EmptyMedia>
@@ -190,8 +202,26 @@ export const MyBins = ({ view, onViewChange, search = '' }) => {
         setPage(1);
     };
 
-    if (isLoading) return <MyBinsLoading t={t} view={view} onViewChange={onViewChange} filter={filter} onFilterChange={handleFilterChange} />;
-    if (bins.length === 0) return <MyBinsEmpty t={t} view={view} onViewChange={onViewChange} filter={filter} onFilterChange={handleFilterChange} />;
+    if (isLoading)
+        return (
+            <MyBinsLoading
+                t={t}
+                view={view}
+                onViewChange={onViewChange}
+                filter={filter}
+                onFilterChange={handleFilterChange}
+            />
+        );
+    if (bins.length === 0)
+        return (
+            <MyBinsEmpty
+                t={t}
+                view={view}
+                onViewChange={onViewChange}
+                filter={filter}
+                onFilterChange={handleFilterChange}
+            />
+        );
 
     const filtered = applySearch(applyFilter(bins, filter), search);
     const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
@@ -199,7 +229,14 @@ export const MyBins = ({ view, onViewChange, search = '' }) => {
     const paginated = filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE);
 
     return (
-        <MyBinsLayout t={t} view={view} onViewChange={onViewChange} filter={filter} onFilterChange={handleFilterChange} count={filtered.length}>
+        <MyBinsLayout
+            t={t}
+            view={view}
+            onViewChange={onViewChange}
+            filter={filter}
+            onFilterChange={handleFilterChange}
+            count={filtered.length}
+        >
             {view === 'grid' ? (
                 <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4'>
                     {paginated.map(bin => (
