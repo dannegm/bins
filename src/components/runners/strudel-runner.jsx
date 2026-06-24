@@ -363,7 +363,7 @@ export const StrudelRunner = ({ content }) => {
                             <Check className={cn({ invisible: !enabledOverlays[name] })} />
                         </span>
                         <Icon className='size-3.5' />
-                        {t(`editor.runner_panel.strudel.overlay_${name}`)}
+                        <span className='hidden sm:inline'>{t(`editor.runner_panel.strudel.overlay_${name}`)}</span>
                     </button>
                 ))}
 
