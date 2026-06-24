@@ -300,7 +300,7 @@ export const StrudelRunner = ({ content }) => {
         <div className='flex h-full flex-col'>
             {hasCanvas && [
                 createPortal(
-                    <button className='fixed bottom-16 right-4 z-300 flex items-center gap-2 rounded-full bg-destructive px-4 py-2 text-xs font-medium text-white shadow-lg shadow-black/30 transition-opacity hover:opacity-90 active:opacity-75 sm:bottom-6'>
+                    <button className='fixed bottom-4 right-4 z-300 flex items-center gap-2 rounded-full bg-destructive px-4 py-2 text-xs font-medium text-white shadow-lg shadow-black/30 transition-opacity hover:opacity-90 active:opacity-75 sm:bottom-6'>
                         <Square className='size-3 fill-current' />
                         {t('editor.runner_panel.strudel.stop')}
                     </button>,
@@ -308,7 +308,7 @@ export const StrudelRunner = ({ content }) => {
                 ),
                 <button
                     onClick={handleStop}
-                    className='fixed bottom-16 right-4 z-max px-4 py-2 sm:bottom-6 opacity-0'
+                    className='fixed bottom-4 right-4 z-max px-4 py-2 sm:bottom-6 opacity-0'
                 >
                     <Square className='size-3' />
                     {t('editor.runner_panel.strudel.stop')}
@@ -368,7 +368,7 @@ export const StrudelRunner = ({ content }) => {
                 ))}
 
                 {isPlaying && (
-                    <span className='ml-auto font-mono text-xs text-muted-foreground'>
+                    <span className='ml-auto hidden sm:inline font-mono text-xs text-muted-foreground'>
                         ♩ {bpm} {t('editor.runner_panel.strudel.bpm')} · {t('editor.runner_panel.strudel.cycle')} {cycle}
                     </span>
                 )}

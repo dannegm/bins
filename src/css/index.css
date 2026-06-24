@@ -82,7 +82,7 @@
     /* Strudel injects canvas directly into body with position:fixed and inline styles */
     body > canvas[id] {
         z-index: 300;
-        top: 5rem !important; /* bin-header h-10 + tab-bar h-10 */
+        top: 0 !important; /* bin-header h-10 + tab-bar h-10 */
         left: 0 !important;
         right: 0 !important;
         background: var(--overlay) !important;
@@ -93,6 +93,7 @@
     @media (min-width: 640px) {
         body > canvas[id] {
             z-index: 200 !important;
+            top: 5rem !important; /* bin-header h-10 + tab-bar h-10 */
             left: 3.5rem !important; /* sidebar w-14 */
         }
     }
