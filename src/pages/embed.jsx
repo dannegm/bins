@@ -93,7 +93,7 @@ const PrivateScreen = ({ t }) => (
     </div>
 );
 
-const NotFoundScreen = ({ t }) => (
+const NotFoundScreen = ({ binId, t }) => (
     <div className='flex h-dvh flex-col items-center justify-center gap-3 bg-background'>
         <FileQuestion className='size-7 text-muted-foreground' />
         <div className='text-center'>
@@ -101,6 +101,9 @@ const NotFoundScreen = ({ t }) => (
             <p className='mt-1 text-xs text-muted-foreground'>
                 {t('embed.not_found_description')}
             </p>
+            {binId && (
+                <p className='mt-2 font-mono text-xs text-muted-foreground/60'>{binId}</p>
+            )}
         </div>
     </div>
 );
@@ -167,7 +170,7 @@ export const EmbedPage = () => {
             </div>
         );
     }
-    if (notFound) return <NotFoundScreen t={t} />;
+    if (notFound) return <NotFoundScreen binId={binId} t={t} />;
     if (isPrivate) return <PrivateScreen t={t} />;
 
     const activeFile = files.find(f => f.id === activeFileId);
