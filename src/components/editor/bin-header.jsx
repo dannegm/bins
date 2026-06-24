@@ -33,6 +33,7 @@ import {
     PopoverTitle,
     PopoverDescription,
 } from '@/ui/popover';
+import { EmbedDialog } from '@/components/editor/embed-dialog';
 
 const VISIBILITY_OPTIONS = [
     { value: VISIBILITY.PUBLIC, icon: Globe },
@@ -483,6 +484,10 @@ export const BinHeader = ({
                     compact
                 />
 
+                {canShare && (
+                    <EmbedDialog binId={bin?.id} files={files} activeFile={activeFile} />
+                )}
+
                 {canShare ? (
                     <button
                         onClick={handleShare}
@@ -574,6 +579,12 @@ export const BinHeader = ({
                                 <Share2 className='size-3.5 shrink-0 text-muted-foreground' />
                                 <span className='text-foreground'>{t('editor.tab_bar.share')}</span>
                             </button>
+                        )}
+
+                        {canShare && (
+                            <div className='px-0.5'>
+                                <EmbedDialog binId={bin?.id} files={files} activeFile={activeFile} />
+                            </div>
                         )}
 
                         <button

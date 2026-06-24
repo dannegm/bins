@@ -386,6 +386,21 @@
             "share_disabled": "Sharing is disabled for private bins",
             "edit_title": "Edit title"
         },
+        "embed_dialog": {
+            "trigger": "Embed",
+            "title": "Embed this bin",
+            "views_label": "Views",
+            "views_editor": "Editor",
+            "views_runner": "Runner",
+            "runnable_label": "Show play button",
+            "theme_label": "Theme",
+            "theme_auto": "Auto (system)",
+            "file_label": "File",
+            "preview_label": "Preview",
+            "code_label": "Embed code",
+            "copy": "Copy",
+            "copied": "Copied!"
+        },
         "tab_bar": {
             "undo": "Undo",
             "redo": "Redo",
@@ -484,5 +499,13 @@
     "maintenance": {
         "title": "We'll be right back",
         "description": "We're doing some maintenance. Hang tight."
+    },
+    "embed": {
+        "open_in_bins": "Open in Bins",
+        "untitled": "Untitled",
+        "private_title": "This bin is private",
+        "private_description": "Only the author can view this bin.",
+        "not_found_title": "Bin not found",
+        "not_found_description": "This bin doesn't exist or has been deleted."
     }
 }

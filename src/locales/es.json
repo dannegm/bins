@@ -386,6 +386,21 @@
             "share_disabled": "Compartir está desactivado para bins privados",
             "edit_title": "Editar título"
         },
+        "embed_dialog": {
+            "trigger": "Embed",
+            "title": "Embeber este bin",
+            "views_label": "Vistas",
+            "views_editor": "Editor",
+            "views_runner": "Runner",
+            "runnable_label": "Mostrar botón de play",
+            "theme_label": "Tema",
+            "theme_auto": "Automático (sistema)",
+            "file_label": "Archivo",
+            "preview_label": "Vista previa",
+            "code_label": "Código embed",
+            "copy": "Copiar",
+            "copied": "¡Copiado!"
+        },
         "tab_bar": {
             "undo": "Deshacer",
             "redo": "Rehacer",
@@ -484,5 +499,13 @@
     "maintenance": {
         "title": "Volvemos pronto",
         "description": "Estamos haciendo mantenimiento. Ya regresamos."
+    },
+    "embed": {
+        "open_in_bins": "Abrir en Bins",
+        "untitled": "Sin título",
+        "private_title": "Este bin es privado",
+        "private_description": "Solo el autor puede ver este bin.",
+        "not_found_title": "Bin no encontrado",
+        "not_found_description": "Este bin no existe o fue eliminado."
     }
 }
