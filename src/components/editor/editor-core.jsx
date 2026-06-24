@@ -217,7 +217,7 @@ export const EditorCore = ({
                             onOpenChange={open => !open && onCloseRunner?.()}
                             direction='bottom'
                         >
-                            <DrawerContent className='h-[calc(100dvh-5rem)] rounded-none p-0'>
+                            <DrawerContent className='h-[calc(100dvh-2.5rem)] rounded-none p-0'>
                                 {runnerPane}
                             </DrawerContent>
                         </Drawer>
