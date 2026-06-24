@@ -10,6 +10,7 @@ import {
 import { useSettings } from '@/hooks/use-settings';
 import { useIdentity } from '@/hooks/use-identity';
 import { useTheme } from '@/providers/theme-provider';
+import { useAiCompletions } from '@/hooks/use-ai-completions';
 import { getLanguage } from '@/constants/languages';
 import { MONACO_THEMES } from '@/constants/themes';
 import { useListener, useEvents } from '@/providers/bus-provider';
@@ -50,6 +51,8 @@ export const MonacoEditor = ({
     onSelectionChange,
     onEditorReady,
 }) => {
+    useAiCompletions();
+
     const { emit } = useEvents();
     const $container = useRef(null);
     const $editor = useRef(null);
@@ -106,6 +109,7 @@ export const MonacoEditor = ({
             stickyScroll: { enabled: false },
             formatOnPaste: false,
             find: { autoFindInSelection: 'never' },
+            inlineSuggest: { enabled: true },
         });
 
         $editor.current = editor;

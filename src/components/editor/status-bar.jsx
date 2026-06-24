@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Users, Check } from 'lucide-react';
+import { Users, Check, Brain } from 'lucide-react';
 import { SmileyDead } from '@/ui/icons';
 import { parseToRgb } from 'polished';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +18,7 @@ import {
     CommandGroup,
     CommandItem,
 } from '@/ui/command';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/ui/tooltip';
 import { useEvents } from '@/providers/bus-provider';
 
 const contrastColor = color => {
@@ -115,16 +116,71 @@ const LanguagePicker = ({ language, onLanguageChange }) => {
     );
 };
 
+const PROVIDER_BRAND = {
+    claude:     { light: '#D97757', dark: '#D97757' },
+    openai:     { light: '#1a1a1a', dark: '#1a1a1a' },
+    gemini:     { light: '#4285F4', dark: '#5A95F5' },
+    openrouter: { light: '#6366F1', dark: '#818CF8' },
+    ollama:     { light: '#2D2D2D', dark: '#404040' },
+};
+
+const AiChip = ({ t }) => {
+    const [aiCompletions, setAiCompletions] = useSettings('aiCompletions');
+
+    const provider = aiCompletions?.provider ?? 'ollama';
+    const apiKey = aiCompletions?.apiKey ?? '';
+    const enabled = aiCompletions?.enabled ?? false;
+
+    const isConfigured = provider === 'ollama' ? true : !!apiKey;
+    if (!isConfigured) return null;
+
+    const toggle = () => setAiCompletions(prev => ({ ...prev, enabled: !prev.enabled }));
+    const brand = PROVIDER_BRAND[provider] ?? PROVIDER_BRAND.ollama;
+
+    return (
+        <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger
+                    onClick={toggle}
+                    style={enabled ? { '--chip-light': brand.light, '--chip-dark': brand.dark } : {}}
+                    className={cn(
+                        'flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs transition-colors',
+                        {
+                            'border-(--chip-light) bg-(--chip-light) dark:border-(--chip-dark) dark:bg-(--chip-dark) text-white':
+                                enabled,
+                            'border-border bg-surface-raised text-muted-foreground hover:text-foreground':
+                                !enabled,
+                        },
+                    )}
+                >
+                    <Brain className='size-3' />
+                    <span className='hidden sm:inline'>AI</span>
+                </TooltipTrigger>
+                <TooltipContent side='top' sideOffset={8}>
+                    {t('editor.status_bar.ai_chip_tooltip')}
+                </TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
+    );
+};
+
 const NudgeButton = ({ t }) => {
     const { emit } = useEvents();
     return (
-        <button
-            onClick={() => emit('peer:nudge')}
-            className='flex items-center gap-1 rounded-full bg-rose-600 px-2 py-0.5 text-white transition-opacity hover:opacity-80 dark:bg-rose-400'
-        >
-            <SmileyDead className='size-3.5' />
-            <span className='hidden sm:inline'>{t('editor.status_bar.nudge')}</span>
-        </button>
+        <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger
+                    onClick={() => emit('peer:nudge')}
+                    className='flex items-center gap-1 rounded-full bg-rose-600 px-2 py-0.5 text-white transition-opacity hover:opacity-80 dark:bg-rose-400'
+                >
+                    <SmileyDead className='size-3.5' />
+                    <span className='hidden sm:inline'>{t('editor.status_bar.nudge')}</span>
+                </TooltipTrigger>
+                <TooltipContent side='top' sideOffset={8}>
+                    {t('editor.status_bar.nudge_tooltip')}
+                </TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
     );
 };
 
@@ -283,6 +339,7 @@ export const StatusBar = ({
 
             <span className='flex-1' />
 
+            <AiChip t={t} />
             <NudgeButton t={t} />
             {peers.length > 0 && <PeerList peers={peers} />}
         </div>
