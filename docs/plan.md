@@ -237,19 +237,23 @@ Runners implementados: `markdown`, `html`, `js/ts/jsx/tsx`, `regex`, `http`, `cs
 
 ---
 
-## Paquetes npm (pendiente)
+## Paquetes npm ✅
 
 CDN: **`esm.sh`** — ES modules en browser. Los paquetes se guardan en `bins.bins.packages` como JSONB.
 
-### Detección automática
+### Drawer (`components/editor/packages-drawer.jsx`)
 
-Monaco detecta `import ... from 'pkg'` y `require('pkg')`, filtra relativos y built-ins. Los no instalados se resaltan con decoración + lightbulb "Agregar al bin".
+- Botón `Package` en sidebar — visible solo cuando el archivo activo es JS/TS/JSX/TSX
+- Búsqueda debounced via npm registry API (`registry.npmjs.org/-/v1/search`)
+- Lista de instalados con opción de eliminar y marcar favorito
+- Favoritos guardados en `settings.favoritePackages` (solo nombre, sin versión)
+- Estrella filled amarilla (`--favorite`) con hover→StarOff para quitar
 
-### Modal (`components/system/packages-modal.jsx`) — por implementar
+### JS Runner
 
-- Búsqueda via npm registry API
-- Selector de versión
-- Lista de instalados con opción de eliminar
+- Cuando hay paquetes: inyecta `<script type="importmap">` + ejecuta como `type="module"`
+- Los `import` se extraen al nivel del módulo (fuera del try/catch)
+- Sin paquetes: comportamiento original (script clásico, sin importmap)
 
 ---
 
@@ -339,7 +343,7 @@ VITE_ADMIN_CLAIM_URL=        # default: https://endpoints.hckr.mx/bins/admin/cla
 ### Fase 3 — Polish (pendiente)
 
 - [ ] Lenguajes custom (Arduino, Minecraft, `.env`, logs)
-- [ ] Paquetes npm (esm.sh) — `components/system/packages-modal.jsx`
+- [x] Paquetes npm (esm.sh) — `components/editor/packages-drawer.jsx`
 - [ ] Search widget flotante con drag+snap — `components/system/search-widget.jsx`
 - [ ] Tips en el editor — icono 💡 en status bar → tip aleatorio flotante (`constants/tips.js` existe)
 - [ ] Modo presentación (fullscreen)
