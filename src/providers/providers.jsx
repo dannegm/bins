@@ -20,6 +20,7 @@ import { NudgeProvider } from '@/providers/nudge-provider';
 import { NyanCatProvider } from '@/components/system/nyan-cat';
 import { DeviceProvider } from '@/providers/device-provider';
 import { GlobalDropzoneProvider } from '@/providers/global-dropzone-provider';
+import { PackagesProvider } from '@/providers/packages-provider';
 
 const MAINTENANCE_MODE = false;
 
@@ -46,5 +47,6 @@ export const Providers = createProviders([
     [ToastProvider],
     [GlobalDropzoneProvider],
     [CommandPaletteProvider],
+    [PackagesProvider],
     [NyanCatProvider],
 ]);

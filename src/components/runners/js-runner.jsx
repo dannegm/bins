@@ -99,14 +99,45 @@ const injectLoopChecks = code => {
         .replace(/\bdo\s*\{/g, m => m + check);
 };
 
-const makeDoc = (code, originalCode, isJsx) => {
-    const instrumented = instrumentExpressions(stripExports(code), originalCode);
-    const guarded = injectLoopChecks(instrumented);
+const makeImportMap = packages => {
+    if (!packages?.length) return '';
+    const imports = Object.fromEntries(
+        packages.map(p => [p.name, `https://esm.sh/${p.name}${p.version ? '@' + p.version : ''}`]),
+    );
+    return `<script type="importmap">${JSON.stringify({ imports })}</script>`;
+};
+
+const extractImports = code => {
+    const lines = code.split('\n');
+    const importLines = [];
+    const restLines = [];
+    for (const line of lines) {
+        if (/^\s*import\s/.test(line)) { importLines.push(line); restLines.push(''); }
+        else restLines.push(line);
+    }
+    return { imports: importLines.join('\n'), rest: restLines.join('\n') };
+};
+
+const makeDoc = (code, originalCode, isJsx, packages) => {
     const catchBlock = `catch(e){var m=e instanceof Error?e.name+': '+e.message:String(e);var ln=null;if(e&&e.stack){var s=e.stack.match(/:(\\d+):(\\d+)/);if(s)ln=parseInt(s[1]);}window.parent.postMessage({type:'bins:console',method:'error',args:[m],line:ln},'*');}`;
     const doneBlock = `finally{window.parent.postMessage({type:'bins:done'},'*');}`;
+    const shimScript = `<script>${CONSOLE_SHIM}${isJsx ? REACT_SHIM : ''}</script>`;
+
+    if (packages?.length > 0) {
+        const { imports, rest } = extractImports(stripExports(code));
+        const instrumented = instrumentExpressions(rest, originalCode);
+        const guarded = injectLoopChecks(instrumented);
+        return `<!DOCTYPE html><html><body>
+${makeImportMap(packages)}${shimScript}
+<script type="module">${imports}\nconst __r__=window.__r__;let __lc__=0;try{\n${guarded}\n}${catchBlock}${doneBlock}</script>
+</body></html>`;
+    }
+
+    const instrumented = instrumentExpressions(stripExports(code), originalCode);
+    const guarded = injectLoopChecks(instrumented);
     return `<!DOCTYPE html><html><body>
-<script>${CONSOLE_SHIM}${isJsx ? REACT_SHIM : ''}</script>
-<script>try{var __lc__=0;${guarded}}${catchBlock}${doneBlock}</script>
+${shimScript}
+<script>try{var __lc__=0;\n${guarded}\n}${catchBlock}${doneBlock}</script>
 </body></html>`;
 };
 
@@ -260,7 +291,7 @@ const RunnerSkeleton = () => (
     </div>
 );
 
-export const JsRunner = ({ content, language }) => {
+export const JsRunner = ({ content, language, packages }) => {
     const { emit } = useEvents();
     const [entries, setEntries] = useState([]);
     const [runKey, setRunKey] = useState(0);
@@ -273,8 +304,11 @@ export const JsRunner = ({ content, language }) => {
     );
 
     const srcDoc = useMemo(
-        () => (code ? makeDoc(code, content ?? '', language === 'jsx' || language === 'tsx') : ''),
-        [code, content, language],
+        () =>
+            code
+                ? makeDoc(code, content ?? '', language === 'jsx' || language === 'tsx', packages)
+                : '',
+        [code, content, language, packages],
     );
 
     useEffect(() => {

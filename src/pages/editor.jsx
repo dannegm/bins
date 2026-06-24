@@ -30,6 +30,8 @@ import { getRunner } from '@/services/runners';
 import { destroyYDoc, destroyAllYDocs } from '@/services/yjs';
 import { FlickeringGrid } from '@/ui/flickering-grid';
 import CoffeeLoader from '@/components/system/coffee-loader';
+import { usePackagesPanel } from '@/providers/packages-provider';
+import { PackagesDrawer } from '@/components/editor/packages-drawer';
 
 const PeerToast = ({ peer, message }) => (
     <div className='flex min-w-64 items-center gap-3 rounded-lg border border-border bg-surface px-4 py-3 shadow-lg shadow-black/25'>
@@ -82,6 +84,10 @@ export const EditorPage = () => {
 
     const activeFile = files.find(f => f.id === activeFileId) ?? null;
 
+    const { setIsJsFile } = usePackagesPanel();
+    const JS_LANGS = new Set(['javascript', 'typescript', 'jsx', 'tsx']);
+    const binPackages = bin?.packages ?? [];
+
     useEffect(() => {
         const current = new Map(Object.entries(peers));
         if ($knownPeers.current === null) {
@@ -100,6 +106,10 @@ export const EditorPage = () => {
         }
         $knownPeers.current = current;
     }, [peers]);
+
+    useEffect(() => {
+        setIsJsFile(JS_LANGS.has(activeFile?.language));
+    }, [activeFile?.language]);
 
     useEffect(() => {
         if (!user?.uuid) return;
@@ -502,6 +512,10 @@ export const EditorPage = () => {
         broadcast('bin:updated', { visibility });
     };
 
+    const handlePackagesChange = useCallback(packages => {
+        setBin(prev => ({ ...prev, packages }));
+    }, []);
+
     const handleShare = async () => {
         await permanentizeBin(binId);
         $hasBeenSaved.current = true;
@@ -576,8 +590,15 @@ export const EditorPage = () => {
                         runner={runner}
                         showRunner={showRunner}
                         onCloseRunner={() => setShowRunner(false)}
+                        packages={binPackages}
                     />
                 )}
+
+                <PackagesDrawer
+                    binId={binId}
+                    packages={binPackages}
+                    onPackagesChange={handlePackagesChange}
+                />
             </div>
         </Layout>
     );

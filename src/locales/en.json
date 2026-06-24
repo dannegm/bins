@@ -23,7 +23,21 @@
         "new_bin": "New bin",
         "admin": "Admin",
         "settings": "Settings",
-        "profile": "My profile"
+        "profile": "My profile",
+        "packages": "Packages"
+    },
+    "packages": {
+        "title": "Packages",
+        "search_placeholder": "Search npm…",
+        "no_results": "No packages found.",
+        "installed": "Installed",
+        "none_installed": "No packages installed.",
+        "favorites": "Favorites",
+        "install": "Install",
+        "uninstall": "Remove",
+        "favorite": "Add to favorites",
+        "unfavorite": "Remove from favorites",
+        "clear_favorites": "Clear all"
     },
     "footer": {
         "tagline": "BINS. — real-time collaborative code editor"

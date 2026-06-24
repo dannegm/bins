@@ -36,6 +36,7 @@ export const EditorCore = ({
     runner = null,
     showRunner = false,
     onCloseRunner,
+    packages = [],
 }) => {
     const { user } = useIdentity();
     const isMobile = useIsMobile();
@@ -192,6 +193,7 @@ export const EditorCore = ({
                 content={file.content ?? ''}
                 language={file.language}
                 fileId={file.id}
+                packages={packages}
                 onClose={onCloseRunner}
             />
         </ErrorBoundary>

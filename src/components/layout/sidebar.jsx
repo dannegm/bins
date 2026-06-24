@@ -1,9 +1,10 @@
 import { Link } from '@tanstack/react-router';
-import { Home, Plus, Settings, ShieldCheck } from 'lucide-react';
+import { Home, Plus, Settings, ShieldCheck, Package } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/ui/button';
 import { useAdmin } from '@/hooks/use-admin';
 import { useIdentity } from '@/hooks/use-identity';
+import { usePackagesPanel } from '@/providers/packages-provider';
 import { UserAvatar } from '@/components/system/user-avatar';
 import { AppIcon } from './app-icon';
 import { cn } from '@/helpers/utils';
@@ -43,6 +44,7 @@ export const Sidebar = () => {
     const { t } = useTranslation();
     const { isAdmin } = useAdmin();
     const { user } = useIdentity();
+    const { isJsFile, setPackagesOpen } = usePackagesPanel();
 
     return (
         <aside
@@ -63,6 +65,21 @@ export const Sidebar = () => {
 
             <NavItem to='/' icon={Home} label={t('sidebar.home')} />
             <NavItem to='/new' icon={Plus} label={t('sidebar.new_bin')} />
+
+            {isJsFile && (
+                <>
+                    <Separator />
+                    <Button
+                        variant='ghost'
+                        size='icon'
+                        className='text-sidebar-foreground/50 hover:text-sidebar-accent-foreground hover:bg-sidebar-accent'
+                        title={t('sidebar.packages')}
+                        onClick={() => setPackagesOpen(true)}
+                    >
+                        <Package />
+                    </Button>
+                </>
+            )}
 
             <Separator />
             <Spacer />

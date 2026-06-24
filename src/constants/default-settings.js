@@ -27,6 +27,8 @@ export const defaultSettings = {
         profileSharedBins: 'grid',
     },
 
+    favoritePackages: [],
+
     aiCompletions: {
         enabled: false,
         provider: 'ollama',

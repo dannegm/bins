@@ -50,6 +50,7 @@
     --color-surface-raised: var(--surface-raised);
     --color-accent-hover: var(--accent-hover);
     --color-success: var(--success);
+    --color-favorite: var(--favorite);
     --color-warning: var(--warning);
     --color-warning-foreground: var(--warning-foreground);
     --color-overlay: var(--overlay);

@@ -23,7 +23,21 @@
         "new_bin": "Nuevo bin",
         "admin": "Admin",
         "settings": "Configuración",
-        "profile": "Mi perfil"
+        "profile": "Mi perfil",
+        "packages": "Paquetes"
+    },
+    "packages": {
+        "title": "Paquetes",
+        "search_placeholder": "Buscar en npm…",
+        "no_results": "No se encontraron paquetes.",
+        "installed": "Instalados",
+        "none_installed": "No hay paquetes instalados.",
+        "favorites": "Favoritos",
+        "install": "Instalar",
+        "uninstall": "Eliminar",
+        "favorite": "Agregar a favoritos",
+        "unfavorite": "Quitar de favoritos",
+        "clear_favorites": "Limpiar todo"
     },
     "footer": {
         "tagline": "BINS. — editor de código colaborativo en tiempo real"
