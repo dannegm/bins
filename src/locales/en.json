@@ -74,9 +74,9 @@
             "unlink_description": "You'll be removed from the collaborators list. You can still access it if the link is shared with you again.",
             "unlink_cancel": "Cancel",
             "unlink_confirm": "Leave",
-            "visibility_public": "Public",
-            "visibility_unlisted": "Unlisted",
-            "visibility_private": "Private"
+            "visibility_public": "public",
+            "visibility_unlisted": "unlisted",
+            "visibility_private": "private"
         }
     },
     "settings": {
@@ -281,7 +281,7 @@
             "filter_all": "All",
             "filter_empty": "Empty",
             "badge_empty": "Empty",
-            "badge_yours": "Yours"
+            "badge_yours": "yours"
         },
         "users": {
             "search_placeholder": "Search by name or ID…",
@@ -307,9 +307,9 @@
             "filter_all": "All",
             "filter_human": "Humans",
             "filter_bot": "Bots",
-            "badge_bot": "Bot",
-            "badge_human": "Human",
-            "badge_admin": "Admin",
+            "badge_bot": "bot",
+            "badge_human": "human",
+            "badge_admin": "admin",
             "mark_as_bot": "Mark as bot",
             "mark_as_human": "Mark as human",
             "scheduled_deletion": "Scheduled for deletion on {{date}}",

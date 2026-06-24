@@ -74,9 +74,9 @@
             "unlink_description": "Serás eliminado de la lista de colaboradores. Puedes volver a acceder si alguien te comparte el enlace de nuevo.",
             "unlink_cancel": "Cancelar",
             "unlink_confirm": "Salir",
-            "visibility_public": "Público",
-            "visibility_unlisted": "Sin listar",
-            "visibility_private": "Privado"
+            "visibility_public": "público",
+            "visibility_unlisted": "sin listar",
+            "visibility_private": "privado"
         }
     },
     "settings": {
@@ -281,7 +281,7 @@
             "filter_all": "Todos",
             "filter_empty": "Vacíos",
             "badge_empty": "Vacío",
-            "badge_yours": "Tuyo"
+            "badge_yours": "tuyo"
         },
         "users": {
             "search_placeholder": "Buscar por nombre o ID…",
@@ -308,7 +308,7 @@
             "filter_human": "Humanos",
             "filter_bot": "Bots",
             "badge_bot": "Bot",
-            "badge_human": "Humano",
+            "badge_human": "humano",
             "badge_admin": "Admin",
             "mark_as_bot": "Marcar como bot",
             "mark_as_human": "Marcar como humano",
