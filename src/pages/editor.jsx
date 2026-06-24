@@ -58,15 +58,6 @@ export const EditorPage = () => {
     const { binId } = Route.useParams();
     const { user } = useIdentity();
 
-    useEffect(() => {
-        try {
-            if (window.self !== window.top) {
-                window.location.replace(`/embed/${binId}`);
-            }
-        } catch {
-            window.location.replace(`/embed/${binId}`);
-        }
-    }, []);
     const { isAdmin } = useAdmin();
     const { emit } = useEvents();
     const navigate = useNavigate();
