@@ -280,7 +280,8 @@
             "col_actions": "Acciones",
             "filter_all": "Todos",
             "filter_empty": "Vacíos",
-            "badge_empty": "Vacío"
+            "badge_empty": "Vacío",
+            "badge_yours": "Tuyo"
         },
         "users": {
             "search_placeholder": "Buscar por nombre o ID…",

@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/services/supabase';
 import { deleteBin } from '@/services/bins';
+import { useIdentity } from '@/hooks/use-identity';
 import { VISIBILITY } from '@/constants/visibility';
 import { getLanguage } from '@/constants/languages';
 import { getAvatarUrl } from '@/helpers/avatar';
@@ -166,7 +167,7 @@ const LangStack = ({ files }) => {
     );
 };
 
-const AuthorCell = ({ profiles, t }) => {
+const AuthorCell = ({ profiles, isYours, t }) => {
     const { isDark } = useTheme();
 
     if (!profiles) {
@@ -191,6 +192,11 @@ const AuthorCell = ({ profiles, t }) => {
             <span className='max-w-28 truncate text-xs text-foreground'>
                 {profiles.name || t('admin.bins.anonymous')}
             </span>
+            {isYours && (
+                <span className='inline-flex items-center rounded-full border border-brand/30 bg-brand/10 px-1.5 py-0.5 text-[10px] font-semibold text-brand'>
+                    {t('admin.bins.badge_yours')}
+                </span>
+            )}
         </RouterLink>
     );
 };
@@ -315,11 +321,13 @@ const BinsTableSkeleton = ({ rows = 5 }) =>
         </TableRow>
     ));
 
-const BinRow = ({ bin, t, formatDate }) => {
+const BinRow = ({ bin, currentUserUuid, t, formatDate }) => {
     const copyLink = () => {
         navigator.clipboard.writeText(`${window.location.origin}/editor/${bin.id}`);
         toast.success(t('admin.bins.copy_link_success'));
     };
+
+    const isYours = bin.profiles?.uuid === currentUserUuid;
 
     return (
         <TableRow>
@@ -338,7 +346,7 @@ const BinRow = ({ bin, t, formatDate }) => {
             </TableCell>
 
             <TableCell>
-                <AuthorCell profiles={bin.profiles} t={t} />
+                <AuthorCell profiles={bin.profiles} isYours={isYours} t={t} />
             </TableCell>
 
             <TableCell>
@@ -551,6 +559,7 @@ const PerPageSelector = ({ perPage, onPerPage, t }) => (
 
 export const BinsTable = () => {
     const { t, i18n } = useTranslation();
+    const { user } = useIdentity();
     const locale = dateFnsLocales[i18n.language] ?? enUS;
     const formatDate = iso => format(new Date(iso), t('formats.date.short_time'), { locale });
 
@@ -613,7 +622,7 @@ export const BinsTable = () => {
         <div>
             <StatsBar stats={stats} t={t} />
 
-            <div className='mb-4 flex items-center gap-3'>
+            <div className='mb-4 flex flex-wrap items-center gap-3'>
                 <button
                     onClick={handleRefresh}
                     disabled={isFetching || isFetchingStats}
@@ -734,7 +743,7 @@ export const BinsTable = () => {
                             </TableRow>
                         )}
                         {rows.map(bin => (
-                            <BinRow key={bin.id} bin={bin} t={t} formatDate={formatDate} />
+                            <BinRow key={bin.id} bin={bin} currentUserUuid={user?.uuid} t={t} formatDate={formatDate} />
                         ))}
                     </TableBody>
                 </Table>
