@@ -8,6 +8,7 @@ import { Checkbox } from '@/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/ui/dialog';
 import { Popover, PopoverTrigger, PopoverContent } from '@/ui/popover';
 import { Command, CommandGroup, CommandItem, CommandList } from '@/ui/command';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/ui/select';
 
 const buildUrl = (binId, { showEditor, showRunner, runnable, theme, fileId }) => {
     const params = new URLSearchParams();

@@ -61,6 +61,16 @@ export const EditorPage = () => {
     const { isAdmin } = useAdmin();
     const { emit } = useEvents();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        try {
+            if (window.self !== window.top) {
+                navigate({ to: '/embed/$binId', params: { binId }, replace: true });
+            }
+        } catch {
+            navigate({ to: '/embed/$binId', params: { binId }, replace: true });
+        }
+    }, []);
     const [showRunner, setShowRunner] = useQueryState('runner', parseAsBoolean.withDefault(false));
 
     const [bin, setBin] = useState(null);
