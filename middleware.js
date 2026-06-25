@@ -1,5 +1,3 @@
-import { next } from '@vercel/edge';
-
 const BOT_PATTERN =
     /bot|crawl|facebookexternalhit|facebot|WhatsApp|Telegram|Slackbot|Discordbot|LinkedInBot|Twitterbot|preview/i;
 
@@ -17,11 +15,11 @@ const dbFetch = (table, params) =>
 
 export default async function middleware(request) {
     const ua = request.headers.get('user-agent') ?? '';
-    if (!BOT_PATTERN.test(ua)) return next();
+    if (!BOT_PATTERN.test(ua)) return;
 
     const { pathname, href } = new URL(request.url);
     const match = pathname.match(/^\/(editor|embed)\/([^/]+)/);
-    if (!match) return next();
+    if (!match) return;
 
     const binId = match[2];
 
@@ -34,7 +32,7 @@ export default async function middleware(request) {
         const [bin] = await binRes.json();
         const files = await filesRes.json();
 
-        if (!bin || bin.visibility === 'private') return next();
+        if (!bin || bin.visibility === 'private') return;
 
         const profileRes = await dbFetch('profiles', {
             uuid: `eq.${bin.author_id}`,
@@ -53,7 +51,7 @@ export default async function middleware(request) {
             headers: { 'content-type': 'text/html;charset=utf-8' },
         });
     } catch {
-        return next();
+        return;
     }
 }
 
