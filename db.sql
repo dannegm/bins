@@ -300,10 +300,11 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA bins GRANT ALL ON TABLES TO
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA bins GRANT ALL ON ROUTINES TO authenticated, service_role;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA bins GRANT ALL ON SEQUENCES TO authenticated, service_role;
 
--- anon: read-only access to public/unlisted bins (embed support)
+-- anon: read-only access to public/unlisted bins + profiles (embed + middleware OG tags)
 GRANT USAGE ON SCHEMA bins TO anon;
 GRANT SELECT ON bins.bins      TO anon;
 GRANT SELECT ON bins.bin_files TO anon;
+GRANT SELECT ON bins.profiles  TO anon;
 GRANT EXECUTE ON FUNCTION bins.get_bin_access(text) TO anon;
 
 
