@@ -4,14 +4,21 @@ const BOT_PATTERN =
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-const dbFetch = (table, params) =>
-    fetch(`${SUPABASE_URL}/rest/v1/${table}?${new URLSearchParams(params)}`, {
-        headers: {
-            apikey: SUPABASE_KEY,
-            Authorization: `Bearer ${SUPABASE_KEY}`,
-            'Accept-Profile': 'bins',
+const dbFetch = async (table, params) => {
+    const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/${table}?${new URLSearchParams(params)}`,
+        {
+            headers: {
+                apikey: SUPABASE_KEY,
+                Authorization: `Bearer ${SUPABASE_KEY}`,
+                'Accept-Profile': 'bins',
+                Accept: 'application/json',
+            },
         },
-    });
+    );
+    if (!res.ok) throw new Error(`[${table}] ${res.status} ${await res.text()}`);
+    return res.json();
+};
 
 export default async function middleware(request) {
     const ua = request.headers.get('user-agent') ?? '';
@@ -24,21 +31,17 @@ export default async function middleware(request) {
     const binId = match[2];
 
     try {
-        const [binRes, filesRes] = await Promise.all([
+        const [[bin], files] = await Promise.all([
             dbFetch('bins', { id: `eq.${binId}`, select: 'title,author_id,visibility' }),
             dbFetch('bin_files', { bin_id: `eq.${binId}`, select: 'language' }),
         ]);
 
-        const [bin] = await binRes.json();
-        const files = await filesRes.json();
-
         if (!bin || bin.visibility === 'private') return;
 
-        const profileRes = await dbFetch('profiles', {
+        const [profile] = await dbFetch('profiles', {
             uuid: `eq.${bin.author_id}`,
             select: 'name',
         });
-        const [profile] = await profileRes.json();
 
         const title = bin.title?.trim() || 'Untitled';
         const author = profile?.name || 'Anonymous';
@@ -50,8 +53,12 @@ export default async function middleware(request) {
         return new Response(buildHtml({ title, description, image, url: href }), {
             headers: { 'content-type': 'text/html;charset=utf-8' },
         });
-    } catch {
-        return;
+    } catch (err) {
+        const msg = err?.message ?? String(err);
+        console.error('[middleware]', msg);
+        return new Response(`<!doctype html><html><head></head><body><!-- middleware error: ${msg.replace(/--/g, '-')} --></body></html>`, {
+            headers: { 'content-type': 'text/html;charset=utf-8' },
+        });
     }
 }
 
