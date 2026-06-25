@@ -22,11 +22,19 @@ const dbFetch = async (table, params) => {
 
 export default async function middleware(request) {
     const ua = request.headers.get('user-agent') ?? '';
-    if (!BOT_PATTERN.test(ua)) return;
+    if (!BOT_PATTERN.test(ua)) {
+        console.log('[middleware] skipped — ua:', ua);
+        return;
+    }
 
     const { pathname, href } = new URL(request.url);
     const match = pathname.match(/^\/(editor|embed)\/([^/]+)/);
-    if (!match) return;
+    if (!match) {
+        console.log('[middleware] skipped — no path match:', pathname);
+        return;
+    }
+
+    console.log('[middleware] handling bot request:', pathname);
 
     const binId = match[2];
 
