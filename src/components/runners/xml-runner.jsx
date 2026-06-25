@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { ThemedJsonView } from '@/components/ui/themed-json-view';
+import { ThemedJsonView } from '@/ui/themed-json-view';
 
 const nodeToObj = node => {
     if (node.nodeType === Node.TEXT_NODE) {

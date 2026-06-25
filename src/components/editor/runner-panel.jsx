@@ -8,7 +8,7 @@ export const RunnerPanel = ({ runner, content, language, fileId, packages, onClo
     const RunnerComponent = runner?.component;
 
     return (
-        <div className='relative flex mt-4 sm:mt-0 min-h-0 flex-1 flex-col border-l border-border bg-surface'>
+        <div className='relative flex mt-4 sm:mt-0 min-h-0 flex-1 flex-col bg-surface'>
             <div className='hidden sm:flex h-8 shrink-0 items-center gap-2 border-b border-border px-3 text-xs'>
                 <span className='flex-1 font-medium text-foreground'>{runner?.label}</span>
                 {onClose && (

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { transform } from 'sucrase';
-import { ThemedJsonView } from '@/components/ui/themed-json-view';
-import { InlineValue } from '@/components/ui/inline-value';
+import { ThemedJsonView } from '@/ui/themed-json-view';
+import { InlineValue } from '@/ui/inline-value';
 import { ScrambleText } from '@/components/system/scramble-text';
 import { cn } from '@/helpers/utils';
 import { useEvents } from '@/providers/bus-provider';

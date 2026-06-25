@@ -49,7 +49,7 @@ export const Sidebar = () => {
     return (
         <aside
             className={cn(
-                'fixed bottom-0 left-0 right-0 z-40 flex h-12 px-2',
+                'fixed bottom-0 left-0 right-0 flex h-12 px-2',
                 'flex-row items-center justify-evenly',
                 'border-t border-sidebar-border bg-sidebar',
 

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ChevronDown, Play, Loader2, AlertCircle, Search, X } from 'lucide-react';
 import Fuse from 'fuse.js';
 import { cn } from '@/helpers/utils';
-import { ThemedJsonView } from '@/components/ui/themed-json-view';
+import { ThemedJsonView } from '@/ui/themed-json-view';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/ui/collapsible';
 import { Input } from '@/ui/input';
 import { useLocalStorage } from '@/hooks/use-local-storage';
