@@ -1,5 +1,4 @@
-const BOT_PATTERN =
-    /bot|crawl|facebookexternalhit|facebot|WhatsApp|Telegram|Slackbot|Discordbot|LinkedInBot|Twitterbot|preview/i;
+import { next } from '@vercel/edge';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -21,20 +20,9 @@ const dbFetch = async (table, params) => {
 };
 
 export default async function middleware(request) {
-    const ua = request.headers.get('user-agent') ?? '';
-    if (!BOT_PATTERN.test(ua)) {
-        console.log('[middleware] skipped — ua:', ua);
-        return;
-    }
-
     const { pathname, href } = new URL(request.url);
     const match = pathname.match(/^\/(editor|embed)\/([^/]+)/);
-    if (!match) {
-        console.log('[middleware] skipped — no path match:', pathname);
-        return;
-    }
-
-    console.log('[middleware] handling bot request:', pathname);
+    if (!match) return next();
 
     const binId = match[2];
 
@@ -44,7 +32,7 @@ export default async function middleware(request) {
             dbFetch('bin_files', { bin_id: `eq.${binId}`, select: 'language' }),
         ]);
 
-        if (!bin || bin.visibility === 'private') return;
+        if (!bin || bin.visibility === 'private') return next();
 
         const [profile] = await dbFetch('profiles', {
             uuid: `eq.${bin.author_id}`,
@@ -58,15 +46,20 @@ export default async function middleware(request) {
         const description = `A ${langLabel} bin by ${author}`;
         const image = `https://endpoints.hckr.mx/bins/bins/${binId}/preview-image.png`;
 
-        return new Response(buildHtml({ title, description, image, url: href }), {
-            headers: { 'content-type': 'text/html;charset=utf-8' },
+        const origin = await next();
+        const html = await origin.text();
+        const tags = buildMetaTags({ title, description, image, url: href });
+
+        const headers = new Headers(origin.headers);
+        headers.delete('content-length');
+
+        return new Response(html.replace('<head>', `<head>\n${tags}`), {
+            status: origin.status,
+            headers,
         });
     } catch (err) {
-        const msg = err?.message ?? String(err);
-        console.error('[middleware]', msg);
-        return new Response(`<!doctype html><html><head></head><body><!-- middleware error: ${msg.replace(/--/g, '-')} --></body></html>`, {
-            headers: { 'content-type': 'text/html;charset=utf-8' },
-        });
+        console.error('[middleware]', err?.message ?? err);
+        return next();
     }
 }
 
@@ -77,27 +70,26 @@ const esc = s =>
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 
-function buildHtml({ title, description, image, url }) {
+function buildMetaTags({ title, description, image, url }) {
     const t = `${esc(title)} — Bins`;
     const d = esc(description);
     const i = esc(image);
     const u = esc(url);
 
-    return `<!doctype html><html><head>
-<meta charset="utf-8">
-<title>${t}</title>
-<meta name="description" content="${d}">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Bins">
-<meta property="og:url" content="${u}">
-<meta property="og:title" content="${t}">
-<meta property="og:description" content="${d}">
-<meta property="og:image" content="${i}">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="${t}">
-<meta name="twitter:description" content="${d}">
-<meta name="twitter:image" content="${i}">
-</head><body></body></html>`;
+    return [
+        `<title>${t}</title>`,
+        `<meta name="description" content="${d}">`,
+        `<meta property="og:type" content="website">`,
+        `<meta property="og:site_name" content="Bins">`,
+        `<meta property="og:url" content="${u}">`,
+        `<meta property="og:title" content="${t}">`,
+        `<meta property="og:description" content="${d}">`,
+        `<meta property="og:image" content="${i}">`,
+        `<meta name="twitter:card" content="summary_large_image">`,
+        `<meta name="twitter:title" content="${t}">`,
+        `<meta name="twitter:description" content="${d}">`,
+        `<meta name="twitter:image" content="${i}">`,
+    ].join('\n');
 }
 
 export const config = {
