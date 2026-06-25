@@ -46,7 +46,8 @@ export default async function middleware(request) {
         const description = `A ${langLabel} bin by ${author}`;
         const image = `https://endpoints.hckr.mx/bins/bins/${binId}/preview-image.png`;
 
-        const origin = await next();
+        const origin = await fetch(new URL('/index.html', request.url));
+        if (!origin.ok) throw new Error(`origin ${origin.status}`);
         const html = await origin.text();
         const tags = buildMetaTags({ title, description, image, url: href });
 
