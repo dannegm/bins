@@ -500,6 +500,26 @@
             "format-code": {
                 "title": "Format your code",
                 "body": "Press {{shortcut:format_code}} to auto-format the current file using your Prettier settings."
+            },
+            "http-runner": {
+                "title": "HTTP runner",
+                "body": "Create a `.http` file and run real HTTP requests with headers, variables, and multiple endpoints — no external client needed."
+            },
+            "mermaid-diagrams": {
+                "title": "Diagrams as code",
+                "body": "Create a `.mermaid` file and write flowcharts, sequences, and Gantt charts that render live in the preview panel."
+            },
+            "share-settings": {
+                "title": "Share your config",
+                "body": "In Settings → Import & Export, copy your full configuration as a link — anyone can apply it instantly."
+            },
+            "session-export": {
+                "title": "Move to a new device",
+                "body": "Generate a one-time session link in Settings → Import & Export to transfer your identity to another browser or device."
+            },
+            "nudge": {
+                "title": "Nudge your team",
+                "body": "Hit the **Nudge** button in the status bar to send a playful alert to all collaborators — just like the old days."
             }
         },
         "peer_joined": "joined the session",

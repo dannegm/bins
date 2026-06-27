@@ -500,6 +500,26 @@
             "format-code": {
                 "title": "Formatea tu código",
                 "body": "Presiona {{shortcut:format_code}} para formatear automáticamente el archivo con tu configuración de Prettier."
+            },
+            "http-runner": {
+                "title": "Runner HTTP",
+                "body": "Crea un archivo `.http` y ejecuta peticiones HTTP reales con headers, variables y múltiples endpoints — sin cliente externo."
+            },
+            "mermaid-diagrams": {
+                "title": "Diagramas como código",
+                "body": "Crea un archivo `.mermaid` y escribe flujos, secuencias y diagramas de Gantt que se renderizan en vivo en el panel."
+            },
+            "share-settings": {
+                "title": "Comparte tu config",
+                "body": "En Configuración → Importar y Exportar, copia tu configuración completa como enlace — cualquiera puede aplicarla al instante."
+            },
+            "session-export": {
+                "title": "Cambia de dispositivo",
+                "body": "Genera un enlace de sesión único en Configuración → Importar y Exportar para transferir tu identidad a otro navegador o dispositivo."
+            },
+            "nudge": {
+                "title": "Molesta a tu equipo",
+                "body": "Pulsa el botón **Zumbido** en la barra de estado para enviar una alerta juguetona a todos los colaboradores — como en los viejos tiempos."
             }
         },
         "peer_joined": "se unió a la sesión",

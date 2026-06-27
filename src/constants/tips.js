@@ -14,4 +14,9 @@ export const TIPS = [
     { id: 'download-zip', icon: 'archive' },
     { id: 'bin-visibility', icon: 'eye' },
     { id: 'format-code', icon: 'wand-sparkles' },
+    { id: 'http-runner', icon: 'network' },
+    { id: 'mermaid-diagrams', icon: 'git-branch' },
+    { id: 'share-settings', icon: 'share-2' },
+    { id: 'session-export', icon: 'log-out' },
+    { id: 'nudge', icon: 'bell-ring' },
 ];
