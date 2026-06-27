@@ -19,4 +19,7 @@ export const TIPS = [
     { id: 'share-settings', icon: 'share-2' },
     { id: 'session-export', icon: 'log-out' },
     { id: 'nudge', icon: 'bell-ring' },
+    { id: 'click-to-follow-peer', icon: 'mouse-pointer-click' },
+    { id: 'cursor-color', icon: 'palette' },
+    { id: 'explore-settings', icon: 'settings-2' },
 ];

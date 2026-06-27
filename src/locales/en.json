@@ -520,6 +520,18 @@
             "nudge": {
                 "title": "Nudge your team",
                 "body": "Hit the **Nudge** button in the status bar to send a playful alert to all collaborators — just like the old days."
+            },
+            "click-to-follow-peer": {
+                "title": "Follow a collaborator",
+                "body": "Click any collaborator's avatar in the status bar to jump straight to their cursor — even if they're on a different file."
+            },
+            "cursor-color": {
+                "title": "Your color, your identity",
+                "body": "Pick your cursor color in Settings — it shows on your avatar, cursor, and active line so collaborators always recognize you."
+            },
+            "explore-settings": {
+                "title": "Make it yours",
+                "body": "Press {{shortcut:settings}} to open Settings — set your display name, pick your colors, choose a theme, and more."
             }
         },
         "peer_joined": "joined the session",

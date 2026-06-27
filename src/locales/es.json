@@ -520,6 +520,18 @@
             "nudge": {
                 "title": "Molesta a tu equipo",
                 "body": "Pulsa el botón **Zumbido** en la barra de estado para enviar una alerta juguetona a todos los colaboradores — como en los viejos tiempos."
+            },
+            "click-to-follow-peer": {
+                "title": "Sigue a un colaborador",
+                "body": "Haz clic en el avatar de cualquier colaborador en la barra de estado para saltar directo a su cursor — aunque esté en otra pestaña."
+            },
+            "cursor-color": {
+                "title": "Tu color, tu identidad",
+                "body": "Elige tu color de cursor en Configuración — aparece en tu avatar, cursor y línea activa para que los colaboradores siempre te reconozcan."
+            },
+            "explore-settings": {
+                "title": "Hazlo tuyo",
+                "body": "Presiona {{shortcut:settings}} para abrir Configuración — define tu nombre, elige tus colores, cambia el tema y mucho más."
             }
         },
         "peer_joined": "se unió a la sesión",
