@@ -446,7 +446,9 @@
             "reconnecting": "Reconnecting…",
             "tips": "Tips",
             "tips_tooltip_show": "Show tips",
-            "tips_tooltip_hide": "Hide tips"
+            "tips_tooltip_hide": "Hide tips",
+            "explain": "Explain",
+            "explain_tooltip": "Explain this file with AI"
         },
         "tips_widget": {
             "title": "Tips",
@@ -466,6 +468,12 @@
             "whole_word": "Match Whole Word",
             "use_regex": "Use Regular Expression",
             "close": "Close (Escape)"
+        },
+        "explain_panel": {
+            "title": "Code explanation",
+            "loading": "Analyzing…",
+            "error": "Failed to generate explanation",
+            "empty": "No content to explain"
         },
         "tips": {
             "instant-collaboration": {

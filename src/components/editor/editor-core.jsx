@@ -52,6 +52,7 @@ export const EditorCore = ({
     const [isDragging, setIsDragging] = useState(false);
     const [showSearch, setShowSearch] = useState(false);
     const $editor = useRef(null);
+    const $editorArea = useRef(null);
 
     const panelStorage = useMemo(
         () => ({
@@ -217,7 +218,7 @@ export const EditorCore = ({
                 setIsDragging(false);
             }}
         >
-            <div className='relative min-h-0 flex-1 overflow-hidden'>
+            <div ref={$editorArea} className='relative min-h-0 flex-1 overflow-hidden'>
                 {isMobile ? (
                     <>
                         <div className='h-full'>{editorPane}</div>
@@ -290,6 +291,7 @@ export const EditorCore = ({
                 showTips={showTips}
                 onToggleTips={() => setShowTips(v => !v)}
                 onLanguageChange={lang => onLanguageChange(file.id, lang)}
+                containerRef={$editorArea}
             />
         </div>
     );

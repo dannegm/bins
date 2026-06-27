@@ -446,7 +446,15 @@
             "reconnecting": "Reconectando…",
             "tips": "Consejos",
             "tips_tooltip_show": "Mostrar consejos",
-            "tips_tooltip_hide": "Ocultar consejos"
+            "tips_tooltip_hide": "Ocultar consejos",
+            "explain": "Explicar",
+            "explain_tooltip": "Explicar este archivo con IA"
+        },
+        "explain_panel": {
+            "title": "Explicación del código",
+            "loading": "Analizando…",
+            "error": "Error al generar la explicación",
+            "empty": "Sin contenido para explicar"
         },
         "tips_widget": {
             "title": "Consejos",

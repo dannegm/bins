@@ -1,5 +1,7 @@
-import { useState } from 'react';
-import { Users, Check, Brain, Lightbulb } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'motion/react';
+import { Users, Check, Brain, Lightbulb, BookOpen, RefreshCw, X, Loader2 } from 'lucide-react';
 import { SmileyDead } from '@/ui/icons';
 import { parseToRgb } from 'polished';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +22,9 @@ import {
 } from '@/ui/command';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/ui/tooltip';
 import { useEvents } from '@/providers/bus-provider';
+import { fetchExplanation } from '@/services/ai-completions';
+import { settings } from '@/services/settings';
+import { cache } from '@/services/cache';
 
 const contrastColor = color => {
     try {
@@ -161,6 +166,224 @@ const AiChip = ({ t }) => {
                 </TooltipContent>
             </Tooltip>
         </TooltipProvider>
+    );
+};
+
+const EP_PADDING = 12;
+const EP_SNAP = 52;
+
+const hashStr = s => {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+    return h.toString(36);
+};
+
+const ExplainButton = ({ content, language, containerRef, t }) => {
+    const [aiCompletions] = useSettings('aiCompletions');
+    const [open, setOpen] = useState(false);
+    const [loadState, setLoadState] = useState('idle');
+    const [explanation, setExplanation] = useState('');
+    const [pos, setPos] = useState(() => settings.get('explainWidget', { x: EP_PADDING, y: EP_PADDING }));
+    const [isDragging, setIsDragging] = useState(false);
+    const $panel = useRef(null);
+    const $abort = useRef(null);
+    const $cachedHash = useRef('');
+    const $cachedExplanation = useRef('');
+
+    const provider = aiCompletions?.provider ?? 'ollama';
+    const apiKey = aiCompletions?.apiKey ?? '';
+    const enabled = aiCompletions?.enabled ?? false;
+    const isConfigured = provider === 'ollama' ? true : !!apiKey;
+
+    useEffect(() => {
+        const saved = cache.get('explain');
+        if (saved) {
+            $cachedHash.current = saved.hash;
+            $cachedExplanation.current = saved.explanation;
+        }
+        return () => $abort.current?.abort();
+    }, []);
+
+    const run = useCallback(async () => {
+        if (!content?.trim()) { setLoadState('empty'); return; }
+        const hash = hashStr(content);
+        if ($cachedHash.current === hash && $cachedExplanation.current) {
+            setExplanation($cachedExplanation.current);
+            setLoadState('done');
+            return;
+        }
+        $abort.current?.abort();
+        $abort.current = new AbortController();
+        setLoadState('loading');
+        setExplanation('');
+        try {
+            const text = await fetchExplanation({
+                provider: aiCompletions.provider,
+                model: aiCompletions.model,
+                apiKey: aiCompletions.apiKey,
+                baseUrl: aiCompletions.baseUrl,
+                content,
+                language,
+                signal: $abort.current.signal,
+            });
+            if (text) {
+                setExplanation(text);
+                setLoadState('done');
+                $cachedHash.current = hash;
+                $cachedExplanation.current = text;
+                cache.set('explain', { hash, explanation: text });
+            } else {
+                setLoadState('error');
+            }
+        } catch (err) {
+            if (err.name !== 'AbortError') setLoadState('error');
+        }
+    }, [content, language, aiCompletions]);
+
+    const handleToggle = () => {
+        if (!open) { setOpen(true); run(); }
+        else { setOpen(false); $abort.current?.abort(); }
+    };
+
+    const forceRun = () => {
+        $cachedHash.current = '';
+        $cachedExplanation.current = '';
+        cache.remove('explain');
+        run();
+    };
+
+    const snapToEdge = useCallback(() => {
+        const panel = $panel.current;
+        const container = containerRef?.current;
+        if (!panel || !container) return;
+        const maxX = container.clientWidth - panel.offsetWidth;
+        const maxY = container.clientHeight - panel.offsetHeight;
+        setPos(cur => {
+            const x = cur.x < EP_SNAP ? EP_PADDING : cur.x > maxX - EP_SNAP ? maxX - EP_PADDING : cur.x;
+            const y = cur.y < EP_SNAP ? EP_PADDING : cur.y > maxY - EP_SNAP ? maxY - EP_PADDING : cur.y;
+            settings.set('explainWidget', { x, y });
+            return { x, y };
+        });
+        setIsDragging(false);
+    }, [containerRef]);
+
+    const handlePointerDown = useCallback(e => {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        const panel = $panel.current;
+        const container = containerRef?.current;
+        if (!panel || !container) return;
+        const containerRect = container.getBoundingClientRect();
+        const panelRect = panel.getBoundingClientRect();
+        const offsetX = e.clientX - panelRect.left;
+        const offsetY = e.clientY - panelRect.top;
+        setIsDragging(true);
+        const onMove = e => {
+            const x = Math.max(0, Math.min(container.clientWidth - panel.offsetWidth, e.clientX - containerRect.left - offsetX));
+            const y = Math.max(0, Math.min(container.clientHeight - panel.offsetHeight, e.clientY - containerRect.top - offsetY));
+            setPos({ x, y });
+        };
+        const onUp = () => {
+            window.removeEventListener('pointermove', onMove);
+            window.removeEventListener('pointerup', onUp);
+            snapToEdge();
+        };
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp);
+    }, [containerRef, snapToEdge]);
+
+    if (!enabled || !isConfigured) return null;
+
+    return (
+        <>
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger
+                        onClick={handleToggle}
+                        className={cn(
+                            'flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs transition-colors',
+                            {
+                                'border-brand bg-brand/10 text-brand': open,
+                                'border-border bg-surface-raised text-muted-foreground hover:text-foreground':
+                                    !open,
+                            },
+                        )}
+                    >
+                        <BookOpen className='size-3' />
+                        <span className='hidden sm:inline'>{t('editor.status_bar.explain')}</span>
+                    </TooltipTrigger>
+                    <TooltipContent side='top' sideOffset={8}>
+                        {t('editor.status_bar.explain_tooltip')}
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+            {containerRef?.current && createPortal(
+                <AnimatePresence>
+                    {open && (
+                        <motion.div
+                            ref={$panel}
+                            initial={{ opacity: 0, scale: 0.96 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.96 }}
+                            transition={{ duration: 0.1 }}
+                            style={{
+                                left: pos.x,
+                                top: pos.y,
+                                position: 'absolute',
+                                transition: isDragging
+                                    ? 'none'
+                                    : 'left 0.2s cubic-bezier(0.4,0,0.2,1), top 0.2s cubic-bezier(0.4,0,0.2,1)',
+                            }}
+                            className='z-50 w-96 overflow-hidden rounded-lg border border-border bg-surface shadow-lg shadow-black/30'
+                        >
+                            <div
+                                onPointerDown={handlePointerDown}
+                                className='flex h-8 cursor-grab items-center gap-1 border-b border-border px-3 active:cursor-grabbing'
+                            >
+                                <span className='flex-1 select-none text-xs font-medium text-muted-foreground'>
+                                    {t('editor.explain_panel.title')}
+                                </span>
+                                <button
+                                    onClick={forceRun}
+                                    disabled={loadState === 'loading'}
+                                    className='flex size-5 items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40'
+                                >
+                                    <RefreshCw className='size-3' />
+                                </button>
+                                <button
+                                    onClick={() => setOpen(false)}
+                                    className='flex size-5 items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground'
+                                >
+                                    <X className='size-3' />
+                                </button>
+                            </div>
+                            <div className='max-h-72 overflow-y-auto px-3 py-3 text-sm leading-relaxed text-foreground'>
+                                {loadState === 'loading' && (
+                                    <span className='flex items-center gap-2 text-muted-foreground'>
+                                        <Loader2 className='size-3.5 animate-spin' />
+                                        {t('editor.explain_panel.loading')}
+                                    </span>
+                                )}
+                                {loadState === 'done' && (
+                                    <p className='whitespace-pre-wrap'>{explanation}</p>
+                                )}
+                                {loadState === 'error' && (
+                                    <span className='text-destructive'>
+                                        {t('editor.explain_panel.error')}
+                                    </span>
+                                )}
+                                {loadState === 'empty' && (
+                                    <span className='text-muted-foreground'>
+                                        {t('editor.explain_panel.empty')}
+                                    </span>
+                                )}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>,
+                containerRef.current,
+            )}
+        </>
     );
 };
 
@@ -315,6 +538,7 @@ export const StatusBar = ({
     showTips = false,
     onToggleTips,
     onLanguageChange,
+    containerRef,
 }) => {
     const fileSize = formatSize(new TextEncoder().encode(content).length);
     const { t } = useTranslation();
@@ -360,8 +584,9 @@ export const StatusBar = ({
 
             <span className='flex-1' />
 
-            <TipsButton showTips={showTips} onToggle={onToggleTips} t={t} />
+            <ExplainButton content={content} language={language} containerRef={containerRef} t={t} />
             <AiChip t={t} />
+            <TipsButton showTips={showTips} onToggle={onToggleTips} t={t} />
             <NudgeButton t={t} />
             {peers.length > 0 && <PeerList peers={peers} />}
         </div>
