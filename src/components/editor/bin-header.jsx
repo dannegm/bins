@@ -14,6 +14,8 @@ import {
     Globe,
     Link,
     EyeOff,
+    Wand2,
+    Loader2,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { lighten } from 'polished';
@@ -34,6 +36,8 @@ import {
     PopoverDescription,
 } from '@/ui/popover';
 import { EmbedDialog } from '@/components/editor/embed-dialog';
+import { useSettings } from '@/hooks/use-settings';
+import { fetchNameSuggestion } from '@/services/ai-completions';
 
 const VISIBILITY_OPTIONS = [
     { value: VISIBILITY.PUBLIC, icon: Globe },
@@ -196,14 +200,18 @@ export const BinHeader = ({
     onShare,
 }) => {
     const { t } = useTranslation();
+    const [aiCompletions] = useSettings('aiCompletions');
     const [isEditing, setIsEditing] = useState(false);
     const [draft, setDraft] = useState('');
+    const [isAiLoading, setIsAiLoading] = useState(false);
     const [shareState, setShareState] = useState('idle');
     const [forkOpen, setForkOpen] = useState(false);
     const [downloadOpen, setDownloadOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [mobileForkConfirm, setMobileForkConfirm] = useState(false);
     const $input = useRef(null);
+
+    const aiEnabled = aiCompletions?.enabled && isAuthor;
 
     const visibility = bin?.visibility ?? VISIBILITY.PUBLIC;
     const canFork = visibility === VISIBILITY.PUBLIC;
@@ -261,6 +269,30 @@ export const BinHeader = ({
         setIsEditing(false);
         const value = draft.trim() || t('editor.bin_header.untitled');
         if (value !== bin?.title) onTitleChange?.(value);
+    };
+
+    const handleAiSuggestTitle = async () => {
+        if (!aiEnabled || isAiLoading) return;
+        const content = files.map(f => `// ${f.name}\n${f.content ?? ''}`).join('\n\n');
+        setIsAiLoading(true);
+        try {
+            const suggestion = await fetchNameSuggestion({
+                provider: aiCompletions.provider,
+                model: aiCompletions.model,
+                apiKey: aiCompletions.apiKey,
+                baseUrl: aiCompletions.baseUrl,
+                content,
+                hint: 'bin_title',
+            });
+            if (suggestion) {
+                setDraft(suggestion);
+                setIsEditing(true);
+            }
+        } catch {
+            toast.error(t('editor.bin_header.ai_suggest_error'));
+        } finally {
+            setIsAiLoading(false);
+        }
     };
 
     const openFork = () => window.open(`/fork/${bin?.id}`, '_blank', 'noopener,noreferrer');
@@ -395,6 +427,26 @@ export const BinHeader = ({
                             </TooltipTrigger>
                             <TooltipContent side='bottom' align='end'>
                                 {t('editor.bin_header.edit_title')}
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                )}
+                {aiEnabled && (
+                    <TooltipProvider delay={1500}>
+                        <Tooltip>
+                            <TooltipTrigger
+                                onClick={handleAiSuggestTitle}
+                                className='shrink-0 text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40'
+                                disabled={isAiLoading}
+                            >
+                                {isAiLoading ? (
+                                    <Loader2 className='size-3 animate-spin' />
+                                ) : (
+                                    <Wand2 className='size-3' />
+                                )}
+                            </TooltipTrigger>
+                            <TooltipContent side='bottom' align='end'>
+                                {t('editor.bin_header.ai_suggest_title')}
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
@@ -605,6 +657,26 @@ export const BinHeader = ({
                                 {t('editor.bin_header.download_zip')}
                             </span>
                         </button>
+
+                        {aiEnabled && (
+                            <button
+                                onClick={() => {
+                                    setMobileMenuOpen(false);
+                                    handleAiSuggestTitle();
+                                }}
+                                disabled={isAiLoading}
+                                className='flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left text-xs transition-colors hover:bg-muted disabled:opacity-40'
+                            >
+                                {isAiLoading ? (
+                                    <Loader2 className='size-3.5 shrink-0 animate-spin text-muted-foreground' />
+                                ) : (
+                                    <Wand2 className='size-3.5 shrink-0 text-muted-foreground' />
+                                )}
+                                <span className='text-foreground'>
+                                    {t('editor.bin_header.ai_suggest_title')}
+                                </span>
+                            </button>
+                        )}
 
                         <div className='h-px bg-border/50' />
 

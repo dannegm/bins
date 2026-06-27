@@ -9,11 +9,15 @@ import {
     ChevronLeft,
     ChevronRight,
     Play,
+    Wand2,
+    Loader2,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/helpers/utils';
 import { getLanguage } from '@/constants/languages';
 import { useTheme } from '@/providers/theme-provider';
+import { fetchNameSuggestion } from '@/services/ai-completions';
+import { useSettings } from '@/hooks/use-settings';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/ui/tooltip';
 
 const LangIcon = ({ language, className }) => {
@@ -47,10 +51,12 @@ const FileTab = ({
     onDragOver,
     onDrop,
     onDragEnd,
+    aiCompletions,
 }) => {
     const { t } = useTranslation();
     const [isEditing, setIsEditing] = useState(false);
     const [editName, setEditName] = useState(file.name);
+    const [isAiLoading, setIsAiLoading] = useState(false);
     const $input = useRef(null);
 
     const handleDoubleClick = () => {
@@ -69,6 +75,26 @@ const FileTab = ({
     const handleKeyDown = e => {
         if (e.key === 'Enter') commitRename();
         if (e.key === 'Escape') setIsEditing(false);
+    };
+
+    const handleAiSuggestName = async e => {
+        e.stopPropagation();
+        if (!aiCompletions?.enabled || isAiLoading) return;
+        setIsAiLoading(true);
+        try {
+            const suggestion = await fetchNameSuggestion({
+                provider: aiCompletions.provider,
+                model: aiCompletions.model,
+                apiKey: aiCompletions.apiKey,
+                baseUrl: aiCompletions.baseUrl,
+                content: file.content ?? '',
+                hint: 'file_name',
+            });
+            if (suggestion) setEditName(suggestion);
+        } finally {
+            setIsAiLoading(false);
+            $input.current?.focus();
+        }
     };
 
     const isConfirming = deleteConfirmId === file.id;
@@ -114,15 +140,38 @@ const FileTab = ({
             <LangIcon language={file.language} />
 
             {isEditing ? (
-                <input
-                    ref={$input}
-                    value={editName}
-                    onChange={e => setEditName(e.target.value)}
-                    onBlur={commitRename}
-                    onKeyDown={handleKeyDown}
-                    onClick={e => e.stopPropagation()}
-                    className='min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none'
-                />
+                <>
+                    <input
+                        ref={$input}
+                        value={editName}
+                        onChange={e => setEditName(e.target.value)}
+                        onBlur={commitRename}
+                        onKeyDown={handleKeyDown}
+                        onClick={e => e.stopPropagation()}
+                        className='min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none'
+                    />
+                    {aiCompletions?.enabled && (
+                        <TooltipProvider delay={1500}>
+                            <Tooltip>
+                                <TooltipTrigger
+                                    onClick={handleAiSuggestName}
+                                    onDoubleClick={e => e.stopPropagation()}
+                                    className='ml-0.5 shrink-0 rounded p-0.5 text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40'
+                                    disabled={isAiLoading}
+                                >
+                                    {isAiLoading ? (
+                                        <Loader2 className='size-3 animate-spin' />
+                                    ) : (
+                                        <Wand2 className='size-3' />
+                                    )}
+                                </TooltipTrigger>
+                                <TooltipContent side='bottom' align='end'>
+                                    {t('editor.tab_bar.ai_suggest_name')}
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    )}
+                </>
             ) : (
                 <TooltipProvider delay={1500}>
                     <Tooltip>
@@ -227,6 +276,7 @@ const TabStrip = ({
     onDeleteConfirm,
     getTabGradient,
     onReorderFiles,
+    aiCompletions,
 }) => {
     const { t } = useTranslation();
     const $scroll = useRef(null);
@@ -347,6 +397,7 @@ const TabStrip = ({
                         onDragOver={!isReadonly ? handleDragOver : undefined}
                         onDrop={!isReadonly ? handleDrop : undefined}
                         onDragEnd={!isReadonly ? handleDragEnd : undefined}
+                        aiCompletions={aiCompletions}
                     />
                 ))}
             </div>
@@ -407,6 +458,7 @@ export const TabBar = ({
 }) => {
     const { t } = useTranslation();
     const { isDark } = useTheme();
+    const [aiCompletions] = useSettings('aiCompletions');
     const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
     const getTabGradient = fileId => {
@@ -446,6 +498,7 @@ export const TabBar = ({
                 onDeleteConfirm={handleDeleteConfirm}
                 getTabGradient={getTabGradient}
                 onReorderFiles={onReorderFiles}
+                aiCompletions={aiCompletions}
             />
             {!isReadonly && (
                 <TooltipProvider delay={1500}>

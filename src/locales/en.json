@@ -393,7 +393,9 @@
             "visibility_private": "Private",
             "visibility_private_desc": "Only you can access this bin",
             "share_disabled": "Sharing is disabled for private bins",
-            "edit_title": "Edit title"
+            "edit_title": "Edit title",
+            "ai_suggest_title": "Suggest title with AI",
+            "ai_suggest_error": "AI suggestion failed"
         },
         "embed_dialog": {
             "trigger": "Embed",
@@ -419,7 +421,8 @@
             "delete_file": "delete",
             "confirm_delete": "confirm",
             "share": "Share",
-            "copied": "Copied!"
+            "copied": "Copied!",
+            "ai_suggest_name": "Suggest file name with AI"
         },
         "status_bar": {
             "ln": "Ln",

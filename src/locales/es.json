@@ -393,7 +393,9 @@
             "visibility_private": "Privado",
             "visibility_private_desc": "Solo tú puedes acceder a este bin",
             "share_disabled": "Compartir está desactivado para bins privados",
-            "edit_title": "Editar título"
+            "edit_title": "Editar título",
+            "ai_suggest_title": "Sugerir título con IA",
+            "ai_suggest_error": "La sugerencia de IA falló"
         },
         "embed_dialog": {
             "trigger": "Embed",
@@ -419,7 +421,8 @@
             "delete_file": "eliminar",
             "confirm_delete": "confirmar",
             "share": "Compartir",
-            "copied": "¡Copiado!"
+            "copied": "¡Copiado!",
+            "ai_suggest_name": "Sugerir nombre con IA"
         },
         "status_bar": {
             "ln": "Lín",
