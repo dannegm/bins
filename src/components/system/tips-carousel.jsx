@@ -5,8 +5,124 @@ import { ChevronLeft, ChevronRight, RefreshCw, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { TIPS } from '@/constants/tips';
 import { Checkbox } from '@/ui/checkbox';
+import { Kbd, KbdGroup } from '@/ui/kbd';
 import { useSettings } from '@/hooks/use-settings';
+import { getLanguage } from '@/constants/languages';
 import { cn } from '@/helpers/utils';
+
+const isMac = typeof navigator !== 'undefined' && /mac/i.test(navigator.userAgent);
+
+const KEY_LABELS = { mod: isMac ? '⌘' : 'Ctrl', shift: isMac ? '⇧' : 'Shift', alt: isMac ? '⌥' : 'Alt', ctrl: 'Ctrl', meta: '⌘' };
+const formatKey = k => KEY_LABELS[k] ?? k.toUpperCase();
+
+const KBD_CLASS = 'bg-(--tip-color-light)/15 dark:bg-(--tip-color-dark)/15 text-(--tip-color-light) dark:text-(--tip-color-dark) border-(--tip-color-light)/30 dark:border-(--tip-color-dark)/30';
+
+const RULES = [
+    {
+        pattern: /\*\*(.+?)\*\*/,
+        render: (match, i) => <strong key={i}>{match[1]}</strong>,
+    },
+    {
+        pattern: /\*(.+?)\*|_(.+?)_/,
+        render: (match, i) => <em key={i}>{match[1] ?? match[2]}</em>,
+    },
+    {
+        pattern: /\{\{icon:([a-z0-9-]+)\}\}/,
+        render: (match, i) => (
+            <span key={i} className='inline-flex align-middle mx-0.5 [&>svg]:size-3'>
+                <DynamicIcon name={match[1]} />
+            </span>
+        ),
+    },
+    {
+        pattern: /\{\{kbd:([^}]+)\}\}/,
+        render: (match, i) => (
+            <Kbd key={i} className={cn('mx-0.5 align-middle', KBD_CLASS)}>
+                {match[1]}
+            </Kbd>
+        ),
+    },
+    {
+        pattern: /\{\{shortcut:([a-z_]+)\}\}/,
+        render: (match, i, ctx) => {
+            const binding = ctx?.appKeybindings?.[match[1]] ?? match[1];
+            const keys = binding.split('+').map(formatKey);
+            return (
+                <KbdGroup key={i} className='mx-0.5 align-middle'>
+                    {keys.map((k, j) => <Kbd key={j} className={KBD_CLASS}>{k}</Kbd>)}
+                </KbdGroup>
+            );
+        },
+    },
+    {
+        pattern: /\{\{color:([^}]+)\}\}/,
+        render: (match, i) => (
+            <span
+                key={i}
+                className='inline-block size-2.5 rounded-full mx-0.5 align-middle bg-(--swatch)'
+                style={{ '--swatch': match[1] }}
+            />
+        ),
+    },
+    {
+        pattern: /\{\{lang:([a-z0-9]+)\}\}/,
+        render: (match, i) => {
+            const lang = getLanguage(match[1]);
+            if (lang.icon)
+                return <i key={i} className={cn(lang.icon, 'colored mx-0.5 align-middle text-sm leading-none')} style={{ color: lang.color }} />;
+            return <span key={i} className='inline-block size-2 rounded-full mx-0.5 align-middle bg-(--dot)' style={{ '--dot': lang.color }} />;
+        },
+    },
+    {
+        pattern: /\{\{link:([^|]+)\|([^}]+)\}\}/,
+        render: (match, i) => (
+            <a
+                key={i}
+                href={match[2]}
+                className='underline decoration-dotted underline-offset-2 transition-opacity hover:opacity-70 text-(--tip-color-light) dark:text-(--tip-color-dark)'
+            >
+                {match[1]}
+            </a>
+        ),
+    },
+];
+
+const parseInline = text => {
+    const parts = [];
+    let remaining = text;
+
+    while (remaining.length > 0) {
+        let earliest = null;
+        let matchedRule = null;
+
+        for (const rule of RULES) {
+            const match = rule.pattern.exec(remaining);
+            if (match && (!earliest || match.index < earliest.index)) {
+                earliest = match;
+                matchedRule = rule;
+            }
+        }
+
+        if (!earliest) {
+            parts.push({ type: 'text', content: remaining });
+            break;
+        }
+
+        if (earliest.index > 0) parts.push({ type: 'text', content: remaining.slice(0, earliest.index) });
+        parts.push({ type: 'match', rule: matchedRule, match: earliest });
+        remaining = remaining.slice(earliest.index + earliest[0].length);
+    }
+
+    return parts;
+};
+
+const RichText = ({ text, className, context }) => (
+    <span className={className}>
+        {parseInline(text).map((part, i) =>
+            part.type === 'text' ? part.content : part.rule.render(part.match, i, context),
+        )}
+    </span>
+);
 
 const TIPS_PER_SESSION = 5;
 const INTERVAL = 10000;
@@ -15,13 +131,15 @@ const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
 
 const pickTips = (exclude = []) => {
     if (TIPS.length <= TIPS_PER_SESSION) return shuffle(TIPS);
-    const pool = TIPS.filter(t => !exclude.includes(t));
+    const excludeIds = new Set(exclude.map(t => t.id));
+    const pool = TIPS.filter(t => !excludeIds.has(t.id));
     return shuffle(pool.length >= TIPS_PER_SESSION ? pool : TIPS).slice(0, TIPS_PER_SESSION);
 };
 
 export const TipsCarousel = ({ onClose }) => {
     const { t } = useTranslation();
     const [tipsEnabled, setTipsEnabled] = useSettings('tipsEnabled');
+    const [appKeybindings] = useSettings('appKeybindings');
     const [tips, setTips] = useState(() => pickTips());
     const [active, setActive] = useState(0);
     const [epoch, setEpoch] = useState(0);
@@ -89,12 +207,16 @@ export const TipsCarousel = ({ onClose }) => {
                         <DynamicIcon name={tip.icon} />
                     </div>
                     <div className='flex flex-col gap-0.5 sm:gap-1 pr-4'>
-                        <span className='text-xs font-semibold sm:text-sm text-(--tip-color-light) dark:text-(--tip-color-dark)'>
-                            {tip.title}
-                        </span>
-                        <span className='text-xs sm:text-sm text-(--tip-color-light) dark:text-(--tip-color-dark)'>
-                            {tip.body}
-                        </span>
+                        <RichText
+                            text={tip.title}
+                            className='text-xs font-semibold sm:text-sm text-(--tip-color-light) dark:text-(--tip-color-dark)'
+                            context={{ appKeybindings }}
+                        />
+                        <RichText
+                            text={tip.body}
+                            className='text-xs sm:text-sm text-(--tip-color-light) dark:text-(--tip-color-dark)'
+                            context={{ appKeybindings }}
+                        />
                     </div>
                 </motion.div>
             </AnimatePresence>
