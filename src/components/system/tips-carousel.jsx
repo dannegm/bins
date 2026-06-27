@@ -144,10 +144,28 @@ const COLORS = [
 
 const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
 
+const IMPRESSIONS_KEY = 'bins:tip-impressions';
+
+const readImpressions = () => {
+    try { return JSON.parse(localStorage.getItem(IMPRESSIONS_KEY) || '{}'); } catch { return {}; }
+};
+
+const bumpImpressions = tips => {
+    try {
+        const counts = readImpressions();
+        tips.forEach(t => { counts[t.id] = (counts[t.id] ?? 0) + 1; });
+        localStorage.setItem(IMPRESSIONS_KEY, JSON.stringify(counts));
+    } catch {}
+};
+
 const pickTips = (exclude = []) => {
+    const impressions = readImpressions();
     const excludeIds = new Set(exclude.map(t => t.id));
     const pool = TIPS.filter(t => !excludeIds.has(t.id));
-    const selected = shuffle(pool.length >= TIPS_PER_SESSION ? pool : TIPS).slice(0, TIPS_PER_SESSION);
+    const source = pool.length >= TIPS_PER_SESSION ? pool : TIPS;
+    const scored = source.map(tip => ({ tip, score: Math.random() / ((impressions[tip.id] ?? 0) + 1) }));
+    scored.sort((a, b) => b.score - a.score);
+    const selected = scored.slice(0, TIPS_PER_SESSION).map(s => s.tip);
     const colors = shuffle(COLORS).slice(0, selected.length);
     return selected.map((tip, i) => ({ ...tip, color: colors[i] }));
 };
@@ -164,6 +182,8 @@ export const TipsCarousel = ({ onClose }) => {
     const tip = tips[active];
     const tipTitle = t(`editor.tips.${tip.id}.title`);
     const tipBody = t(`editor.tips.${tip.id}.body`);
+
+    useEffect(() => { bumpImpressions(tips); }, [tips]);
 
     useEffect(() => {
         const id = setInterval(() => setActive(i => (i + 1) % tips.length), INTERVAL);
