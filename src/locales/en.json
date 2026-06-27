@@ -449,6 +449,21 @@
             "title": "Tips",
             "show_again": "Show tips when opening the editor"
         },
+        "search_widget": {
+            "title": "Find",
+            "placeholder": "Find…",
+            "replace_placeholder": "Replace…",
+            "no_results": "No results",
+            "toggle_replace": "Toggle Replace",
+            "prev_match": "Previous Match (Shift+Enter)",
+            "next_match": "Next Match (Enter)",
+            "replace": "Replace",
+            "replace_all": "Replace All",
+            "match_case": "Match Case",
+            "whole_word": "Match Whole Word",
+            "use_regex": "Use Regular Expression",
+            "close": "Close (Escape)"
+        },
         "tips": {
             "instant-collaboration": {
                 "title": "Instant collaboration",
@@ -541,6 +556,18 @@
             "explore-settings": {
                 "title": "Make it yours",
                 "body": "Press {{shortcut:settings}} to open Settings — set your display name, pick your colors, choose a theme, and more."
+            },
+            "move-search-widget": {
+                "title": "Drag the Finder",
+                "body": "Find panel in the way? Drag it by the title bar to move it wherever it's most comfortable."
+            },
+            "no-account-required": {
+                "title": "No account needed",
+                "body": "Bins is fully anonymous — no sign-up, no login, just open the app and start creating."
+            },
+            "right-to-be-forgotten": {
+                "title": "Right to forget",
+                "body": "Want a clean slate? Open {{shortcut:settings}} and hit **Forget me** to permanently delete your profile and all your bins."
             }
         },
         "peer_joined": "joined the session",

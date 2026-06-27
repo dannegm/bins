@@ -50,6 +50,7 @@ export const MonacoEditor = ({
     onCursorChange,
     onSelectionChange,
     onEditorReady,
+    onSearch,
 }) => {
     useAiCompletions();
 
@@ -118,6 +119,7 @@ export const MonacoEditor = ({
         onEditorReady?.(editor);
 
         editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => onSave?.());
+        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyF, () => onSearch?.());
 
         editor.onDidChangeCursorSelection(e => {
             const pos = e.selection.getPosition();

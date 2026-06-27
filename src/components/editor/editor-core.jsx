@@ -8,6 +8,7 @@ import { EditorSkeleton } from '@/components/editor/editor-skeleton';
 import { StatusBar } from '@/components/editor/status-bar';
 import { FileDropOverlay } from '@/components/editor/file-drop-overlay';
 import { TipsCarousel } from '@/components/system/tips-carousel';
+import { SearchWidget } from '@/components/system/search-widget';
 import { useDefaultLayout } from 'react-resizable-panels';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/ui/resizable';
 import { Drawer, DrawerContent } from '@/ui/drawer';
@@ -49,6 +50,8 @@ export const EditorCore = ({
     const $saveTimer = useRef(null);
     const $hasLocalEdits = useRef(false);
     const [isDragging, setIsDragging] = useState(false);
+    const [showSearch, setShowSearch] = useState(false);
+    const $editor = useRef(null);
 
     const panelStorage = useMemo(
         () => ({
@@ -180,6 +183,8 @@ export const EditorCore = ({
                         onSave={() => scheduleSave(yContext.yText.toString())}
                         onCursorChange={handleCursorChange}
                         onSelectionChange={onSelectionChange}
+                        onEditorReady={editor => { $editor.current = editor; }}
+                        onSearch={() => setShowSearch(true)}
                     />
                 </ErrorBoundary>
             ) : (
@@ -262,6 +267,14 @@ export const EditorCore = ({
                 <AnimatePresence>
                     {showTips && (
                         <TipsCarousel onClose={() => setShowTips(false)} />
+                    )}
+                </AnimatePresence>
+                <AnimatePresence>
+                    {showSearch && (
+                        <SearchWidget
+                            editorRef={$editor}
+                            onClose={() => setShowSearch(false)}
+                        />
                     )}
                 </AnimatePresence>
             </div>

@@ -449,6 +449,21 @@
             "title": "Consejos",
             "show_again": "Mostrar al abrir el editor"
         },
+        "search_widget": {
+            "title": "Buscar",
+            "placeholder": "Buscar…",
+            "replace_placeholder": "Reemplazar…",
+            "no_results": "Sin resultados",
+            "toggle_replace": "Activar reemplazo",
+            "prev_match": "Resultado anterior (Shift+Enter)",
+            "next_match": "Resultado siguiente (Enter)",
+            "replace": "Reemplazar",
+            "replace_all": "Reemplazar todo",
+            "match_case": "Distinguir mayúsculas",
+            "whole_word": "Solo palabras completas",
+            "use_regex": "Usar expresión regular",
+            "close": "Cerrar (Escape)"
+        },
         "tips": {
             "instant-collaboration": {
                 "title": "Colaboración instantánea",
@@ -541,6 +556,18 @@
             "explore-settings": {
                 "title": "Hazlo tuyo",
                 "body": "Presiona {{shortcut:settings}} para abrir Configuración — define tu nombre, elige tus colores, cambia el tema y mucho más."
+            },
+            "move-search-widget": {
+                "title": "Mueve el buscador",
+                "body": "¿Te estorba el buscador? Arrástralo desde su título y ponlo donde mejor te quede."
+            },
+            "no-account-required": {
+                "title": "Sin registro",
+                "body": "Bins es completamente anónimo — sin registro, sin contraseña, solo abre la app y empieza a crear."
+            },
+            "right-to-be-forgotten": {
+                "title": "Derecho al olvido",
+                "body": "¿Quieres borrarte? Abre {{shortcut:settings}} y pulsa **Olvídame** para eliminar permanentemente tu perfil y todos tus bins."
             }
         },
         "peer_joined": "se unió a la sesión",
