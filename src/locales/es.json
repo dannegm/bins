@@ -440,6 +440,40 @@
             "title": "Consejos",
             "show_again": "Mostrar al abrir el editor"
         },
+        "tips": {
+            "instant-collaboration": {
+                "title": "Colaboración instantánea",
+                "body": "Comparte la URL — cualquiera con el enlace puede editar en tiempo real, sin registro."
+            },
+            "multiple-files": {
+                "title": "Múltiples archivos",
+                "body": "Usa el botón {{icon:plus}} de la barra de pestañas para añadir archivos. Cada uno puede tener su propio lenguaje."
+            },
+            "run-your-code": {
+                "title": "Ejecuta tu código",
+                "body": "JS, HTML, Markdown y más tienen runners en vivo. Haz clic en el botón de play en la barra de estado."
+            },
+            "command-palette": {
+                "title": "Paleta de comandos",
+                "body": "Presiona {{shortcut:command_palette}} para abrir la paleta de comandos y acceder a todas las acciones rápidamente."
+            },
+            "fork-any-bin": {
+                "title": "Fork de cualquier bin",
+                "body": "¿Encontraste algo interesante? Dale a Fork para obtener tu propia copia editable al instante."
+            },
+            "ai-completions": {
+                "title": "Completado con IA",
+                "body": "Conecta tu propia clave de API en Configuración para activar el autocompletado con IA en el editor."
+            },
+            "embed-anywhere": {
+                "title": "Incrusta en cualquier lugar",
+                "body": "Cada bin tiene una URL de embed — colócala en cualquier página para una vista de solo lectura con resaltado de sintaxis."
+            },
+            "your-keys-your-data": {
+                "title": "Tus claves, tus datos",
+                "body": "Las claves de API nunca salen de tu dispositivo. Todo se almacena en el localStorage de tu navegador."
+            }
+        },
         "peer_joined": "se unió a la sesión",
         "peer_left": "abandonó la sesión",
         "drop_overlay": {

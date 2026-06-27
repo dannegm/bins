@@ -127,13 +127,21 @@ const RichText = ({ text, className, context }) => (
 const TIPS_PER_SESSION = 5;
 const INTERVAL = 10000;
 
+const COLORS = [
+    '#6366f1', '#0ea5e9', '#10b981', '#f59e0b', '#ec4899',
+    '#8b5cf6', '#14b8a6', '#f97316', '#ef4444', '#84cc16',
+    '#06b6d4', '#a855f7', '#f43f5e', '#22c55e', '#eab308',
+    '#3b82f6', '#d946ef', '#fb923c', '#34d399', '#818cf8',
+];
+
 const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
 
 const pickTips = (exclude = []) => {
-    if (TIPS.length <= TIPS_PER_SESSION) return shuffle(TIPS);
     const excludeIds = new Set(exclude.map(t => t.id));
     const pool = TIPS.filter(t => !excludeIds.has(t.id));
-    return shuffle(pool.length >= TIPS_PER_SESSION ? pool : TIPS).slice(0, TIPS_PER_SESSION);
+    const selected = shuffle(pool.length >= TIPS_PER_SESSION ? pool : TIPS).slice(0, TIPS_PER_SESSION);
+    const colors = shuffle(COLORS).slice(0, selected.length);
+    return selected.map((tip, i) => ({ ...tip, color: colors[i] }));
 };
 
 export const TipsCarousel = ({ onClose }) => {
@@ -146,6 +154,8 @@ export const TipsCarousel = ({ onClose }) => {
 
     const isWidget = !!onClose;
     const tip = tips[active];
+    const tipTitle = t(`editor.tips.${tip.id}.title`);
+    const tipBody = t(`editor.tips.${tip.id}.body`);
 
     useEffect(() => {
         const id = setInterval(() => setActive(i => (i + 1) % tips.length), INTERVAL);
@@ -208,12 +218,12 @@ export const TipsCarousel = ({ onClose }) => {
                     </div>
                     <div className='flex flex-col gap-0.5 sm:gap-1 pr-4'>
                         <RichText
-                            text={tip.title}
+                            text={tipTitle}
                             className='text-xs font-semibold sm:text-sm text-(--tip-color-light) dark:text-(--tip-color-dark)'
                             context={{ appKeybindings }}
                         />
                         <RichText
-                            text={tip.body}
+                            text={tipBody}
                             className='text-xs sm:text-sm text-(--tip-color-light) dark:text-(--tip-color-dark)'
                             context={{ appKeybindings }}
                         />
