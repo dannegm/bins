@@ -244,7 +244,8 @@
         "save": "Guardar",
         "nav": {
             "bins": "Bins",
-            "users": "Usuarios"
+            "users": "Usuarios",
+            "tips": "Consejos"
         },
         "stats": {
             "total_bins": "bins totales",
@@ -282,6 +283,14 @@
             "filter_empty": "Vacíos",
             "badge_empty": "Vacío",
             "badge_yours": "tuyo"
+        },
+        "tips": {
+            "search_placeholder": "Buscar consejos…",
+            "empty": "No se encontraron consejos.",
+            "col_icon": "Icono",
+            "col_id": "ID",
+            "col_title": "Título",
+            "col_body": "Descripción"
         },
         "users": {
             "search_placeholder": "Buscar por nombre o ID…",

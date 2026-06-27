@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
-import { ShieldCheck, LayoutGrid, Users } from 'lucide-react';
+import { ShieldCheck, LayoutGrid, Lightbulb, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { useAdmin } from '@/hooks/use-admin';
+import { TIPS } from '@/constants/tips';
 import { supabase } from '@/services/supabase';
 import { Layout } from '@/components/layout/layout';
 import { Footer } from '@/components/layout/footer';
@@ -81,6 +82,12 @@ export const AdminLayout = ({ children }) => {
                             icon={LayoutGrid}
                             label={t('admin.nav.bins')}
                             count={binsCount}
+                        />
+                        <NavTab
+                            to='/admin/tips'
+                            icon={Lightbulb}
+                            label={t('admin.nav.tips')}
+                            count={TIPS.length}
                         />
                     </div>
                 </div>

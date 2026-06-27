@@ -244,7 +244,8 @@
         "save": "Save",
         "nav": {
             "bins": "Bins",
-            "users": "Users"
+            "users": "Users",
+            "tips": "Tips"
         },
         "stats": {
             "total_bins": "total bins",
@@ -282,6 +283,14 @@
             "filter_empty": "Empty",
             "badge_empty": "Empty",
             "badge_yours": "yours"
+        },
+        "tips": {
+            "search_placeholder": "Search tips…",
+            "empty": "No tips found.",
+            "col_icon": "Icon",
+            "col_id": "ID",
+            "col_title": "Title",
+            "col_body": "Body"
         },
         "users": {
             "search_placeholder": "Search by name or ID…",

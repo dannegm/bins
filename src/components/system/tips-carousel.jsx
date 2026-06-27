@@ -27,6 +27,14 @@ const RULES = [
         render: (match, i) => <em key={i}>{match[1] ?? match[2]}</em>,
     },
     {
+        pattern: /`([^`]+)`/,
+        render: (match, i) => (
+            <code key={i} className='rounded border border-border bg-surface px-1 py-0.5 font-mono text-[0.8em] text-foreground'>
+                {match[1]}
+            </code>
+        ),
+    },
+    {
         pattern: /\{\{icon:([a-z0-9-]+)\}\}/,
         render: (match, i) => (
             <span key={i} className='inline-flex align-middle mx-0.5 [&>svg]:size-3'>
@@ -116,7 +124,7 @@ const parseInline = text => {
     return parts;
 };
 
-const RichText = ({ text, className, context }) => (
+export const RichText = ({ text, className, context }) => (
     <span className={className}>
         {parseInline(text).map((part, i) =>
             part.type === 'text' ? part.content : part.rule.render(part.match, i, context),
