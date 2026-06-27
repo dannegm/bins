@@ -14,14 +14,6 @@
 
 ## 🔵 UX y Producto
 
-### 8. El embed no tiene link de regreso al bin original
-
-La vista `/embed/:id` no tiene forma de llegar al editor original, reduciendo la viralidad.
-
-**Mejora:** Badge "Open in Bins ↗" en la esquina, ocultable con `?badge=0`.
-
----
-
 ### 9. Sin historial de versiones navegable
 
 Yjs guarda la historia en `Y.Doc` pero no hay UI para navegarla.
@@ -37,34 +29,6 @@ Yjs guarda la historia en `Y.Doc` pero no hay UI para navegarla.
 `CLAUDE.md` y `PLAN.md` prometen 10 archivos en `/docs/`. Ninguno tiene contenido.
 
 **Prioridad:** `docs/architecture.md`, `docs/runners.md`, `docs/sync.md`.
-
----
-
-## 🌐 Internacionalización
-
-### 11. Monaco i18n no sigue el idioma de la app
-
-Si el usuario cambia el idioma en Settings, Monaco sigue en el idioma del bundle hasta el siguiente reload.
-
----
-
----
-
-## 🔵 Compartir
-
-### 12. Embed avanzado
-
-El embed actual es estático. No permite seleccionar qué archivo mostrar, qué tema usar, ni activar el runner.
-
-**Mejora:** Soporte para query params: `?file=index.js&theme=dracula&lines=10-30&runner=1`. Permite embeds quirúrgicos en blogs, documentación y artículos técnicos.
-
----
-
-### 13. Badge "Open in Bins" en el embed
-
-La vista `/embed/:id` no referencia el origen, eliminando toda viralidad.
-
-**Mejora:** Badge fijo en la esquina con link al editor original. Ocultable con `?badge=0` para casos donde el autor no lo quiera.
 
 ---
 
@@ -99,10 +63,8 @@ Titular un bin o nombrar archivos es fricción innecesaria cuando el contenido y
 | Prioridad | Item                          | Esfuerzo |
 | --------- | ----------------------------- | -------- |
 | 🟡 Perf   | Monaco bundle optimizado (#6) | Medio    |
-| 🔵 UX     | Badge en embed (#8, #13)      | Muy bajo |
 | 🔵 UX     | Historial de versiones (#9)   | Alto     |
 | ⚪ Deuda  | Docs en /docs vacíos (#10)    | Medio    |
-| 🔵 UX     | Embed avanzado (#12)          | Medio    |
 | 🤖 AI     | Explain this (#14)            | Bajo     |
 | 🤖 AI     | AI rename (#16)               | Muy bajo |
 | 🤖 AI     | Generar bin desde prompt (#15)| Alto     |
