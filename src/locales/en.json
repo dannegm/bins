@@ -472,6 +472,34 @@
             "your-keys-your-data": {
                 "title": "Your keys, your data",
                 "body": "API keys never leave your device. Everything is stored in your browser's localStorage."
+            },
+            "drag-and-drop-files": {
+                "title": "Drop files in",
+                "body": "Drag any local file onto the editor to replace content, append it, or open it as a new tab."
+            },
+            "npm-packages": {
+                "title": "npm packages",
+                "body": "Open the {{icon:package-2}} Packages panel to search and install any npm package for the JS runner."
+            },
+            "rename-file-tab": {
+                "title": "Rename files",
+                "body": "Double-click any file tab to rename it — no menu needed."
+            },
+            "reorder-tabs": {
+                "title": "Reorder tabs",
+                "body": "Drag file tabs to rearrange them — drop them anywhere in the tab bar."
+            },
+            "download-zip": {
+                "title": "Download your bin",
+                "body": "Use the {{icon:download}} button in the header to download the current file or the full bin as a ZIP."
+            },
+            "bin-visibility": {
+                "title": "Control visibility",
+                "body": "Set your bin to {{icon:globe}} Public, {{icon:link}} Unlisted, or {{icon:eye-off}} Private from the header."
+            },
+            "format-code": {
+                "title": "Format your code",
+                "body": "Press {{shortcut:format_code}} to auto-format the current file using your Prettier settings."
             }
         },
         "peer_joined": "joined the session",

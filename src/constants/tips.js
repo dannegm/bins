@@ -7,4 +7,11 @@ export const TIPS = [
     { id: 'ai-completions', icon: 'bot' },
     { id: 'embed-anywhere', icon: 'link' },
     { id: 'your-keys-your-data', icon: 'shield' },
+    { id: 'drag-and-drop-files', icon: 'file-down' },
+    { id: 'npm-packages', icon: 'package-2' },
+    { id: 'rename-file-tab', icon: 'pencil-line' },
+    { id: 'reorder-tabs', icon: 'grip-horizontal' },
+    { id: 'download-zip', icon: 'archive' },
+    { id: 'bin-visibility', icon: 'eye' },
+    { id: 'format-code', icon: 'wand-sparkles' },
 ];

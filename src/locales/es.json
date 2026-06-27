@@ -472,6 +472,34 @@
             "your-keys-your-data": {
                 "title": "Tus claves, tus datos",
                 "body": "Las claves de API nunca salen de tu dispositivo. Todo se almacena en el localStorage de tu navegador."
+            },
+            "drag-and-drop-files": {
+                "title": "Arrastra archivos",
+                "body": "Arrastra cualquier archivo al editor para reemplazar el contenido, añadirlo al final o abrirlo en una nueva pestaña."
+            },
+            "npm-packages": {
+                "title": "Paquetes npm",
+                "body": "Abre el panel {{icon:package-2}} Paquetes para buscar e instalar cualquier paquete npm en el runner de JS."
+            },
+            "rename-file-tab": {
+                "title": "Renombra archivos",
+                "body": "Haz doble clic en cualquier pestaña para renombrarla directamente, sin menús."
+            },
+            "reorder-tabs": {
+                "title": "Reordena pestañas",
+                "body": "Arrastra las pestañas para reorganizarlas — suéltalas donde quieras en la barra."
+            },
+            "download-zip": {
+                "title": "Descarga tu bin",
+                "body": "Usa el botón {{icon:download}} del encabezado para descargar el archivo actual o el bin completo como ZIP."
+            },
+            "bin-visibility": {
+                "title": "Controla la visibilidad",
+                "body": "Cambia tu bin a {{icon:globe}} Público, {{icon:link}} Sin listar o {{icon:eye-off}} Privado desde el encabezado."
+            },
+            "format-code": {
+                "title": "Formatea tu código",
+                "body": "Presiona {{shortcut:format_code}} para formatear automáticamente el archivo con tu configuración de Prettier."
             }
         },
         "peer_joined": "se unió a la sesión",
