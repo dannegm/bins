@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Users, Check, Brain } from 'lucide-react';
+import { Users, Check, Brain, Lightbulb } from 'lucide-react';
 import { SmileyDead } from '@/ui/icons';
 import { parseToRgb } from 'polished';
 import { useTranslation } from 'react-i18next';
@@ -184,6 +184,25 @@ const NudgeButton = ({ t }) => {
     );
 };
 
+const TipsButton = ({ showTips, onToggle, t }) => (
+    <TooltipProvider>
+        <Tooltip>
+            <TooltipTrigger
+                onClick={onToggle}
+                className='flex items-center gap-1 rounded-full bg-yellow-500 px-2 py-0.5 text-yellow-950 transition-opacity hover:opacity-80'
+            >
+                <Lightbulb className='size-3.5' />
+                <span className='hidden sm:inline'>{t('editor.status_bar.tips')}</span>
+            </TooltipTrigger>
+            <TooltipContent side='top' sideOffset={8}>
+                {showTips
+                    ? t('editor.status_bar.tips_tooltip_hide')
+                    : t('editor.status_bar.tips_tooltip_show')}
+            </TooltipContent>
+        </Tooltip>
+    </TooltipProvider>
+);
+
 const PeerList = ({ peers }) => {
     const { isDark } = useTheme();
     const { emit } = useEvents();
@@ -293,6 +312,8 @@ export const StatusBar = ({
     saveStatus,
     syncStatus = 'connected',
     peers = [],
+    showTips = false,
+    onToggleTips,
     onLanguageChange,
 }) => {
     const fileSize = formatSize(new TextEncoder().encode(content).length);
@@ -339,6 +360,7 @@ export const StatusBar = ({
 
             <span className='flex-1' />
 
+            <TipsButton showTips={showTips} onToggle={onToggleTips} t={t} />
             <AiChip t={t} />
             <NudgeButton t={t} />
             {peers.length > 0 && <PeerList peers={peers} />}

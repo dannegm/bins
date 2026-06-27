@@ -7,6 +7,7 @@ import { ErrorBoundary } from '@/components/system/error-boundary';
 import { EditorSkeleton } from '@/components/editor/editor-skeleton';
 import { StatusBar } from '@/components/editor/status-bar';
 import { FileDropOverlay } from '@/components/editor/file-drop-overlay';
+import { TipsCarousel } from '@/components/system/tips-carousel';
 import { useDefaultLayout } from 'react-resizable-panels';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/ui/resizable';
 import { Drawer, DrawerContent } from '@/ui/drawer';
@@ -40,6 +41,7 @@ export const EditorCore = ({
 }) => {
     const { user } = useIdentity();
     const isMobile = useIsMobile();
+    const [showTips, setShowTips] = useState(() => settings.get('tipsEnabled', true));
     const [saveStatus, setSaveStatus] = useState('idle');
     const [cursor, setCursor] = useState({ lineNumber: 1, column: 1 });
     const [lineCount, setLineCount] = useState(1);
@@ -257,6 +259,11 @@ export const EditorCore = ({
                         />
                     )}
                 </AnimatePresence>
+                <AnimatePresence>
+                    {showTips && (
+                        <TipsCarousel onClose={() => setShowTips(false)} />
+                    )}
+                </AnimatePresence>
             </div>
             <StatusBar
                 language={file.language}
@@ -267,6 +274,8 @@ export const EditorCore = ({
                 saveStatus={saveStatus}
                 syncStatus={channelStatus}
                 peers={binPeers}
+                showTips={showTips}
+                onToggleTips={() => setShowTips(v => !v)}
                 onLanguageChange={lang => onLanguageChange(file.id, lang)}
             />
         </div>

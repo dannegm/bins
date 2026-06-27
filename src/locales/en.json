@@ -431,7 +431,14 @@
             "saving": "Saving…",
             "saved": "Saved",
             "unsaved": "Unsaved changes",
-            "reconnecting": "Reconnecting…"
+            "reconnecting": "Reconnecting…",
+            "tips": "Tips",
+            "tips_tooltip_show": "Show tips",
+            "tips_tooltip_hide": "Hide tips"
+        },
+        "tips_widget": {
+            "title": "Tips",
+            "show_again": "Show tips when opening the editor"
         },
         "peer_joined": "joined the session",
         "peer_left": "left the session",

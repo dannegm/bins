@@ -431,7 +431,14 @@
             "saving": "Guardando…",
             "saved": "Guardado",
             "unsaved": "Cambios sin guardar",
-            "reconnecting": "Reconectando…"
+            "reconnecting": "Reconectando…",
+            "tips": "Consejos",
+            "tips_tooltip_show": "Mostrar consejos",
+            "tips_tooltip_hide": "Ocultar consejos"
+        },
+        "tips_widget": {
+            "title": "Consejos",
+            "show_again": "Mostrar al abrir el editor"
         },
         "peer_joined": "se unió a la sesión",
         "peer_left": "abandonó la sesión",
