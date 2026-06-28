@@ -8,12 +8,9 @@ import { isAiEnabled } from '@/helpers/ai';
 import { fetchBinGeneration } from '@/services/ai-completions';
 import { createBinWithFiles } from '@/services/bins';
 
-const SUGGESTION_KEYS = [
-    'home.generate.suggestion_1',
-    'home.generate.suggestion_2',
-    'home.generate.suggestion_3',
-    'home.generate.suggestion_4',
-];
+const ALL_SUGGESTIONS = Array.from({ length: 35 }, (_, i) => `home.generate.suggestion_${i + 1}`);
+
+const pickRandom = (arr, n) => [...arr].sort(() => Math.random() - 0.5).slice(0, n);
 
 export const GenerateBin = () => {
     const { t } = useTranslation();
@@ -23,6 +20,7 @@ export const GenerateBin = () => {
     const [focused, setFocused] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
     const [error, setError] = useState(null);
+    const [suggestions] = useState(() => pickRandom(ALL_SUGGESTIONS, 3));
     const $abort = useRef(null);
     const $textarea = useRef(null);
 
@@ -127,7 +125,7 @@ export const GenerateBin = () => {
             </div>
             {error && <p className='text-sm text-destructive'>{error}</p>}
             <div className='flex flex-wrap gap-2'>
-                {SUGGESTION_KEYS.map(key => (
+                {suggestions.map(key => (
                     <button
                         key={key}
                         type='button'
