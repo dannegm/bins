@@ -4,7 +4,9 @@ import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import remarkDirective from 'remark-directive';
 import rehypeKatex from 'rehype-katex';
+import rehypeHighlight from 'rehype-highlight';
 import { visit } from 'unist-util-visit';
+import 'highlight.js/styles/atom-one-dark.css';
 import mermaid from 'mermaid';
 import 'katex/dist/katex.min.css';
 import { cn } from '@/helpers/utils';
@@ -121,8 +123,15 @@ const components = {
     },
 
     code: ({ children, className }) => {
-        if (className?.startsWith('language-')) {
-            return <code className={cn('font-mono text-sm', className)}>{children}</code>;
+        if (className?.includes('language-')) {
+            return (
+                <code
+                    className={cn('font-mono text-sm', className)}
+                    style={{ background: 'transparent', padding: 0 }}
+                >
+                    {children}
+                </code>
+            );
         }
         return (
             <code className='rounded bg-surface-raised px-1.5 py-0.5 font-mono text-xs text-accent'>
@@ -195,7 +204,7 @@ export const MarkdownRunner = ({ content }) => (
     <div className='px-4 py-4 sm:px-6 sm:py-6 text-sm'>
         <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkMath, remarkDirective, remarkCallout]}
-            rehypePlugins={[rehypeKatex]}
+            rehypePlugins={[rehypeKatex, [rehypeHighlight, { ignoreMissing: true }]]}
             components={components}
         >
             {content ?? ''}
