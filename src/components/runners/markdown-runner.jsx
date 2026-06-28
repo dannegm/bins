@@ -6,7 +6,7 @@ import remarkDirective from 'remark-directive';
 import rehypeKatex from 'rehype-katex';
 import rehypeHighlight from 'rehype-highlight';
 import { visit } from 'unist-util-visit';
-import 'highlight.js/styles/atom-one-dark.css';
+import '@/css/hljs-theme.css';
 import mermaid from 'mermaid';
 import 'katex/dist/katex.min.css';
 import { cn } from '@/helpers/utils';
@@ -114,6 +114,15 @@ const components = {
         const lang = code?.props?.className?.replace('language-', '');
         if (lang === 'mermaid') {
             return <MermaidBlock code={String(code.props.children).trim()} />;
+        }
+        if (!code?.props?.className) {
+            return (
+                <pre className='mb-4 overflow-x-auto rounded-lg bg-surface-raised p-4 text-sm font-mono text-foreground'>
+                    <code style={{ background: 'transparent', padding: 0 }}>
+                        {code?.props?.children}
+                    </code>
+                </pre>
+            );
         }
         return (
             <pre className='mb-4 overflow-x-auto rounded-lg bg-surface-raised p-4 text-sm font-mono text-foreground'>

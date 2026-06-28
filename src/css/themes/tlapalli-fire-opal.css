@@ -40,6 +40,17 @@
     --overlay: oklch(0 0 0 / 30%);
     --brand: #ff8599;
     --brand-foreground: #0c0707;
+    --hljs-comment: #6d4a4a;
+    --hljs-keyword: #c94d5a;
+    --hljs-string: #ffb3b8;
+    --hljs-number: #ff9199;
+    --hljs-function: #df4c4c;
+    --hljs-class: #ff7070;
+    --hljs-attr: #df4c4c;
+    --hljs-tag: #804a4a;
+    --hljs-builtin: #ff7070;
+    --hljs-variable: #ea8e97;
+    --hljs-meta: #7f3d3d;
 
     background-color: var(--background);
 }

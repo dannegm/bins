@@ -220,10 +220,23 @@ Write `src/css/themes/{slug}.css`:
     --overlay: {value};
     --brand: {value};
     --brand-foreground: {value};
+    --hljs-comment: {comment color from tokenColors};
+    --hljs-keyword: {keyword color from tokenColors};
+    --hljs-string: {string color from tokenColors};
+    --hljs-number: {constant.numeric color from tokenColors};
+    --hljs-function: {entity.name.function color from tokenColors};
+    --hljs-class: {entity.name.class / support.class color};
+    --hljs-attr: {entity.other.attribute-name color};
+    --hljs-tag: {entity.name.tag color};
+    --hljs-builtin: {support.function / support.class color};
+    --hljs-variable: {variable color};
+    --hljs-meta: {meta / preprocessor / markup.heading color};
 
     background-color: var(--background);
 }
 ```
+
+**`--hljs-*` tokens** power syntax highlighting in Markdown code blocks (via `src/css/hljs-theme.css`). Derive each value from the `tokenColors` array mapped in Step 3 — use the same colors chosen for the Monaco rules. For `inherit: true` themes (light/dark shadcn), use the VS Code default token colors: dark=(`#569cd6` keyword, `#ce9178` string, `#6a9955` comment, `#b5cea8` number, `#dcdcaa` function, `#4ec9b0` class, `#9cdcfe` attr, `#c586c0` meta), light=(`#0000ff`, `#a31515`, `#008000`, `#098658`, `#795e26`, `#267f99`, `#001080`, `#af00db`).
 
 ## Step 6 — Register the CSS import
 

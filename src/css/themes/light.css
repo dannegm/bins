@@ -41,6 +41,17 @@
     --overlay: oklch(0 0 0 / 25%);
     --brand: #4f46e5;
     --brand-foreground: #ffffff;
+    --hljs-comment: #008000;
+    --hljs-keyword: #0000ff;
+    --hljs-string: #a31515;
+    --hljs-number: #098658;
+    --hljs-function: #795e26;
+    --hljs-class: #267f99;
+    --hljs-attr: #001080;
+    --hljs-tag: #800000;
+    --hljs-builtin: #795e26;
+    --hljs-variable: #001080;
+    --hljs-meta: #af00db;
 
     background-color: var(--background);
 }
