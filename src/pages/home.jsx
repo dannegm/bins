@@ -3,6 +3,7 @@ import { Layout } from '@/components/layout/layout';
 import { Footer } from '@/components/layout/footer';
 import { TipsCarousel } from '@/components/system/tips-carousel';
 import { HomeHeader } from '@/components/home/home-header';
+import { GenerateBin } from '@/components/home/generate-bin';
 import { MyBins } from '@/components/home/my-bins';
 import { SharedBins } from '@/components/home/shared-bins';
 import { useSettings } from '@/hooks/use-settings';
@@ -18,6 +19,7 @@ export const HomePage = () => {
                 <div className='flex flex-1 flex-col overflow-y-auto'>
                     <div className='flex flex-col gap-8 p-8'>
                         <HomeHeader search={search} onSearchChange={setSearch} />
+                        <GenerateBin />
                         <TipsCarousel />
                         <MyBins view={myBinsView} onViewChange={setMyBinsView} search={search} />
                         <SharedBins

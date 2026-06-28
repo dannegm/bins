@@ -1,6 +1,7 @@
 const MAX_TOKENS = 150;
 const MAX_NAME_TOKENS = 30;
 const MAX_EXPLAIN_TOKENS = 500;
+const MAX_GENERATE_TOKENS = 3000;
 const MAX_PREFIX = 3000;
 const MAX_SUFFIX = 500;
 const MAX_NAME_CONTENT = 2000;
@@ -135,4 +136,18 @@ export const fetchNameSuggestion = ({ provider, model, apiKey, baseUrl, content,
 export const fetchExplanation = ({ provider, model, apiKey, baseUrl, content, language, signal }) => {
     const { system, user } = buildExplanationPrompt(content, language);
     return callProvider({ provider, model, apiKey, baseUrl, system, user, maxTokens: MAX_EXPLAIN_TOKENS, signal });
+};
+
+const buildGenerationPrompt = prompt => ({
+    system: 'You are a code generator. Given a description, generate a complete project with appropriate files. Return a JSON object with this exact structure: {"title":"short project title","files":[{"name":"filename.ext","language":"languageId","content":"file content"}]}. Use at most 5 files. Keep each file focused and complete. Language IDs: javascript, typescript, html, css, markdown, python, rust, go, bash, json, yaml, sql. Return ONLY valid JSON — no markdown fences, no explanation, no extra text.',
+    user: `Description: ${prompt}\n\nJSON:`,
+});
+
+export const fetchBinGeneration = async ({ provider, model, apiKey, baseUrl, prompt, signal }) => {
+    const { system, user } = buildGenerationPrompt(prompt);
+    const raw = await callProvider({ provider, model, apiKey, baseUrl, system, user, maxTokens: MAX_GENERATE_TOKENS, signal });
+    const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+    const result = JSON.parse(cleaned);
+    if (!result.title || !Array.isArray(result.files) || result.files.length === 0) throw new Error('Invalid response');
+    return result;
 };

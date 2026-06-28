@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Info } from 'lucide-react';
 import { useSettings } from '@/hooks/use-settings';
 import { Switch } from '@/ui/switch';
 import { Input } from '@/ui/input';
@@ -46,6 +46,13 @@ const PROVIDERS = [
     },
 ];
 
+const InfoCallout = ({ children }) => (
+    <div className='flex gap-2.5 px-1 py-3 text-xs text-muted-foreground'>
+        <Info className='mt-px size-3.5 shrink-0' />
+        <p className='text-pretty leading-relaxed'>{children}</p>
+    </div>
+);
+
 const ProviderTab = ({ provider, active, onClick }) => (
     <button
         type='button'
@@ -70,7 +77,7 @@ export const AiCompletionsSection = () => {
     const set = (key, val) => setAiCompletions(prev => ({ ...prev, [key]: val }));
 
     const currentProvider =
-        PROVIDERS.find(p => p.id === (aiCompletions.provider ?? 'ollama')) ?? PROVIDERS[4];
+        PROVIDERS.find(p => p.id === (aiCompletions.provider ?? 'openrouter')) ?? PROVIDERS[3];
     const hasPresetModels = currentProvider.models.length > 0;
 
     return (
@@ -84,6 +91,7 @@ export const AiCompletionsSection = () => {
                             onCheckedChange={v => set('enabled', v)}
                         />
                     </SettingRow>
+                    <InfoCallout>{t('settings.ai_completions.features_callout')}</InfoCallout>
                 </SettingGroup>
 
                 {(aiCompletions.enabled ?? false) && (

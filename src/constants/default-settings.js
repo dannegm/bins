@@ -31,7 +31,7 @@ export const defaultSettings = {
 
     aiCompletions: {
         enabled: false,
-        provider: 'ollama',
+        provider: 'openrouter',
         apiKey: '',
         baseUrl: 'http://localhost:11434',
         model: '',

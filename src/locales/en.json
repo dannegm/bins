@@ -58,6 +58,15 @@
             "filter_all": "All",
             "filter_public": "Public",
             "filter_private": "Private"
+        },
+        "generate": {
+            "placeholder": "Describe what you want to build…",
+            "hint": "Enter to generate · Shift+Enter for newline",
+            "error": "Failed to generate bin",
+            "suggestion_1": "Express server with 3 REST routes",
+            "suggestion_2": "React todo app with localStorage",
+            "suggestion_3": "Python script to parse a CSV file",
+            "suggestion_4": "HTML landing page with CSS animations"
         }
     },
     "bins": {
@@ -87,7 +96,7 @@
             "editor": "Editor",
             "keybindings": "Keybindings",
             "prettier": "Prettier",
-            "ai_completions": "AI Completions",
+            "ai_completions": "AI Capabilities",
             "import_export": "Import & Export",
             "danger_zone": "Danger zone"
         },
@@ -166,7 +175,7 @@
             "jsx_single_quote_label": "JSX single quotes"
         },
         "ai_completions": {
-            "title": "AI Completions",
+            "title": "AI Capabilities",
             "enabled_label": "Enable AI completions",
             "provider_label": "Provider",
             "model_label": "Model",
@@ -176,7 +185,8 @@
             "base_url_label": "Base URL",
             "show": "Show",
             "hide": "Hide",
-            "key_notice": "Your API key is stored locally in this browser and never sent to any server other than the AI provider."
+            "key_notice": "Your API key is stored locally in this browser and never sent to any server other than the AI provider.",
+            "features_callout": "Enables inline code completions, AI-suggested names for bins and files, one-click code explanations, and bin generation from natural language prompts."
         },
         "danger_zone": {
             "title": "Danger zone"
@@ -579,6 +589,10 @@
             "right-to-be-forgotten": {
                 "title": "Right to forget",
                 "body": "Want a clean slate? Open {{shortcut:settings}} and hit **Forget me** to permanently delete your profile and all your bins."
+            },
+            "explain-this": {
+                "title": "Explain This",
+                "body": "Hit {{icon:book-open}} **Explain** in the status bar and the AI will tell you what the current file does."
             }
         },
         "peer_joined": "joined the session",

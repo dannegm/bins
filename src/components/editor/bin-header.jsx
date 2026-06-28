@@ -37,6 +37,7 @@ import {
 } from '@/ui/popover';
 import { EmbedDialog } from '@/components/editor/embed-dialog';
 import { useSettings } from '@/hooks/use-settings';
+import { isAiEnabled } from '@/helpers/ai';
 import { fetchNameSuggestion } from '@/services/ai-completions';
 
 const VISIBILITY_OPTIONS = [
@@ -211,7 +212,7 @@ export const BinHeader = ({
     const [mobileForkConfirm, setMobileForkConfirm] = useState(false);
     const $input = useRef(null);
 
-    const aiEnabled = aiCompletions?.enabled && isAuthor;
+    const aiEnabled = isAiEnabled(aiCompletions) && isAuthor;
 
     const visibility = bin?.visibility ?? VISIBILITY.PUBLIC;
     const canFork = visibility === VISIBILITY.PUBLIC;

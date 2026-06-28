@@ -17,6 +17,7 @@ import { cn } from '@/helpers/utils';
 import { getLanguage } from '@/constants/languages';
 import { useTheme } from '@/providers/theme-provider';
 import { fetchNameSuggestion } from '@/services/ai-completions';
+import { isAiEnabled } from '@/helpers/ai';
 import { useSettings } from '@/hooks/use-settings';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/ui/tooltip';
 
@@ -79,7 +80,7 @@ const FileTab = ({
 
     const handleAiSuggestName = async e => {
         e.stopPropagation();
-        if (!aiCompletions?.enabled || isAiLoading) return;
+        if (!isAiEnabled(aiCompletions) || isAiLoading) return;
         setIsAiLoading(true);
         try {
             const suggestion = await fetchNameSuggestion({
@@ -150,7 +151,7 @@ const FileTab = ({
                         onClick={e => e.stopPropagation()}
                         className='min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none'
                     />
-                    {aiCompletions?.enabled && (
+                    {isAiEnabled(aiCompletions) && (
                         <TooltipProvider delay={1500}>
                             <Tooltip>
                                 <TooltipTrigger

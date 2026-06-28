@@ -25,4 +25,5 @@ export const TIPS = [
     { id: 'move-search-widget', icon: 'move' },
     { id: 'no-account-required', icon: 'fingerprint' },
     { id: 'right-to-be-forgotten', icon: 'eraser' },
+    { id: 'explain-this', icon: 'book-open' },
 ];

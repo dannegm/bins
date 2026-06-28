@@ -58,6 +58,15 @@
             "filter_all": "Todos",
             "filter_public": "Públicos",
             "filter_private": "Privados"
+        },
+        "generate": {
+            "placeholder": "Describe qué quieres crear…",
+            "hint": "Enter para generar · Shift+Enter para nueva línea",
+            "error": "Error al generar el bin",
+            "suggestion_1": "Servidor Express con 3 rutas REST",
+            "suggestion_2": "App de tareas en React con localStorage",
+            "suggestion_3": "Script Python para parsear un CSV",
+            "suggestion_4": "Landing page en HTML con animaciones CSS"
         }
     },
     "bins": {
@@ -87,7 +96,7 @@
             "editor": "Editor",
             "keybindings": "Atajos",
             "prettier": "Prettier",
-            "ai_completions": "Completado IA",
+            "ai_completions": "Capacidades de IA",
             "import_export": "Importar y Exportar",
             "danger_zone": "Zona de peligro"
         },
@@ -166,8 +175,8 @@
             "jsx_single_quote_label": "Comillas simples en JSX"
         },
         "ai_completions": {
-            "title": "Completado con IA",
-            "enabled_label": "Activar completado con IA",
+            "title": "Capacidades de IA",
+            "enabled_label": "Activar capacidades de IA",
             "provider_label": "Proveedor",
             "model_label": "Modelo",
             "model_placeholder": "nombre del modelo",
@@ -176,7 +185,8 @@
             "base_url_label": "URL base",
             "show": "Mostrar",
             "hide": "Ocultar",
-            "key_notice": "Tu clave de API se almacena localmente en este navegador y nunca se envía a ningún servidor que no sea el proveedor de IA."
+            "key_notice": "Tu clave de API se almacena localmente en este navegador y nunca se envía a ningún servidor que no sea el proveedor de IA.",
+            "features_callout": "Activa el completado de código inline, nombres sugeridos por IA para bins y archivos, explicaciones de código con un clic, y la generación de bins desde prompts en lenguaje natural."
         },
         "danger_zone": {
             "title": "Zona de peligro"
@@ -579,6 +589,10 @@
             "right-to-be-forgotten": {
                 "title": "Derecho al olvido",
                 "body": "¿Quieres borrarte? Abre {{shortcut:settings}} y pulsa **Olvídame** para eliminar permanentemente tu perfil y todos tus bins."
+            },
+            "explain-this": {
+                "title": "Explica este código",
+                "body": "Pulsa {{icon:book-open}} **Explicar** en la barra de estado y la IA te dirá qué hace el archivo actual."
             }
         },
         "peer_joined": "se unió a la sesión",

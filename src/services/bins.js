@@ -93,6 +93,27 @@ export const forkBin = async sourceBinId => {
     return newId;
 };
 
+export const createBinWithFiles = async (title, files) => {
+    const authorId = settings.get('user.uuid');
+    const newId = nanoid(10);
+
+    const { error: binError } = await supabase()
+        .from('bins')
+        .insert({ id: newId, title, author_id: authorId, expires_at: null });
+
+    if (binError) throw binError;
+
+    for (let i = 0; i < files.length; i++) {
+        const { name, language, content } = files[i];
+        const { error: fileError } = await supabase()
+            .from('bin_files')
+            .insert({ id: nanoid(8), bin_id: newId, name, language, content: content ?? '', position: i });
+        if (fileError) throw fileError;
+    }
+
+    return newId;
+};
+
 export const incrementViews = async binId => {
     const key = `viewed:${binId}`;
     if (sessionStorage.getItem(key)) return;

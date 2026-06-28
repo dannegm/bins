@@ -23,6 +23,7 @@ import {
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/ui/tooltip';
 import { useEvents } from '@/providers/bus-provider';
 import { fetchExplanation } from '@/services/ai-completions';
+import { isAiConfigured, isAiEnabled } from '@/helpers/ai';
 import { settings } from '@/services/settings';
 import { cache } from '@/services/cache';
 
@@ -132,12 +133,10 @@ const PROVIDER_BRAND = {
 const AiChip = ({ t }) => {
     const [aiCompletions, setAiCompletions] = useSettings('aiCompletions');
 
-    const provider = aiCompletions?.provider ?? 'ollama';
-    const apiKey = aiCompletions?.apiKey ?? '';
     const enabled = aiCompletions?.enabled ?? false;
+    const provider = aiCompletions?.provider ?? 'openrouter';
 
-    const isConfigured = provider === 'ollama' ? true : !!apiKey;
-    if (!isConfigured) return null;
+    if (!isAiConfigured(aiCompletions)) return null;
 
     const toggle = () => setAiCompletions(prev => ({ ...prev, enabled: !prev.enabled }));
     const brand = PROVIDER_BRAND[provider] ?? PROVIDER_BRAND.ollama;
@@ -189,11 +188,6 @@ const ExplainButton = ({ content, language, containerRef, t }) => {
     const $abort = useRef(null);
     const $cachedHash = useRef('');
     const $cachedExplanation = useRef('');
-
-    const provider = aiCompletions?.provider ?? 'ollama';
-    const apiKey = aiCompletions?.apiKey ?? '';
-    const enabled = aiCompletions?.enabled ?? false;
-    const isConfigured = provider === 'ollama' ? true : !!apiKey;
 
     useEffect(() => {
         const saved = cache.get('explain');
@@ -292,7 +286,7 @@ const ExplainButton = ({ content, language, containerRef, t }) => {
         window.addEventListener('pointerup', onUp);
     }, [containerRef, snapToEdge]);
 
-    if (!enabled || !isConfigured) return null;
+    if (!isAiEnabled(aiCompletions)) return null;
 
     return (
         <>
