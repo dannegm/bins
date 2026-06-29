@@ -27,7 +27,7 @@ Skills live in `.agents/skills/<name>/SKILL.md` inside the project repo, then ge
 
 4. **Create the symlink**:
    ```bash
-   ln -s "$(pwd)/.agents/skills/<name>" ~/.claude/skills/<name>
+   ln -sfn "$(pwd)/.agents/skills/<name>" "$(pwd)/.claude/skills/<name>"
    ```
 
 5. **Confirm** — show the skill name, its description, and that the symlink is live.
